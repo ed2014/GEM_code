@@ -36,9 +36,11 @@ library(dplyr)
 ## Retrieve data and check
 ```{r, include=FALSE}
 # load data from HD
-setwd("E:\\SowByGenotype")
+#setwd("E:\\SowByGenotype")
+setwd(C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data)
 
 load("DATA_GEM.Rda", .GlobalEnv)
+
 
 head(DATA_GEM)
 tail(DATA_GEM)
