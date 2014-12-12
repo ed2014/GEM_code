@@ -1,0 +1,480 @@
+---
+title: "AnalyseGEM"
+author: "edmar.teixeira@me.com"
+date: "Sunday, December 07, 2014"
+output: html_document
+---
+
+# Background
+
+## Aim
+
+Quantify **uncertanty** (sensitivity of model to?) coming from the choice of (possible?) **sowing dates and maize hybrids** in regional simulations
+
+## Method
+
+> Use APSIM 7.4
+
+> Run model for ~2700 pixels of 5 x 5 km (NIWA ref XXX) across New Zealand
+
+> Arable land filter frpm LandCare (ref XXX)
+
+> Run 30 years (XXX-XXXX) of data from NIWA (XXXX)
+
+> Run 5 hybrid maturity types (parameter XXXX with values x, x, x, x, x)
+
+> Run at 5 different sowng dates (1-Sep, 1-Oct, 1-Nov, 1-Dec, 1-Jan)
+
+
+# Data Manipulation
+
+```{r, echo=TRUE, include=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+## Retrieve data and check
+```{r, include=FALSE}
+# load data from HD
+setwd("E:\\SowByGenotype")
+
+load("DATA_GEM.Rda", .GlobalEnv)
+
+head(DATA_GEM)
+tail(DATA_GEM)
+summary(DATA_GEM)
+```
+
+> Subset to keep only maize (exclude winter forage wheat) and order factors
+```{r, include=FALSE}
+# Remove wheat (catch crop rotation) and keep only maize data
+workDF = filter(DATA_GEM, CurrentCrop != 'wheat_exceed')
+
+# order sow dates
+workDF$thisSow = factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
+```
+
+## Graph some results
+
+> Total silage biomass by sowing date (kg/ha)
+```{r}
+
+# Pooled response to sow date
+ggplot(workDF, aes(x= thisSow , y=TotalBiomass)) +  geom_boxplot() +
+facet_grid( .~ thisHyb)
+
+```
+
+> Total silage biomass by hybrid type (kg/ha)
+```{r}
+
+# Pooled response to Hybrid (Bio)
+ggplot(workDF, aes(x= thisHyb , y=TotalBiomass)) +  geom_boxplot() +
+facet_grid( .~ thisSow)
+
+```
+
+> Total **grain yield** by hybrid type (kg/ha)
+```{r}
+
+# Pooled response to Hybrid (Bio)
+ggplot(workDF, aes(x= thisHyb , y=TotalYield)) +  geom_boxplot() +
+facet_grid( .~ thisSow)
+
+```
+
+> Harvest index by hybrid type
+```{r}
+
+# Pooled response to Hybrid (HI)
+ggplot(workDF, aes(x= thisHyb , y=HarvestIndex)) +  geom_boxplot() +
+facet_grid( .~ thisSow)
+
+```
+
+# Analysis
+
+## Calculate variability 
+
+> Just to have an initial idea of variability
+
+> Considers variation among YEARS and PIXELS together
+
+> Pooled among hybrids and sowing dates
+
+
+```{r}
+# polled CV across hybrids and sowing dates
+cvTable = workDF %>%
+  group_by(thisSow, thisHyb) %>%
+  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100)
+
+ggplot(cvTable, aes(x= thisHyb , y=CVperc)) +  geom_point() +
+facet_grid( .~ thisSow)
+
+```
+
+## Values pooled (median, mean, stdev) across **years** 
+
+> Statistics of n years per pixel/scenario of hybrid and sow date combination
+
+> Also creates a ID for each pixel-h-s combination (FIXME: maybe redundant now)
+
+```{r}
+# Create a median and stdev for each pixel-h-s, polled across YEARS (i.e. year is not included in grouping)
+
+workDF_med = workDF %>%
+  group_by(row,col,thisHyb,thisSow) %>%
+  summarise( thisLat = mean(thisLat, na.rm = TRUE),
+             thisLong = mean(thisLong, na.rm = TRUE),
+             Bio_mean = mean(TotalBiomass, na.rm = TRUE),
+             Bio_med = median(TotalBiomass, na.rm = TRUE),
+             Bio_sdv = sd(TotalBiomass, na.rm = TRUE),
+             Bio_cv = (Bio_sdv/Bio_mean)*100,
+             Y_mean = mean(TotalYield, na.rm = TRUE),
+             Y_med = median(TotalYield, na.rm = TRUE),
+             Y_sdv = sd(TotalYield, na.rm = TRUE),
+             Y_cv = (Y_sdv/Y_mean)*100,
+             HI_med = median(HarvestIndex, na.rm = TRUE)) %>%
+  # Unique ID for the pixel in a hxs scenario (FIXME: maybe redundant now)
+  mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow),
+         pixel_ID=paste0(row,"_",col))   
+
+# make hybrid and sow date as numbers (for using in raster later) - FIXME: do this prettier later
+workDF_med$thisSow_n[workDF_med$thisSow == "s1"] <- 1
+workDF_med$thisSow_n[workDF_med$thisSow == "s2"] <- 2
+workDF_med$thisSow_n[workDF_med$thisSow == "s3"] <- 3
+workDF_med$thisSow_n[workDF_med$thisSow == "s4"] <- 4
+workDF_med$thisSow_n[workDF_med$thisSow == "s5"] <- 5
+
+workDF_med$thisHyb_n[workDF_med$thisHyb == "h1"] <- 1
+workDF_med$thisHyb_n[workDF_med$thisHyb == "h2"] <- 2
+workDF_med$thisHyb_n[workDF_med$thisHyb == "h3"] <- 3
+workDF_med$thisHyb_n[workDF_med$thisHyb == "h4"] <- 4
+workDF_med$thisHyb_n[workDF_med$thisHyb == "h5"] <- 5
+
+head(workDF_med)
+
+```
+
+
+## Find hybrid x sow date with **highest yield** in each pixel
+
+> This is to check the data "sensibility"
+
+> FIXME: Check this dplyr script and logic as it seems that almost  **NO variation** is coming from this 
+
+> Most productive sowing dates are **S1 (Sept) and S2 (Oct) **
+
+> Most productive is always **hybrid 5** (longest hybrid)
+
+
+```{r, echo=FALSE}
+# select line with maximum yield per pixel
+df_maxB <- workDF_med %>% group_by(row, col) %>%
+  filter(Bio_med == max(Bio_med))
+
+head(df_maxB)
+nrow(df_maxB)
+
+#summary(df_maxB)
+
+#PLot histograms
+hg1 = ggplot(df_maxB, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 =ggplot(df_maxB, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+
+# Plot
+require(gridExtra)
+grid.arrange(hg1, hg2,ncol=2)
+```
+
+
+## Find highest **grain yield** per pixel
+
+> Allmost same results for grain
+
+```{r, echo=FALSE}
+# select line with maximum yield per pixel
+df_maxY <- workDF_med %>% group_by(row, col) %>%
+  filter(Y_med == max(Y_med))
+
+head(df_maxY, 25)
+nrow(df_maxY)
+
+#summary(df_maxY)
+
+#PLot histograms
+hg1 = ggplot(df_maxY, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 = ggplot(df_maxY, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+
+
+# Plot
+require(gridExtra)
+grid.arrange(hg1, hg2,ncol=2)
+```
+
+
+## Find hybrid x sow date with **lowest inter-annual variability** in each pixel
+
+> A bit more spread of frequencies here
+
+> In most pixels, sowing date 2 and 3 are less variable
+
+> Longer hybrids (Hybrid 3,4 and 5) are less variable
+
+
+```{r}
+df_minSd <- workDF_med %>% group_by(row, col) %>%
+#  filter(Bio_sdv == min(Bio_sdv))
+ filter(Bio_cv == min(Bio_cv))
+
+head(df_minSd)
+nrow(df_minSd)
+#summary(df_minSd)
+
+#summary(df_maxY)
+
+#PLot histograms
+hg1 = ggplot(df_minSd, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 =ggplot(df_minSd, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+
+
+# Plot distributions of Si
+require(gridExtra)
+grid.arrange(hg1, hg2, ncol=2)
+
+```
+
+# How is total biomass and inter-annual variability related?
+
+> In general **highest** yields have **lowest variability**
+
+```{r, echo=FALSE}
+
+workDF_med$Bio_meanTons = workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
+
+# all together
+ggplot(workDF_med, aes(x= Bio_meanTons , y=Bio_cv)) +  geom_point(aes(colour = factor(thisSow)) ) +
+facet_grid(thisHyb ~.)
+
+#different panels by hybrid
+ggplot(workDF_med, aes(x= Bio_meanTons , y=Bio_cv)) +  geom_point(aes(colour = factor(thisHyb )) ) +
+facet_grid(thisSow ~thisHyb, scales="free")
+
+```
+
+# Rasterise for mapping
+
+> 
+
+> Checking data-frame
+
+> Plot statistics for n Years 
+
+## Pixels with highest Total Silage Biomass
+
+> Maps show stats and which hybrid and sowing date was selected in each pixel
+
+```{r, echo=FALSE, warning=FALSE}
+library(raster)
+par(mfrow=c(1,1))
+outNames = colnames(df_maxY)
+outNames =gsub(" ","",outNames )
+
+# ignore first 6 factors
+spg = list() # dataframe list to be coerced as spatial object
+rast = list() # raster
+s=list()
+for(o in 7:length(outNames)){
+if (o == 12) {next} # other label to ignore
+
+  # For aggregate
+  spg[[o]] = data.frame(df_maxY$thisLong, df_maxY$thisLat, df_maxY[[o]])
+  coordinates(spg[[o]]) = ~ df_maxY.thisLong + df_maxY.thisLat # Attention to variable names
+ 
+  # Common to both methods (grid, raterise and project)
+  gridded(spg[[o]]) <- TRUE
+  rast[[o]] = raster(spg[[o]])
+  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+ plot(rast[[o]], main = paste0(outNames[o]))
+
+  # stack them
+  if(o == 1) {
+    s = stack(rast[[o]])} 
+  else {
+    s[[o]] = rast[[o]]
+  }
+  
+  # save raster as
+  #writeRaster(rast[[o]], file=paste0(cropNames[c],"\\",thisCrop,"_", outNames[o],"_var",".tiff"), overwrite=TRUE) 
+}
+
+```
+
+
+## Show maps when selecting run with **lowest variability**
+
+
+```{r, echo=FALSE, warning=FALSE}
+library(raster)
+par(mfrow=c(1,1))
+outNames = colnames(df_minSd)
+outNames =gsub(" ","",outNames )
+
+# ignore first 6 factors
+spg = list() # dataframe list to be coerced as spatial object
+rast = list() # raster
+s=list()
+for(o in 7:length(outNames)){
+if (o == 12) {next} # other label to ignore
+
+  # For aggregate
+  spg[[o]] = data.frame(df_minSd$thisLong, df_minSd$thisLat, df_minSd[[o]])
+  coordinates(spg[[o]]) = ~ df_minSd.thisLong + df_minSd.thisLat # Attention to variable names
+ 
+  # Common to both methods (grid, raterise and project)
+  gridded(spg[[o]]) <- TRUE
+  rast[[o]] = raster(spg[[o]])
+  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+ plot(rast[[o]], main = paste0(outNames[o]))
+
+  # stack them
+  if(o == 1) {
+    s = stack(rast[[o]])} 
+  else {
+    s[[o]] = rast[[o]]
+  }
+  
+  # save raster as
+  #writeRaster(rast[[o]], file=paste0(cropNames[c],"\\",thisCrop,"_", outNames[o],"_var",".tiff"), overwrite=TRUE) 
+}
+
+```
+
+
+## Calculate the relative variability for factors
+
+> How much of overall variation is coming from sowing date, hybrid and their interaction?
+
+> Adapting Esther Meenken method of sensitivity analysis for that
+
+> Run a ANOVA and retrive the Sums of Squares (SS) of each factor (2 main factors and the interaction)
+
+> Display it as a relative proportion of total variation (% of total SS)
+
+> This is the **Si index** summary:
+
+```{r, echo =FALSE}
+# do an anova for each pixel 
+si_df_final = NULL
+pixels = unique(workDF_med$pixel_ID)
+for (p in 1:length(pixels)) {
+  
+  thisPixDF = filter(workDF_med, pixel_ID == pixels[[p]])
+  
+  summary(thisPixDF)
+         
+  # do anova
+  anova = aov(Bio_mean ~ thisHyb*thisSow, data = thisPixDF)
+  anovaTable = summary(anova)
+  
+  #Retrive SS and MS values
+  anova_SS = anovaTable[[1]]$'Sum Sq'
+  anova_MS = anovaTable[[1]]$'Mean Sq' 
+
+  # Binds all SS for each variable together into a new df
+  df_ss = data.frame(SS = anova_SS, MS = anova_MS)
+
+  #retrieves row names and load into result df
+  namesAnTab = rownames(anovaTable[[1]])
+  rownames (df_ss) = gsub(" ","",namesAnTab) # remove spaces
+
+  # Creates a column with "normalised" percent of total variation (SS) 
+  # in relation to total SS for each factor
+  df_ss$SS_p = round((df_ss$SS/sum(df_ss$SS))*100,3)
+  df_ss$MS_p = round((df_ss$MS/sum(df_ss$MS))*100,3) # FIXME: Not sure which to use SS or MS
+ 
+ 
+  df_si=data.frame(thisLat = thisPixDF$thisLat[1],
+                   thisLong = thisPixDF$thisLong[1], 
+                   df_ss$SS_p[1], 
+                   df_ss$SS_p[2], 
+                   df_ss$SS_p[3])
+  
+  # label Si df
+  colnames(df_si)[3] = gsub(" ","",paste0("Si_",namesAnTab[1]))
+  colnames(df_si)[4] = gsub(" ","",paste0("Si_",namesAnTab[2]))
+  colnames(df_si)[5] = "Si_Interac"
+  
+  # Appends to final Si df
+  if(p==1){ 
+    si_df_final = data.frame(df_si)  
+    } else {
+    si_df_final = rbind(si_df_final, df_si)
+    }
+  
+}
+
+summary(si_df_final)
+nrow(si_df_final)
+gH =ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gS = ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gI = ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+
+# Plot distributions of Si
+require(gridExtra)
+grid.arrange(gH, gS, gI,nrow=3)
+```
+
+
+> Histograms show frequency of pixels in each range of Si for each factor and interactions
+
+## Map Si index
+
+> Si is the fraction of total sums of squares attributed to each main factor or interactions
+
+> Let's plot it: 
+
+```{r, echo = FALSE, warning=FALSE}
+library(raster)
+par(mfrow=c(1,1))
+outNames = colnames(si_df_final)
+outNames =gsub(" ","",outNames )
+
+# ignore first 6 factors
+spg = list() # dataframe list to be coerced as spatial object
+rast = list() # raster
+s=list()
+for(o in 3:length(outNames)){
+
+  # For aggregate
+  spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
+  coordinates(spg[[o]]) = ~ si_df_final.thisLong + si_df_final.thisLat # Attention to variable names
+ 
+  # Common to both methods (grid, raterise and project)
+  gridded(spg[[o]]) <- TRUE
+  rast[[o]] = raster(spg[[o]])
+  #rast = raster(spg[[o]])
+  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  #proj4string(rast) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+ plot(rast[[o]], main = paste0(outNames[o]))
+
+  # stack them
+  if(o == 1) {
+    s = stack(rast[[o]])} 
+  else {
+    s[[o]] = rast[[o]]
+  }
+  
+  # save raster as
+  writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+}
+
+```
+
+
+
+
