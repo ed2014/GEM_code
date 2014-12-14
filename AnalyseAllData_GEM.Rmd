@@ -37,7 +37,7 @@ library(dplyr)
 ```{r, include=FALSE}
 # load data from HD
 #setwd("E:\\SowByGenotype")
-setwd(C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data)
+setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
@@ -50,6 +50,7 @@ summary(DATA_GEM)
 > Subset to keep only maize (exclude winter forage wheat) and order factors
 ```{r, include=FALSE}
 # Remove wheat (catch crop rotation) and keep only maize data
+
 workDF = filter(DATA_GEM, CurrentCrop != 'wheat_exceed')
 
 # order sow dates
@@ -156,8 +157,70 @@ workDF_med$thisHyb_n[workDF_med$thisHyb == "h4"] <- 4
 workDF_med$thisHyb_n[workDF_med$thisHyb == "h5"] <- 5
 
 head(workDF_med)
+tail(workDF_med)
 
 ```
+
+
+Select some pixels across the range of results
+```{r}
+library(dplyr)
+# Give me the 25th percentile of Biomass
+df_p <- workDF_med %>% group_by(row, col) %>%
+  mutate(perc = rank(Bio_med)/length(Bio_med))
+
+# select pixels to graph
+
+df_sel = data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
+
+
+for (p in 1:nrow(df_pix)) {
+    
+
+df_pix <- df_p %>% group_by(row, col) %>%
+  #filter(row==184 & col==113)
+  filter(row==df_sel$rowsSel[p] & col==df_sel$colsSel[p])
+
+head(df_pix, 25)
+write.table(df_pix, file=paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p],"_","3D_graph.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
+               append=FALSE, quote=FALSE)
+
+par(mfrow = c(1, 2))
+# PLot 3 D graph
+z = matrix(df_pix$Bio_med, # the data elements 
+nrow=length(unique(df_pix$thisHyb)),              # number of rows 
+ncol=length(unique(df_pix$thisSow)),              # number of columns 
+byrow = TRUE)        # fill matrix by rows 
+colnames(z) = unique(df_pix$thisHyb_n)
+rownames(z) = unique(df_pix$thisSow_n)
+
+x = as.numeric(colnames(z))
+y = as.numeric(rownames(z))
+  
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, col=color[max(z)],
+        ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+
+
+# variaility
+# PLot 3 D graph
+z = matrix(df_pix$Bio_sd, # the data elements 
+nrow=length(unique(df_pix$thisHyb)),              # number of rows 
+ncol=length(unique(df_pix$thisSow)),              # number of columns 
+byrow = TRUE)        # fill matrix by rows 
+colnames(z) = unique(df_pix$thisHyb_n)
+rownames(z) = unique(df_pix$thisSow_n)
+
+x = as.numeric(colnames(z))
+y = as.numeric(rownames(z))
+  
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, col=color[max(z)],main= paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
+        ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+
+}
+
+```
+
+
 
 
 ## Find hybrid x sow date with **highest yield** in each pixel
