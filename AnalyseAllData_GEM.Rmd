@@ -175,6 +175,7 @@ df_sel = data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
 
 
 for (p in 1:nrow(df_pix)) {
+  
     
 
 df_pix <- df_p %>% group_by(row, col) %>%
