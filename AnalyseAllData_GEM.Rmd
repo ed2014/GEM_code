@@ -28,13 +28,18 @@ Quantify **uncertanty** (sensitivity of model to?) coming from the choice of (po
 
 # Data Manipulation
 
-```{r, echo=TRUE, include=FALSE}
+```{r LoadLibs, echo=TRUE, include=FALSE}
 library(ggplot2)
 library(dplyr)
+library(plot3D)
+library(gridExtra)
+library(tidyr)
+library(raster)
+library(mapproj)
 ```
 
 ## Retrieve data and check
-```{r, include=FALSE}
+```{r GetData, include=FALSE}
 # load data from HD
 #setwd("E:\\SowByGenotype")
 setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
@@ -48,23 +53,48 @@ summary(DATA_GEM)
 ```
 
 > Subset to keep only maize (exclude winter forage wheat) and order factors
-```{r, include=FALSE}
+
+```{r TidyUp, include=FALSE}
 # Remove wheat (catch crop rotation) and keep only maize data
 
-workDF = filter(DATA_GEM, CurrentCrop != 'wheat_exceed')
+workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
 
 # order sow dates
 workDF$thisSow = factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
+
+#creates ID for each pixel
+workDF$pixel_ID <- paste0(workDF$row,"_",workDF$col)
+
+# Creates a year field as factor
+workDF$yearAsFact <- as.factor(paste0(workDF$year,"_Y"))
+
+summary(workDF)
+
 ```
 
 ## Graph some results
 
 > Total silage biomass by sowing date (kg/ha)
-```{r}
+```{r GraphCheck, echo=FALSE}
 
 # Pooled response to sow date
-ggplot(workDF, aes(x= thisSow , y=TotalBiomass)) +  geom_boxplot() +
+workDF %>%
+ggplot(aes(x= thisSow , y=TotalBiomass)) +  
+geom_boxplot() +
 facet_grid( .~ thisHyb)
+
+# 
+workDF %>%
+ggplot(aes(x= thisSow , y=TotalYield)) +  
+geom_boxplot() +
+facet_grid( .~ thisHyb)
+
+# 
+workDF %>%
+ggplot(aes(x= thisSow , y=HarvestIndex)) +  
+geom_boxplot() +
+facet_grid( .~ thisHyb)
+
 
 ```
 
@@ -127,7 +157,7 @@ facet_grid( .~ thisSow)
 # Create a median and stdev for each pixel-h-s, polled across YEARS (i.e. year is not included in grouping)
 
 workDF_med = workDF %>%
-  group_by(row,col,thisHyb,thisSow) %>%
+  group_by(row,col,pixel_ID, thisHyb,thisSow) %>%
   summarise( thisLat = mean(thisLat, na.rm = TRUE),
              thisLong = mean(thisLong, na.rm = TRUE),
              Bio_mean = mean(TotalBiomass, na.rm = TRUE),
@@ -140,8 +170,9 @@ workDF_med = workDF %>%
              Y_cv = (Y_sdv/Y_mean)*100,
              HI_med = median(HarvestIndex, na.rm = TRUE)) %>%
   # Unique ID for the pixel in a hxs scenario (FIXME: maybe redundant now)
-  mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow),
-         pixel_ID=paste0(row,"_",col))   
+  # mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow),
+        # pixel_ID=paste0(row,"_",col))   
+     mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow))  
 
 # make hybrid and sow date as numbers (for using in raster later) - FIXME: do this prettier later
 workDF_med$thisSow_n[workDF_med$thisSow == "s1"] <- 1
@@ -166,18 +197,20 @@ Select some pixels across the range of results
 ```{r}
 library(dplyr)
 # Give me the 25th percentile of Biomass
-df_p <- workDF_med %>% group_by(row, col) %>%
+df_p <- workDF_med %>% 
+  group_by(row, col) %>%
   mutate(perc = rank(Bio_med)/length(Bio_med))
+
+summary(df_p$perc)
+
 
 # select pixels to graph
 
 df_sel = data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
 
 
-for (p in 1:nrow(df_pix)) {
+for (p in 1:nrow(df_sel)) {
   
-    
-
 df_pix <- df_p %>% group_by(row, col) %>%
   #filter(row==184 & col==113)
   filter(row==df_sel$rowsSel[p] & col==df_sel$colsSel[p])
@@ -198,7 +231,7 @@ rownames(z) = unique(df_pix$thisSow_n)
 x = as.numeric(colnames(z))
 y = as.numeric(rownames(z))
   
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, col=color[max(z)],
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
         ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
 
 
@@ -214,7 +247,7 @@ rownames(z) = unique(df_pix$thisSow_n)
 x = as.numeric(colnames(z))
 y = as.numeric(rownames(z))
   
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, col=color[max(z)],main= paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, main= paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
         ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
 
 }
@@ -430,21 +463,30 @@ if (o == 12) {next} # other label to ignore
 
 > Display it as a relative proportion of total variation (% of total SS)
 
+> FIXME: this must include weatther variability too
+
 > This is the **Si index** summary:
 
-```{r, echo =FALSE}
+```{r ANOVA, echo =FALSE}
 # do an anova for each pixel 
 si_df_final = NULL
-pixels = unique(workDF_med$pixel_ID)
+pixels <- unique(workDF_med$pixel_ID)
+
+summary(workDF) # Should I use workDF?
+
 for (p in 1:length(pixels)) {
   
-  thisPixDF = filter(workDF_med, pixel_ID == pixels[[p]])
+  # thisPixDF <- filter(workDF_med, pixel_ID == pixels[[p]])
+  thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
   
+  head(thisPixDF)
   summary(thisPixDF)
          
   # do anova
-  anova = aov(Bio_mean ~ thisHyb*thisSow, data = thisPixDF)
-  anovaTable = summary(anova)
+ # anova = aov(Bio_mean ~ thisHyb*thisSow, data = thisPixDF)
+  anova <- aov(TotalBiomass ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
+
+  anovaTable <- summary(anova)
   
   #Retrive SS and MS values
   anova_SS = anovaTable[[1]]$'Sum Sq'
@@ -454,25 +496,32 @@ for (p in 1:length(pixels)) {
   df_ss = data.frame(SS = anova_SS, MS = anova_MS)
 
   #retrieves row names and load into result df
-  namesAnTab = rownames(anovaTable[[1]])
-  rownames (df_ss) = gsub(" ","",namesAnTab) # remove spaces
+  namesAnTab <- rownames(anovaTable[[1]])
+  rownames (df_ss) <- gsub(" ","",namesAnTab) # remove spaces
+ 
+ # get names and count of main factors
+mainFact <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main factors from
 
   # Creates a column with "normalised" percent of total variation (SS) 
   # in relation to total SS for each factor
-  df_ss$SS_p = round((df_ss$SS/sum(df_ss$SS))*100,3)
-  df_ss$MS_p = round((df_ss$MS/sum(df_ss$MS))*100,3) # FIXME: Not sure which to use SS or MS
+  df_ss$SS_p <- round((df_ss$SS/sum(df_ss$SS))*100,3)
+  df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
+  # FIXME: Not sure which to use SS or MS
  
  
-  df_si=data.frame(thisLat = thisPixDF$thisLat[1],
+  df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1], 
                    df_ss$SS_p[1], 
                    df_ss$SS_p[2], 
-                   df_ss$SS_p[3])
+                   df_ss$SS_p[3],
+                   df_ss$SS_p[4]
+                   )
   
-  # label Si df
-  colnames(df_si)[3] = gsub(" ","",paste0("Si_",namesAnTab[1]))
-  colnames(df_si)[4] = gsub(" ","",paste0("Si_",namesAnTab[2]))
-  colnames(df_si)[5] = "Si_Interac"
+  # label Si df FIXME: Automate this
+  colnames(df_si)[3] = gsub(" ","",paste0("Si_",mainFact[1]))
+  colnames(df_si)[4] = gsub(" ","",paste0("Si_",mainFact[2]))
+  colnames(df_si)[5] = gsub(" ","",paste0("Si_",mainFact[3]))
+  colnames(df_si)[6] = "Si_Interac"
   
   # Appends to final Si df
   if(p==1){ 
@@ -487,11 +536,29 @@ summary(si_df_final)
 nrow(si_df_final)
 gH =ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gS = ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gW = ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gI = ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
+
+
+# All plotted together
+fontSize <- 14
+si_df_final %>%
+  group_by(thisLat, thisLong) %>%
+  gather(factName, siVal, 3:6) %>%
+  ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
+  geom_histogram(aes(y=..density..), binwidth=.8, alpha=0) +
+  geom_density(alpha=0.2,size=1.5) +
+  xlab("Percent of total variability (%)") +
+  ylab("Frequency distribution") +
+  theme(text = element_text(size=fontSize)) +
+  theme(legend.position = c(0, 1), 
+       legend.justification = c(-4, 1)) 
+
+
+
 # Plot distributions of Si
-require(gridExtra)
-grid.arrange(gH, gS, gI,nrow=3)
+grid.arrange(gH, gS, gW,gI, nrow=4)
 ```
 
 
@@ -505,15 +572,16 @@ grid.arrange(gH, gS, gI,nrow=3)
 
 ```{r, echo = FALSE, warning=FALSE}
 library(raster)
-par(mfrow=c(1,1))
 outNames = colnames(si_df_final)
 outNames =gsub(" ","",outNames )
+par(mfrow=c(1,(length(mainFact)+1)))
+#outNames <- mainFact
 
 # ignore first 6 factors
 spg = list() # dataframe list to be coerced as spatial object
 rast = list() # raster
 s=list()
-for(o in 3:length(outNames)){
+for(o in length(mainFact):length(outNames)){
 
   # For aggregate
   spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
@@ -523,21 +591,28 @@ for(o in 3:length(outNames)){
   gridded(spg[[o]]) <- TRUE
   rast[[o]] = raster(spg[[o]])
   #rast = raster(spg[[o]])
-  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   #proj4string(rast) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-
- plot(rast[[o]], main = paste0(outNames[o]))
 
   # stack them
   if(o == 1) {
-    s = stack(rast[[o]])} 
+    s <- NULL
+    s <- stack(rast[[o]])} 
   else {
-    s[[o]] = rast[[o]]
+    s[[o]] <- rast[[o]]
   }
   
   # save raster as
   writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+  
+  # plot them
+  factNames <- c("xx","xx", "Hybrid","Sow date", "Weather", "Interactions")
+   plot(rast[[o]], main = paste0(factNames[o]))
+  # map('nz')
+  
+  
 }
+map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
 
 ```
 
