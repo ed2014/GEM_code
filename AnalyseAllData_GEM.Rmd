@@ -75,23 +75,44 @@ summary(workDF)
 ## Graph some results
 
 > Total silage biomass by sowing date (kg/ha)
-```{r GraphCheck, echo=FALSE}
 
-# Pooled response to sow date
+```{r GraphBySow, echo=FALSE}
+
+# Pooled pixels response to sow date by hybrid
+
+# Total biomass
 workDF %>%
 ggplot(aes(x= thisSow , y=TotalBiomass)) +  
 geom_boxplot() +
 facet_grid( .~ thisHyb)
 
-# 
+# Total Yield
 workDF %>%
 ggplot(aes(x= thisSow , y=TotalYield)) +  
 geom_boxplot() +
 facet_grid( .~ thisHyb)
 
-# 
+# Harvest Index
 workDF %>%
 ggplot(aes(x= thisSow , y=HarvestIndex)) +  
+geom_boxplot() +
+facet_grid( .~ thisHyb)
+
+# Water Use
+workDF %>%
+ggplot(aes(x= thisSow , y=ETact)) +  
+geom_boxplot() +
+facet_grid( .~ thisHyb)
+
+# Water Use Efficiency
+workDF %>%
+ggplot(aes(x= thisSow , y=WUE)) +  
+geom_boxplot() +
+facet_grid( .~ thisHyb)
+
+# Water Use Efficiency
+workDF %>%
+ggplot(aes(x= thisSow , y=WUE)) +  
 geom_boxplot() +
 facet_grid( .~ thisHyb)
 
@@ -99,35 +120,55 @@ facet_grid( .~ thisHyb)
 ```
 
 > Total silage biomass by hybrid type (kg/ha)
-```{r}
+
+This form of display seems more interesting.
+
+- Advantege of long hybrids is reduced at late sowing dates
+
+```{r GraphByHyb, echo = FALSE}
 
 # Pooled response to Hybrid (Bio)
-ggplot(workDF, aes(x= thisHyb , y=TotalBiomass)) +  geom_boxplot() +
+# Total biomass
+workDF %>%
+ggplot(aes(x= thisHyb , y=TotalBiomass)) +  
+geom_boxplot() +
 facet_grid( .~ thisSow)
 
-```
-
-> Total **grain yield** by hybrid type (kg/ha)
-```{r}
-
-# Pooled response to Hybrid (Bio)
-ggplot(workDF, aes(x= thisHyb , y=TotalYield)) +  geom_boxplot() +
+# Total Yield
+workDF %>%
+ggplot(aes(x= thisHyb , y=TotalYield)) +  
+geom_boxplot() +
 facet_grid( .~ thisSow)
 
-```
+# Harvest Index
+workDF %>%
+ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
+geom_boxplot() +
+facet_grid( .~ thisSow)
 
-> Harvest index by hybrid type
-```{r}
+# Water Use
+workDF %>%
+ggplot(aes(x= thisHyb , y=ETact)) +  
+geom_boxplot() +
+facet_grid( .~ thisSow)
 
-# Pooled response to Hybrid (HI)
-ggplot(workDF, aes(x= thisHyb , y=HarvestIndex)) +  geom_boxplot() +
+# Water Use Efficiency
+workDF %>%
+ggplot(aes(x= thisHyb , y=WUE)) +  
+geom_boxplot() +
+facet_grid( .~ thisSow)
+
+# Water Use Efficiency
+workDF %>%
+ggplot(aes(x= thisHyb , y=WUE)) +  
+geom_boxplot() +
 facet_grid( .~ thisSow)
 
 ```
 
 # Analysis
 
-## Calculate variability 
+## Calculate variability as CV%
 
 > Just to have an initial idea of variability
 
@@ -136,14 +177,13 @@ facet_grid( .~ thisSow)
 > Pooled among hybrids and sowing dates
 
 
-```{r}
+```{r GraphCVs, echo =FALSE}
 # polled CV across hybrids and sowing dates
-cvTable = workDF %>%
+workDF %>%
   group_by(thisSow, thisHyb) %>%
-  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100)
-
-ggplot(cvTable, aes(x= thisHyb , y=CVperc)) +  geom_point() +
-facet_grid( .~ thisSow)
+  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  ggplot(aes(x= thisHyb , y=CVperc)) +  geom_point() +
+  facet_grid( .~ thisSow)
 
 ```
 
@@ -153,10 +193,10 @@ facet_grid( .~ thisSow)
 
 > Also creates a ID for each pixel-h-s combination (FIXME: maybe redundant now)
 
-```{r}
+```{r CreateMedCV_df, echo = FALSE}
 # Create a median and stdev for each pixel-h-s, polled across YEARS (i.e. year is not included in grouping)
 
-workDF_med = workDF %>%
+workDF_med <- workDF %>%
   group_by(row,col,pixel_ID, thisHyb,thisSow) %>%
   summarise( thisLat = mean(thisLat, na.rm = TRUE),
              thisLong = mean(thisLong, na.rm = TRUE),
@@ -174,7 +214,8 @@ workDF_med = workDF %>%
         # pixel_ID=paste0(row,"_",col))   
      mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow))  
 
-# make hybrid and sow date as numbers (for using in raster later) - FIXME: do this prettier later
+# make hybrid and sow date as numbers (for using in raster later) 
+# FIXME: do this in a prettier way later
 workDF_med$thisSow_n[workDF_med$thisSow == "s1"] <- 1
 workDF_med$thisSow_n[workDF_med$thisSow == "s2"] <- 2
 workDF_med$thisSow_n[workDF_med$thisSow == "s3"] <- 3
@@ -194,45 +235,51 @@ tail(workDF_med)
 
 
 Select some pixels across the range of results
-```{r}
-library(dplyr)
+
+```{r 3DGraphsByPixel, echo = FALSE}
+
 # Give me the 25th percentile of Biomass
 df_p <- workDF_med %>% 
   group_by(row, col) %>%
   mutate(perc = rank(Bio_med)/length(Bio_med))
 
+head(df_p)
 summary(df_p$perc)
 
 
-# select pixels to graph
+# select 3 "sample" pixels to graph
 
-df_sel = data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
+df_sel <- data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
 
-
+# loop each selected pixel and graph
 for (p in 1:nrow(df_sel)) {
   
 df_pix <- df_p %>% group_by(row, col) %>%
-  #filter(row==184 & col==113)
   filter(row==df_sel$rowsSel[p] & col==df_sel$colsSel[p])
 
-head(df_pix, 25)
+#head(df_pix, 25)
+# save pixel data
 write.table(df_pix, file=paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p],"_","3D_graph.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
                append=FALSE, quote=FALSE)
 
+# graph it
 par(mfrow = c(1, 2))
-# PLot 3 D graph
-z = matrix(df_pix$Bio_med, # the data elements 
+
+# Plot 3 D graph
+z <- matrix(df_pix$Bio_med,                       # the data elements 
 nrow=length(unique(df_pix$thisHyb)),              # number of rows 
 ncol=length(unique(df_pix$thisSow)),              # number of columns 
-byrow = TRUE)        # fill matrix by rows 
+byrow = TRUE)                                     # fill matrix by rows 
 colnames(z) = unique(df_pix$thisHyb_n)
 rownames(z) = unique(df_pix$thisSow_n)
 
 x = as.numeric(colnames(z))
 y = as.numeric(rownames(z))
   
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
-        ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+persp3D(x, y, z, theta=60, phi=10, expand=0.75,
+        main= paste0("Bio_mean: ",df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
+        ticktype="detailed", lighting = TRUE, 
+        xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
 
 
 # variaility
@@ -247,8 +294,10 @@ rownames(z) = unique(df_pix$thisSow_n)
 x = as.numeric(colnames(z))
 y = as.numeric(rownames(z))
   
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, main= paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
-        ticktype="detailed", lighting = TRUE, xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
+        main= paste0("Bio_CV: ",df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
+        ticktype="detailed", lighting = TRUE, xlab="Sow date", 
+        ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
 
 }
 
@@ -265,9 +314,10 @@ persp3D(x, y, z, theta=60, phi=10, expand=0.75, main= paste0(df_sel$rowsSel[p],"
 > Most productive is always **hybrid 5** (longest hybrid)
 
 
-```{r, echo=FALSE}
+```{r FindHighBio, echo=FALSE}
 # select line with maximum yield per pixel
-df_maxB <- workDF_med %>% group_by(row, col) %>%
+df_maxB <- workDF_med %>% 
+  group_by(row, col) %>%
   filter(Bio_med == max(Bio_med))
 
 head(df_maxB)
@@ -276,11 +326,10 @@ nrow(df_maxB)
 #summary(df_maxB)
 
 #PLot histograms
-hg1 = ggplot(df_maxB, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 =ggplot(df_maxB, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg1 <- ggplot(df_maxB, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 <- ggplot(df_maxB, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
-# Plot
-require(gridExtra)
+# Plot (pixels with highest yield in each category of sowing date and hybrid)
 grid.arrange(hg1, hg2,ncol=2)
 ```
 
@@ -289,7 +338,7 @@ grid.arrange(hg1, hg2,ncol=2)
 
 > Allmost same results for grain
 
-```{r, echo=FALSE}
+```{r FindHighYield, echo=FALSE}
 # select line with maximum yield per pixel
 df_maxY <- workDF_med %>% group_by(row, col) %>%
   filter(Y_med == max(Y_med))
@@ -300,15 +349,12 @@ nrow(df_maxY)
 #summary(df_maxY)
 
 #PLot histograms
-hg1 = ggplot(df_maxY, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 = ggplot(df_maxY, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-
+hg1 <- ggplot(df_maxY, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 <- ggplot(df_maxY, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 # Plot
-require(gridExtra)
 grid.arrange(hg1, hg2,ncol=2)
 ```
-
 
 ## Find hybrid x sow date with **lowest inter-annual variability** in each pixel
 
@@ -319,7 +365,7 @@ grid.arrange(hg1, hg2,ncol=2)
 > Longer hybrids (Hybrid 3,4 and 5) are less variable
 
 
-```{r}
+```{r FindLowCV, echo = FALSE}
 df_minSd <- workDF_med %>% group_by(row, col) %>%
 #  filter(Bio_sdv == min(Bio_sdv))
  filter(Bio_cv == min(Bio_cv))
@@ -331,12 +377,11 @@ nrow(df_minSd)
 #summary(df_maxY)
 
 #PLot histograms
-hg1 = ggplot(df_minSd, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 =ggplot(df_minSd, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg1 <- ggplot(df_minSd, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 <- ggplot(df_minSd, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 
 # Plot distributions of Si
-require(gridExtra)
 grid.arrange(hg1, hg2, ncol=2)
 
 ```
@@ -550,12 +595,12 @@ si_df_final %>%
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) +
   theme(legend.position = c(0, 1), 
-       legend.justification = c(-4, 1)) 
+       legend.justification = c(-3, 1)) 
 
 
 
 # Plot distributions of Si
-grid.arrange(gH, gS, gW,gI, nrow=4)
+#grid.arrange(gH, gS, gW,gI, nrow=4)
 ```
 
 
