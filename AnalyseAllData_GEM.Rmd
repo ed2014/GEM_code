@@ -316,31 +316,31 @@ persp3D(x, y, z, theta=60, phi=10, expand=0.75,
 
 ```{r FindHighBio, echo=FALSE}
 # select line with maximum yield per pixel
-df_maxB <- workDF_med %>% 
+df_maxBio <- workDF_med %>% 
   group_by(row, col) %>%
   filter(Bio_med == max(Bio_med))
 
-head(df_maxB)
-nrow(df_maxB)
+head(df_maxBio)
+nrow(df_maxBio)
 
-#summary(df_maxB)
+#summary(df_maxBio)
 
 #PLot histograms
-hg1 <- ggplot(df_maxB, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 <- ggplot(df_maxB, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg1 <- ggplot(df_maxBio, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 <- ggplot(df_maxBio, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 # Plot (pixels with highest yield in each category of sowing date and hybrid)
 grid.arrange(hg1, hg2,ncol=2)
 ```
 
-
 ## Find highest **grain yield** per pixel
 
 > Allmost same results for grain
 
-```{r FindHighYield, echo=FALSE}
+```{r FindHighestYield, echo=FALSE}
 # select line with maximum yield per pixel
-df_maxY <- workDF_med %>% group_by(row, col) %>%
+df_maxY <- workDF_med %>% 
+  group_by(row, col) %>%
   filter(Y_med == max(Y_med))
 
 head(df_maxY, 25)
@@ -366,8 +366,8 @@ grid.arrange(hg1, hg2,ncol=2)
 
 
 ```{r FindLowCV, echo = FALSE}
-df_minSd <- workDF_med %>% group_by(row, col) %>%
-#  filter(Bio_sdv == min(Bio_sdv))
+df_minSd <- workDF_med %>% 
+ group_by(row, col) %>%
  filter(Bio_cv == min(Bio_cv))
 
 head(df_minSd)
@@ -390,23 +390,19 @@ grid.arrange(hg1, hg2, ncol=2)
 
 > In general **highest** yields have **lowest variability**
 
-```{r, echo=FALSE}
+```{r BioVsCv, echo=FALSE}
 
-workDF_med$Bio_meanTons = workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
-
-# all together
-ggplot(workDF_med, aes(x= Bio_meanTons , y=Bio_cv)) +  geom_point(aes(colour = factor(thisSow)) ) +
-facet_grid(thisHyb ~.)
+workDF_med$Bio_meanTons <- workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
 
 #different panels by hybrid
-ggplot(workDF_med, aes(x= Bio_meanTons , y=Bio_cv)) +  geom_point(aes(colour = factor(thisHyb )) ) +
+workDF_med %>%
+ggplot(aes(x= Bio_meanTons , y=Bio_cv)) +  
+geom_point(aes(colour = factor(thisHyb )) ) +
 facet_grid(thisSow ~thisHyb, scales="free")
 
 ```
 
 # Rasterise for mapping
-
-> 
 
 > Checking data-frame
 
@@ -416,35 +412,37 @@ facet_grid(thisSow ~thisHyb, scales="free")
 
 > Maps show stats and which hybrid and sowing date was selected in each pixel
 
-```{r, echo=FALSE, warning=FALSE}
-library(raster)
-par(mfrow=c(1,1))
-outNames = colnames(df_maxY)
-outNames =gsub(" ","",outNames )
+```{r MapsHighYield, echo=FALSE, warning=FALSE, include = FALSE}
+
+par(mfrow = c(1,1))
+outNames <- colnames(df_maxY) # Using maximum grain yield
+
+outNames <- gsub(" ","",outNames )
 
 # ignore first 6 factors
-spg = list() # dataframe list to be coerced as spatial object
-rast = list() # raster
-s=list()
-for(o in 7:length(outNames)){
-if (o == 12) {next} # other label to ignore
+spg <- list() # dataframe list to be coerced as spatial object
+rast <- list() # raster
+s <- list()
 
-  # For aggregate
-  spg[[o]] = data.frame(df_maxY$thisLong, df_maxY$thisLat, df_maxY[[o]])
-  coordinates(spg[[o]]) = ~ df_maxY.thisLong + df_maxY.thisLat # Attention to variable names
+for(o in 7:length(outNames)){
+if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
+
+  # For each variable aggregation
+  spg[[o]] <- data.frame(df_maxY$thisLong, df_maxY$thisLat, df_maxY[[o]])
+  coordinates(spg[[o]]) <- ~ df_maxY.thisLong + df_maxY.thisLat # Attention to variable names
  
   # Common to both methods (grid, raterise and project)
   gridded(spg[[o]]) <- TRUE
-  rast[[o]] = raster(spg[[o]])
-  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  rast[[o]] <- raster(spg[[o]])
+  proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
- plot(rast[[o]], main = paste0(outNames[o]))
+ plot(rast[[o]], main = paste0("Var: ", outNames[o]))
 
   # stack them
   if(o == 1) {
-    s = stack(rast[[o]])} 
+    s <- stack(rast[[o]])} # create stack
   else {
-    s[[o]] = rast[[o]]
+    s[[o]] <- rast[[o]]
   }
   
   # save raster as
@@ -457,8 +455,7 @@ if (o == 12) {next} # other label to ignore
 ## Show maps when selecting run with **lowest variability**
 
 
-```{r, echo=FALSE, warning=FALSE}
-library(raster)
+```{r MapsLowCv, echo=FALSE, warning=FALSE}
 par(mfrow=c(1,1))
 outNames = colnames(df_minSd)
 outNames =gsub(" ","",outNames )
@@ -501,17 +498,15 @@ if (o == 12) {next} # other label to ignore
 
 > Adapting Esther Meenken method of sensitivity analysis for that
 
-> Run a ANOVA and retrive the Sums of Squares (SS) of each factor (2 main factors and the interaction)
+> Run a ANOVA and retrive the Sums of Squares (SS) of each factor (3 main factors and the interaction)
 
 > Display it as a relative proportion of total variation (% of total SS)
-
-> FIXME: this must include weatther variability too
 
 > This is the **Si index** summary:
 
 ```{r ANOVA, echo =FALSE}
 # do an anova for each pixel 
-si_df_final = NULL
+si_df_final <- NULL
 pixels <- unique(workDF_med$pixel_ID)
 
 summary(workDF) # Should I use workDF?
@@ -525,31 +520,29 @@ for (p in 1:length(pixels)) {
   summary(thisPixDF)
          
   # do anova
- # anova = aov(Bio_mean ~ thisHyb*thisSow, data = thisPixDF)
   anova <- aov(TotalBiomass ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
 
   anovaTable <- summary(anova)
   
   #Retrive SS and MS values
-  anova_SS = anovaTable[[1]]$'Sum Sq'
-  anova_MS = anovaTable[[1]]$'Mean Sq' 
+  anova_SS <- anovaTable[[1]]$'Sum Sq'
+  anova_MS <- anovaTable[[1]]$'Mean Sq' 
 
   # Binds all SS for each variable together into a new df
-  df_ss = data.frame(SS = anova_SS, MS = anova_MS)
+  df_ss <- data.frame(SS = anova_SS, MS = anova_MS)
 
   #retrieves row names and load into result df
   namesAnTab <- rownames(anovaTable[[1]])
   rownames (df_ss) <- gsub(" ","",namesAnTab) # remove spaces
  
  # get names and count of main factors
-mainFact <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main factors from
+ mainFact <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main factors from
 
   # Creates a column with "normalised" percent of total variation (SS) 
-  # in relation to total SS for each factor
+  # in relation to total SS for each factor in that pixel
   df_ss$SS_p <- round((df_ss$SS/sum(df_ss$SS))*100,3)
   df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
-  # FIXME: Not sure which to use SS or MS
- 
+  # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
  
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1], 
@@ -560,28 +553,26 @@ mainFact <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main fac
                    )
   
   # label Si df FIXME: Automate this
-  colnames(df_si)[3] = gsub(" ","",paste0("Si_",mainFact[1]))
-  colnames(df_si)[4] = gsub(" ","",paste0("Si_",mainFact[2]))
-  colnames(df_si)[5] = gsub(" ","",paste0("Si_",mainFact[3]))
-  colnames(df_si)[6] = "Si_Interac"
+  colnames(df_si)[3] <- gsub(" ","",paste0("Si_",mainFact[1]))
+  colnames(df_si)[4] <- gsub(" ","",paste0("Si_",mainFact[2]))
+  colnames(df_si)[5] <- gsub(" ","",paste0("Si_",mainFact[3]))
+  colnames(df_si)[6] <- "Si_Interac"
   
   # Appends to final Si df
   if(p==1){ 
-    si_df_final = data.frame(df_si)  
+    si_df_final <- data.frame(df_si)  
     } else {
-    si_df_final = rbind(si_df_final, df_si)
+    si_df_final <- rbind(si_df_final, df_si)
     }
   
 }
 
 summary(si_df_final)
 nrow(si_df_final)
-gH =ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gS = ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gW = ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gI = ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-
-
+gH <- ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 # All plotted together
 fontSize <- 14
@@ -597,12 +588,9 @@ si_df_final %>%
   theme(legend.position = c(0, 1), 
        legend.justification = c(-3, 1)) 
 
-
-
 # Plot distributions of Si
 #grid.arrange(gH, gS, gW,gI, nrow=4)
 ```
-
 
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
 
@@ -613,16 +601,16 @@ si_df_final %>%
 > Let's plot it: 
 
 ```{r, echo = FALSE, warning=FALSE}
-library(raster)
-outNames = colnames(si_df_final)
-outNames =gsub(" ","",outNames )
+outNames <- colnames(si_df_final)
+outNames <- gsub(" ","",outNames )
 par(mfrow=c(1,(length(mainFact)+1)))
-#outNames <- mainFact
 
 # ignore first 6 factors
-spg = list() # dataframe list to be coerced as spatial object
-rast = list() # raster
-s=list()
+spg <- list() # dataframe list to be coerced as spatial object
+rast <- list() # raster
+s <- list()
+
+
 for(o in length(mainFact):length(outNames)){
 
   # For aggregate
@@ -631,10 +619,8 @@ for(o in length(mainFact):length(outNames)){
  
   # Common to both methods (grid, raterise and project)
   gridded(spg[[o]]) <- TRUE
-  rast[[o]] = raster(spg[[o]])
-  #rast = raster(spg[[o]])
+  rast[[o]] <- raster(spg[[o]])
   proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-  #proj4string(rast) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
   # stack them
   if(o == 1) {
@@ -654,7 +640,7 @@ for(o in length(mainFact):length(outNames)){
   
   
 }
-map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
+#map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
 
 ```
 
