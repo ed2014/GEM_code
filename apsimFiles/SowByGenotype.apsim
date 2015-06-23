@@ -1,0 +1,3610 @@
+<folder version="36" creator="Apsim 7.6-r3499" name="simulations">
+  <memo name="readMe">Simulation set up for CCII-NIWA 2013 project. Validating APSIM-maize against rainshelter data full N (250kg/ha) for irrigated and rain-fed conditions.
+GridCell simulation is a test for multiple years of a simple rotation to be run in the while of NZ
+FIXME:
+This is running with "frost senescence" off because it was too sensitive in Canterbury (needs to be re-defined)
+Silage harvest rule is a "hardcoded" draft at the moment (harvest at 550oCd after flowering) and does not match the 850oCd from Winson et al (check it)
+Residue management has to be defined (e.g. remove part for silage on the day of harvest and incorporate the rest)
+FIX N total to around 50 kg/ha - APSIM changed initial from ppm to kg/ha
+
+For these analysis the PT variables are in fact calculated for each crop cycle (not the phase as originally)
+
+Pixels to test
+North: 67_180
+Canterb: 189_60
+South: 239_38
+
+
+Attention:
+
+Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date</memo>
+  <simulation name="GridCell">
+    <metfile name="met">
+      <filename name="filename" input="yes">E:\ERA-40_Reanalysis\(1971-2000)\239_38.met</filename>
+    </metfile>
+    <clock>
+      <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1981</end_date>
+    </clock>
+    <summaryfile />
+    <area name="pixel">
+      <Soil name="H">
+        <RecordNumber>0</RecordNumber>
+        <SoilType>Generic NZ heavy</SoilType>
+        <LocalName>Brigalow</LocalName>
+        <State>Hawke's Bay</State>
+        <NaturalVegetation>Brigalow, belah, wilga</NaturalVegetation>
+        <Latitude>0</Latitude>
+        <Longitude>0</Longitude>
+        <InitialWater name="Initial water">
+          <FractionFull>1</FractionFull>
+          <DepthWetSoil>NaN</DepthWetSoil>
+          <PercentMethod>FilledFromTop</PercentMethod>
+          <RelativeTo>ll15</RelativeTo>
+        </InitialWater>
+        <Water>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <BD>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+          </BD>
+          <AirDry>
+            <double>0.08</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+          </AirDry>
+          <LL15>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+          </LL15>
+          <DUL>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+          </DUL>
+          <SAT>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+          </SAT>
+          <KS>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+          </KS>
+          <SoilCrop name="Wheat">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Barley">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Oats">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Canola">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="FieldPea">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="potato">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="maize">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+        </Water>
+        <SoilWater>
+          <SummerCona>3.5</SummerCona>
+          <SummerU>6</SummerU>
+          <SummerDate>1-Nov</SummerDate>
+          <WinterCona>3.5</WinterCona>
+          <WinterU>6</WinterU>
+          <WinterDate>1-Apr</WinterDate>
+          <DiffusConst>40</DiffusConst>
+          <DiffusSlope>16</DiffusSlope>
+          <Salb>0.13</Salb>
+          <CN2Bare>1</CN2Bare>
+          <CNRed>0</CNRed>
+          <CNCov>0</CNCov>
+          <Slope>0</Slope>
+          <DischargeWidth>0</DischargeWidth>
+          <CatchmentArea>0</CatchmentArea>
+          <MaxPond>0</MaxPond>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <SWCON>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+          </SWCON>
+        </SoilWater>
+        <Analysis>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <Texture>
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+          </Texture>
+          <MunsellColour>
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+          </MunsellColour>
+          <PH>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+          </PH>
+          <PHUnits>Water</PHUnits>
+          <BoronUnits>HotWater</BoronUnits>
+        </Analysis>
+        <Sample name="Initial nitrogen">
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <NO3>
+            <double>20</double>
+            <double>10</double>
+            <double>5</double>
+            <double>2</double>
+            <double>1</double>
+            <double>1</double>
+            <double>1</double>
+          </NO3>
+          <NH4>
+            <double>2</double>
+            <double>2</double>
+            <double>0.6</double>
+            <double>0.1</double>
+            <double>0.1</double>
+            <double>0.1</double>
+            <double>0.1</double>
+          </NH4>
+          <NO3Units>kgha</NO3Units>
+          <NH4Units>kgha</NH4Units>
+          <SWUnits>Volumetric</SWUnits>
+          <OCUnits>Total</OCUnits>
+          <PHUnits>Water</PHUnits>
+        </Sample>
+        <SoilOrganicMatter>
+          <RootCN>16</RootCN>
+          <RootWt>6000</RootWt>
+          <SoilCN>11</SoilCN>
+          <EnrACoeff>7.4</EnrACoeff>
+          <EnrBCoeff>0.2</EnrBCoeff>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <OC>
+            <double>1.8</double>
+            <double>0.97</double>
+            <double>0.42</double>
+            <double>0.23</double>
+            <double>0.23</double>
+            <double>0.23</double>
+            <double>0.23</double>
+          </OC>
+          <FBiom>
+            <double>0.03</double>
+            <double>0.02</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+          </FBiom>
+          <FInert>
+            <double>0.4</double>
+            <double>0.6</double>
+            <double>0.8</double>
+            <double>0.9</double>
+            <double>0.9</double>
+            <double>0.9</double>
+            <double>0.9</double>
+          </FInert>
+          <OCUnits>Total</OCUnits>
+        </SoilOrganicMatter>
+      </Soil>
+      <surfaceom name="SurfaceOrganicMatter">
+        <PoolName description="Organic Matter pool name">wheat</PoolName>
+        <type description="Organic Matter type">wheat</type>
+        <mass description="Initial surface residue (kg/ha)">0</mass>
+        <cnr description="C:N ratio of initial residue">80.0</cnr>
+        <standing_fraction description="Fraction of residue standing">0.0</standing_fraction>
+      </surfaceom>
+      <fertiliser />
+      <maize>
+        <ini>
+          <filename input="yes">C:\apsim_dev\Projects\CCII\2013_Maize_NZ(Validation)\MaizeValidation.xml</filename>
+        </ini>
+      </maize>
+      <wheat>
+        <ini>
+          <filename input="yes">C:\apsim_dev\Model\Wheat\XML\Wheat.xml</filename>
+        </ini>
+      </wheat>
+      <folder name="Manager folder">
+        <manager name="SupportVariables">
+          <ui>
+            <crop1 type="modulename" description="Enter crop 1">maize</crop1>
+            <crop2 type="modulename" description="Enter crop 2">wheat</crop2>
+          </ui>
+          <script>
+            <text>InFallow = 1    ! No crop in the ground (starts with fallow)
+
+FlagReset = 0 ! Turns to 1 at sowing FIXME is this used?
+
+! ---- Crop variables
+HarvestIndex = 0 ! Fractional
+TotalBiomass = 0 ! kg/ha
+TotalYield = 0   ! kg/ha
+StageNameCrop = 'noCrop'
+dayGrowth = 0 ! g/m2 for stress index calculation FIXME
+
+!------ Crop calendar variables
+SowingDay = today - 2415019 ! excel format
+HarvestDay = today - 2415019 ! excel format 
+GrowthLength = 0 ! (days)
+SowingDOY = 0  ! 0-365 day
+HarvestDOY = 0 ! 0-365 day
+DaysAfterSowing = 0 ! Count days from last sowing
+LengthGrowthPeriod = 0 ! Days when both temperature and water allow crop growth
+FallowRad = 0 ! Radiation wasted during fallow period (MJ/m2) 
+FloweringDOY = 0
+DaysToFlower = 0
+
+!------- Canopy related variables
+MaxLAI = 0       ! Maximum LAI achieved during on cycle
+MaxLAIDay = 0 ! Day when MaxLAI occurred (excel date format)
+Current_lai = 0  ! Summs all crop lai's to get the current one in one single variable
+IntRadSum = 0   ! MJ/m2/year
+RadIntToday = 0 ! MJ/m2/day
+
+!-------Photosynthesis related variables
+RUEtop = 0 ! Radiation use efficiency of above-ground biomass  ("actual" for the season in g DM/MJ solar Rad)
+
+! -------Water related variables
+EswSowing = 0 ! Extractable soil water available at sowing (mm)
+WUE = 0 ! Water use efficiency (mm water evapotraspired / kg biomass)
+SWDtop = 0 ! Soil water deficit of upper layers ("also" initialized here but calculated in Rotation manager to avoid warnings)
+
+! ----Soil related variables
+EmergSoil_N = 0 ! Total soil nitrogen (kg/ha) at emergence
+
+EmergSoil_C = 0 ! Total soil carbon (kg/ha) at emergence
+EmergSoil_W = 0 ! Total soil water (kg/ha) at emergence
+
+SowSoil_N = 0 ! Total soil nitrogen (kg/ha) at sowing - check as I believe this gets values "just" before sowin and re-set
+SowSoil_C = 0 ! Total soil carbon (kg/ha) at sowing
+SowSoil_W = 0 ! Total soil water (kg/ha) at sowing
+
+nitMinTot = 0      ! Total soil nitrogen (kg/ha)
+
+!----- Crop residue variables
+ResidueDmAtSow = 0! kg dry matter per ha
+ResidueNitAtSow = 0 ! kg N per ha
+
+!------ Stress indexes
+StressByN = 0 ! kg DM / ha lost due to nitrogen stress
+StressByW = 0 ! kg DM / ha lost due to water stress
+
+!------------------- Totals accumulated for cycle
+   PTirrig = 0 ! Total irrigation applied in one rotation cycle (mm)
+   PTes = 0    ! Total soil evaporation (mm)
+   PTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+   PTep = 0    ! Total plant transpiration (mm)
+   PTrain = 0
+   PTrunoff = 0
+   PTdrain = 0
+   PTfert = 0  ! Total nitrogen fertilizer applied in one rotation cycle (kg nitrogen/ha)
+   PTleach = 0
+   PTmin = 0
+   PTmin_res = 0
+   PTdnit = 0 
+   PTcropn = 0 ! kg/ha sum of all layers and has a negative value by APSIM default
+   ETact = 0 ! actual plant evapotranspiration (mm)
+
+!------------------- Totals accumulated for fallow period
+   FTes = 0    ! Total soil evaporation (mm)
+   FTeo = 0    ! Total Potential Evapotranspiration (check if PennMann or other Method) (mm)
+   FTrain = 0
+   FTrunoff = 0
+   FTdrain = 0
+   FTmin = 0
+   FTmin_res = 0
+   FTdnit = 0 
+
+!---- Frost
+
+frostDays = 0
+frostIntensity = 0
+BiomassAtFrost = 0 ! kg/ha
+YieldAtFrost = 0 ! kg/ha
+
+!--- Phenology
+   AnthesisDoy = 0
+   AnthesisTT = 0
+   MaturityDoy = 0
+   MaturityTT = 0
+   TTsum = 0
+
+! Leaching and drainage in one whole year (to look into system)
+LeachYear = 0
+DrainYear = 0
+LeachLastYear = 0
+DrainLastYear = 0
+
+one = 1</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>!----------- Manage totals for crop phases
+reset_PT = 0 ! Do not reset totals
+FlagReset = 0 ! Turns to 1 at sowing ! FIXME: is this used?
+
+
+!------------ Crop calendars-------------------------
+DaysAfterSowing = DaysAfterSowing + 1
+HarvestDay = today - 2415019 ! This converts APSIM date te into Excel date counting
+GrowthLength = HarvestDay - SowingDay ! This date is only true at harvest when it's last reported
+HarvestDOY = day 
+
+! ----- Stress index calculations
+
+dayGrowth = [crop1].dlt_dm + [crop2].dlt_dm
+
+StressByN = StressByN + dayGrowth  * [crop1].n_stress_photo  ! kg DM / ha lost due to nitrogen stress
+StressByW = StressByW + dayGrowth  * [crop1].sw_stress_photo ! kg DM / ha lost due to water stress
+
+!!!!! Gets stage name for different crops
+         
+         if ([crop1].plant_status = 'alive') then
+              StageNameCrop = [crop1].stagename
+              TTsum = TTsum + [crop1].TT
+
+         elseif ([crop2].plant_status = 'alive') then
+              StageNameCrop = [crop2].stagename 
+              TTsum = TTsum + [crop2].TT 
+                
+         endif 
+
+              if (StageNameCrop = 'flowering') then
+              AnthesisDoy = day
+              AnthesisTT = TTsum
+              endif
+
+              if (StageNameCrop = 'maturity') then  !FIXME: ask if maturity is silage or grain maturity
+              MaturityDoy = day 
+              MaturityTT = TTsum
+              endif
+
+!--------- Soil Mineral N (kg/ha)
+   nitMinTot = no3() + nh4() 
+
+
+
+   
+
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>if (InFallow = 0) then ! Note all PT sums are calculated only for the crop cycle
+
+! Intercepted radiation sum and RUE (setting a minimum biomass of 2t/ha to avoid calculations at failed crops)
+!-------------------------------------------------
+
+RadIntToday = ([crop1].cover_green + [crop2].cover_green) * radn
+
+IntRadSum = IntRadSum + RadIntToday
+
+if (IntRadSum &gt; 0 and TotalBiomass &gt; 3000) then
+   RUEtop = (TotalBiomass * 0.1) / IntRadSum ! converts biomass to g/m2
+endif
+
+!----------- Dry matter----------------------------
+
+TotalYield = [crop1].yield + [crop2].yield                             
+TotalBiomass = ([crop1].biomass + [crop2].biomass)
+
+! ------- Harvest index (fractional) -----------
+
+if (TotalBiomass &gt; 0) then
+HarvestIndex = TotalYield / TotalBiomass
+endif
+
+! ------- Water use efficiency (kg DM/mm plant transpiration)-----(setting a minimum biomass of 3t/ha to avoid calculations at failed crops)
+if (PTep &gt; 0 and TotalBiomass &gt; 3000) then
+WUE = TotalBiomass / PTep
+endif
+
+! -------------- Leaf Area Index -------------------
+
+Current_lai = ([crop1].lai + [crop2].lai)
+
+if (Current_lai &gt; MaxLAI) then
+   MaxLAI = Current_lai
+   MaxLAIDay = today - 2415019 ! converts to excel date format
+endif
+
+
+!------------ Water balance -------------------
+PTirrig = PTirrig + irrigation
+PTes = PTes + es   ! soil evaporation (mm)
+PTeo = PTeo + eo   ! "Potential" evapotranspiration (mm)
+PTep = PTep + [crop1].ep + [crop2].ep ! Plant transpiration
+ETact = PTep + PTes ! Actual plant avapotarnspiration
+PTrain = PTrain + rain
+PTrunoff = PTrunoff + runoff
+PTdrain = PTdrain + drain
+
+!------------  Nitrogen balance variable rotation phase totals (PT)
+PTfert = PTfert + fertiliser
+PTleach = PTleach + leach_no3 + leach_nh4 ! Assumes last soil layer 
+PTmin = PTmin + dlt_n_min()  ! FIXME
+PTmin_res = PTmin_res + dlt_n_min_res()! FIXME
+PTdnit = PTdnit + dnit() 
+PTcropn = PTcropn + [crop1].no3_uptake() + [crop2].no3_uptake()
+
+!--- Frost events ----------------------------------------------
+if (mint &lt; 0) then
+frostDays = frostDays + 1
+frostIntensity = frostIntensity + (mint)
+endif
+
+if (frostDays = 1) then ! Retrives yield in the first frost event
+BiomassAtFrost = TotalBiomass
+YieldAtFrost = TotalYield
+endif
+
+else ! Calculates fallow related variables so InFallow = 1
+
+   FTes = FTes + es    ! Total soil evaporation (mm)
+   FTeo = FTeo + eo    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+   FTrain = FTrain + rain
+   FTrunoff = FTrunoff + runoff
+   FTdrain = FTdrain + drain
+   FTmin = FTmin + dlt_n_min()
+   FTmin_res = FTmin_res + dlt_n_min_res()
+   FTdnit = FTdnit + dnit() 
+
+
+endif
+
+! ------------ Leaching and N by whole year (done every day) - resets in early spring (1-aug)
+LeachYear = LeachYear + leach_no3 + leach_nh4 ! Assumes last soil layer 
+DrainYear = DrainYear + drain
+if (today = date('1-aug')) then
+LeachLastYear = LeachYear
+DrainLastYear = DrainYear
+LeachYear = 0 
+DrainYear = 0
+endif 
+
+! ----- Flowering day
+if ([crop1].stage = 7 or [crop2].stage = 7) then ! flowering is often 7 in APSIM plant
+FloweringDOY = day
+  if (FloweringDOY &lt; SowingDOY) then 
+    DaysToFlower = FloweringDOY + 365 - SowingDOY ! corrects for change in year
+    else
+    DaysToFlower = FloweringDOY - SowingDOY ! corrects for change in year
+  endif
+endif
+
+</text>
+            <event>end_of_day</event>
+          </script>
+          <script>
+            <text>! ------------------ Crop calendars
+SowingDay = today - 2415019 ! This converts APSIM date te into Excel date counting
+SowingDOY = day  ! 0-365 day
+HarvestDOY = 0 ! 0-365 day
+FloweringDOY = 0
+DaysToFlower = 0
+
+!------------------- Set flag for crop presence
+InFallow = 0 ! ONE if there is a crop growing ! FIXME: this action is duplicated in Rotation manager
+
+!--------------------Retrieve Amounts of carbon, nitrogen and water in the soil
+SowSoil_N = nitMinTot  ! 
+SowSoil_C = carbon_tot !
+SowSoil_W = esw        !
+ResidueDmAtSow =  surfaceom_wt! kg dry matter per ha
+ResidueNitAtSow = surfaceom_n ! kg N per ha
+
+!-------------------- Reset variables at sowing
+PTirrig = 0 ! Total irrigation applied in one rotation cycle (mm)
+PTes = 0    ! Total soil evaporation (mm)
+PTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+PTep = 0    ! Total plant transpiration (mm)
+PTrain = 0
+PTrunoff = 0
+PTdrain = 0
+PTfert = 0  ! Total nitrogen fertilizer applied in one rotation cycle (kg nitrogen/ha)
+PTleach = 0
+PTmin = 0
+PTmin_res = 0
+PTdnit = 0 
+PTcropn = 0
+ETact = 0
+
+FTes = 0    ! Total soil evaporation (mm)
+FTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+FTrain = 0
+FTrunoff = 0
+FTdrain = 0
+FTmin = 0
+FTmin_res = 0
+FTdnit = 0 
+
+
+StressByN = 0
+StressByW = 0
+HarvestDay = 0
+IntRadSum = 0
+MaxLAI = 0
+MaxLAIDay = 0
+
+DaysAfterSowing = 0 !
+
+frostDays = 0
+frostIntensity = 0
+
+AnthesisDoy = 0
+AnthesisTT = 0
+MaturityDoy = 0
+MaturityTT = 0
+TTsum = 0
+
+BiomassAtFrost = 0 ! kg/ha
+YieldAtFrost = 0 ! kg/ha
+
+
+</text>
+            <event>sowing</event>
+          </script>
+          <script>
+            <text>EmergSoil_N = nitMinTot  ! 
+EmergSoil_C = carbon_tot !
+EmergSoil_W = esw      !
+
+</text>
+            <event>emergence</event>
+          </script>
+        </manager>
+        <folder name="RotManager">
+          <manager name="RotationManager">
+            <ui>
+              <FirstRotation type="text" description="Enter the crop number you want the rotation to start:">1</FirstRotation>
+              <Crop1 type="text" description="Enter 1st crop:">MaizeSpr</Crop1>
+              <Crop2 type="text" description="Enter 2nd crop:">CatchCrop</Crop2>
+              <Crop3 type="text" description="Enter 3rd crop:">nil</Crop3>
+              <Crop4 type="text" description="Enter 4th crop:">nil</Crop4>
+              <Crop5 type="text" description="Enter 5th crop:">nil</Crop5>
+              <Crop6 type="text" description="Enter 6th crop:">nil</Crop6>
+              <Crop7 type="text" description="Enter 7th crop:">nil</Crop7>
+              <Crop8 type="text" description="Enter 8th crop:">nil</Crop8>
+              <Crop9 type="text" description="Enter 9th crop:">nil</Crop9>
+              <Crop10 type="text" description="Enter 10th crop:">nil</Crop10>
+              <Crop11 type="text" description="Enter 11th crop:">nil</Crop11>
+              <General type="category" description="General" />
+              <RewindRotation type="text" description="Enter number of sequences before rewinding to rotation 1:">100</RewindRotation>
+              <WaitTime type="text" description="Minimum number of days between harvest and sowing:">2</WaitTime>
+            </ui>
+            <script>
+              <text>!!! Control variables
+   rotation_counter = [FirstRotation]    ! Rotations always start with a fallow period
+   days_after_harvest = 0
+   FallowDays = 0          ! Number of days in fallow
+   InFallow = 1            ! FallowPhase is 1 ... CropPhase is 0 (analogous to old variable "fallow")
+   FallowCount = 0         ! Number of fallow periods
+   CropOption = 'NoCrop'   ! Crop choice to be considered for sowing today (i.e. next option)
+   WaitTime = 0            ! Minimum number of days between harvest and next sowing
+   SkipNextCrop = 0     ! Flag to ignore a number of alternative crops when teh main one was sown
+   CurrentCrop = 'Fallow'  ! Name of current crop and cultivar on the ground - FIXME-EIT This should ba named CurrentCultivar
+   CurrentSpecies = 'NoCrop' ! Current crop species on the ground
+   CurrentCropType = 'NoCrop' ! Crop Option on the ground today
+   ThisCropOption = 0      ! Name of crop set in "each" crop elements (i.e. the ID of the crop)
+   HarvestFlag = 0         ! Turns to 1 only in the day of harvest
+   CapN = 0  ! kg/ha per cycle 
+   
+!!! Harvest related variables   
+   TtPosFlow = 0
+   SilageCut = 'no'    ! Is this crop to be harvested for silage? (yes/no)
+   EndTheCrop = 0        ! Flag that indicates crop should be harvested and end 
+   EndByStage = 0        ! Flag that indicates crop should be harvested and end due to its STAGE
+   EndByStatus = 0       ! Flag that indicates crop should be harvested and end due to its STATUS
+   EndByDate = 0         ! Flag that indicates crop should be harvested and end due to DATE
+   EndbySilage = 0           ! Silage maturity for harvest is "1" (ready to harvest) or "0" (don't harvest)
+
+!!! Water variables for irrigation trigger
+   SWD = 0          ! Fraction of potentially available soil water today in three upper layers
+   SWD_top = 0      ! Fraction of potentially available soil water today in TOP layers 
+   SWFMax = 0              ! Maximum fraction of available soil water in top 3 layers (0-1) for sowing to be allowed - set in crop elements
+   SWFTopMax = 0           ! Maximum fraction of available soil water in top most layers (0-1) for sowing to be allowed - set in crop elements
+   SWFTopMin = 0           ! Minimum fraction of available soil water in top most layers (0-1) for sowing to be allowed - set in crop elements
+      
+!!! Sowing variables
+SowByWindow = 0    ! 0 is not sowing and 1 is sowing allowed
+SowByWait = 0      ! 0 is not sowing and 1 is sowing allowed
+SowByMoisture = 0  ! 0 is not sowing and 1 is sowing allowed
+ReadyToSow = 0     ! 0 is not sowing and 1 is sowing allowed
+SowByTemp = 0      !
+SowByFrost = 0 ! Flag to read sowing window from met file
+
+!!! Running average temperature for sowing FIXME: Need to make temperture limit as crop-specific
+TempAv = 0 ! today's average temp
+TempAvRun = 15 ! oC running mean today
+TempAvPer = 15 ! period in days in which running temperature is calculated
+TempAvCritSow = 0
+
+
+ </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>!--------- Calendar variables -----------------------------------------------------------
+WaitTime = [WaitTime] 
+days_after_harvest = days_after_harvest + 1
+
+!-------- Soil water deficit used to trigger sowing rules (fraction of water in soil)
+SWD = ((sw(1) + sw(2) + sw(3)) - (ll15(1) + ll15(2) +ll15(3)))/((dul(1) + dul(2) + dul(3)) - (ll15(1) + ll15(2) + ll15(3)))
+SWD_top = (sw(1) - ll15(1))/(dul(1) - ll15(1)) ! Fraction of plant available water in top layer (fractional)
+ 
+!-------- Rewind rotations as per properties tab user input -------------------------------
+if (InFallow = 1 and (rotation_counter = [RewindRotation] or CropOption = 'nil')) then 
+   rotation_counter = 1
+endif
+
+!!! Rotation Counter-----------------------------------------------------------------------
+ 
+      if (rotation_counter = 1) then         ! Every "rotation" is composed of a fallow phase followed by a crop phase
+         CropOption = '[Crop1]'              ! This is the first crop to be tried in the first crop phase
+      elseif (rotation_counter = 2) then
+         CropOption = '[Crop2]'
+      elseif (rotation_counter = 3) then
+        CropOption = '[Crop3]'
+      elseif (rotation_counter = 4) then
+         CropOption = '[Crop4]'
+      elseif (rotation_counter = 5) then
+         CropOption = '[Crop5]'
+      elseif (rotation_counter = 6) then
+         CropOption = '[Crop6]'
+      elseif (rotation_counter = 7) then
+         CropOption = '[Crop7]'
+      elseif (rotation_counter = 8) then
+         CropOption = '[Crop8]'
+      elseif (rotation_counter = 9) then
+        CropOption = '[Crop9]'
+      elseif (rotation_counter = 10) then
+        CropOption = '[Crop10]'           ! Set rotation to first crop
+      elseif (rotation_counter = 11) then
+        CropOption = '[Crop11]'           ! Set rotation to first crop
+      endif
+</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>HarvestFlag = 0                            ! End the day assuming tomorrow is a non harvest day
+
+!Running average temperature
+       TempAv = (maxt + mint) * 0.5
+       TempAvRun = (TempAvRun  * (TempAvPer  - 1) + TempAv ) / TempAvPer
+
+!!! Sowing variables
+SowByWindow = 0    ! 0 is not sowing and 1 is sowing allowed
+SowByWait = 0      ! 0 is not sowing and 1 is sowing allowed
+SowByMoisture = 0  ! 0 is not sowing and 1 is sowing allowed
+SowByTemp = 0
+ReadyToSow = 0     ! 0 is not sowing and 1 is sowing allowed
+SowByFrost = 0 ! Flag to read sowing window from met file
+
+</text>
+              <event>end_of_day</event>
+            </script>
+            <script>
+              <text>CurrentCropType = CropOption
+TtPosFlow = 0
+
+</text>
+              <event>sowing</event>
+            </script>
+          </manager>
+          <manager name="MaizeSpr">
+            <ui>
+              <FirstCropOption type="category" description="First crop to be tried" />
+              <ThisCropOption type="text" description="Enter the place this crop has in the crop sequence (e.g. 1 is the first crop option):">MaizeSpr</ThisCropOption>
+              <CropName type="crop" description="Crop species:">maize</CropName>
+              <CultivarName type="cultivars" description="Cultivar:">medium</CultivarName>
+              <Population type="text" description="Plant population (/m2)">12</Population>
+              <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
+              <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-aug</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-aug</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-aug</EndRot>
+              <General type="category" description="General criteria for sowing" />
+              <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
+              <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
+              <SWFTopMax type="text" description="Maximum soil water fraction in TOP soil layer to allow sowing (0-1):">10</SWFTopMax>
+              <Harvesting type="category" description="Harvesting Rules" />
+              <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">maturity</StageName>
+              <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
+              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-apr</CriticalDate>
+              <SilageCut type="yesno" description="Harvested for silage? (yes/no):">yes</SilageCut>
+              <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
+              <Fertilizer type="category" description="Fertilizer Rules" />
+              <CropNCap type="text" description="Enter maximum N to be applied in this crop (kg/ha/cycle):">300</CropNCap>
+              <FlagGrazed type="text" description="Return N from grazing as urine?  (0 = &quot;no&quot; and 1 = &quot;yes&quot;)">0</FlagGrazed>
+              <Priority type="category" description="Crop Priority Rules" />
+              <SkipNextCrop1 type="text" description="Is the next crop an altertive to this one? (yes/no):">0</SkipNextCrop1>
+            </ui>
+            <script>
+              <text>
+              </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>if (CropOption = '[ThisCropOption]') then      ! Crop this is the next "choice" to be sown 
+
+TempAvCritSow = 0 ! FIXME (make property) oC average in the running period of calculation when sow is alowed (tested for Canterbury)
+
+IsCatchCrop = 0
+
+!!!! Set Soil Rule Variables 
+
+   SWFMax = [SWFMax]
+   SWFTopMax = [SWFTopMax]   ! Measure of "too" wet to sow in top most soil layer
+   SWFTopMin = [SWFTopMin]   ! Measure of "too" dry to sow in top most soil layer
+   
+!!! General set up 
+
+   SkipNextCrop = '[SkipNextCrop1]'
+   FlagGrazed = [FlagGrazed]
+   HeadDryRule = '[HeadDryRule]'
+   SilageCut = '[SilageCut]'
+   
+   if   (InFallow = 1) then ! If at fallow crop can be sown
+   
+   FallowDays = FallowDays + 1 
+
+!!! SOWING Rules
+
+         if (date_within('[StartSow],[EndSow]') = 1)) then
+            SowByWindow = 1
+         endif
+         if (days_after_harvest &gt; WaitTime) then
+            SowByWait = 1
+         endif
+         if (SWD_top&lt;= SWFTopMax and SWD_top&gt;= SWFTopMin) then
+            SowByMoisture = 1
+         endif
+         if (TempAvRun &gt; TempAvCritSow ) then ! FIXME this threshold needs to be defined in the crop element
+            SowByTemp = 1
+         endif
+      !   if (day &gt;= Met.SowOpen or day &lt; Met.SowClose) then
+      !      SowByFrost = 1
+      !   endif
+
+         
+        ReadyToSow = SowByWindow * SowByWait * SowByMoisture * SowByTemp !* SowByFrost
+
+   
+         if       (ReadyToSow = 1)    then                  
+                        
+                        [CropName] sow plants = [Population], sowing_depth = [SowDepth], cultivar = [CultivarName], row_spacing = [RowSpace], crop_class = plant            
+                        CapN = [CropNCap]
+                        InFallow = 0
+                        CurrentCrop = '[CropName]_[CultivarName]'
+                        CurrentSpecies = '[CropName]'                        
+
+                 ! Check if this crop is a main one or a alternative one
+                        if (SkipNextCrop &gt; 0) then             
+                            rotation_counter = rotation_counter + SkipNextCrop  ! Skip the alternative crop if this one was sown
+                        endif
+                        
+                        
+         elseif  (today=date('[EndRot]')) then  ! FIXME- This date just needs to be EndSow + 1 (do not know the synthax)
+                        
+                        rotation_counter = rotation_counter + 1 ! Move to next crop option
+         endif         
+         
+   endif                                                                                                         
+
+   if   (InFallow = 0) then ! Crop on the ground so it's ok to harvest
+      
+!!! HARVESTING Rules
+         
+   ! Test Silage harvest
+            if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
+               TtPosFlow = TtPosFlow + [CropName].tt    
+ 
+              if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 80% of tt to maturity (empirical assumption)
+                 EndbySilage = 1
+              endif     
+                                         
+            endif       
+
+   ! Set flags for the possible events that trigger a harvest
+
+         if [CropName].StageName = '[StageName]' then
+            EndByStage = 1
+         elseif [CropName].plant_status = '[StatusName]' then
+            EndByStatus = 1
+         elseif today=date('[CriticalDate]') then
+            EndByDate = 1
+         endif
+         
+         EndTheCrop = EndByStage + EndByStatus + EndByDate + EndbySilage ! Will give "0" for not harvest and "&gt;0" for do harvest
+   
+          if EndTheCrop &gt; 0 then
+                        OutReport do_output ! Report the chosen module             
+                        [CropName]  harvest
+                        [CropName]  end_crop                                                                
+         endif       
+               
+   endif
+
+endif</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>! Re-set all necessary variables after harvest
+if EndTheCrop &gt; 0 then  
+                        InFallow = 1
+                        CurrentCrop = 'fallow' 
+                        FallowCount = FallowCount + 1
+                        days_after_harvest = 0
+                        rotation_counter = rotation_counter + 1
+                        HarvestFlag = 1
+                        EndTheCrop = 0
+                        EndByStage = 0
+                        EndByStatus = 0
+                        EndByDate = 0
+                        EndBySilage = 0
+                        ReadyToSow = 0  
+                                         
+endif  
+
+
+
+</text>
+              <event>end_of_day</event>
+            </script>
+          </manager>
+          <manager name="CatchCrop">
+            <ui>
+              <FirstCropOption type="category" description="First crop to be tried" />
+              <ThisCropOption type="text" description="Enter the place this crop has in the crop sequence (e.g. 1 is the first crop option):">CatchCrop</ThisCropOption>
+              <CropName type="crop" description="Crop species:">wheat</CropName>
+              <CultivarName type="cultivars" description="Cultivar:">exceed</CultivarName>
+              <Population type="text" description="Plant population (/m2)">400</Population>
+              <SowDepth type="text" description="Sowing Depth (mm):">30</SowDepth>
+              <RowSpace type="text" description="Row Spacing (mm):">150</RowSpace>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">01-jan</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">02-jul</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">03-jul</EndRot>
+              <General type="category" description="General criteria for sowing" />
+              <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
+              <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
+              <SWFTopMax type="text" description="Maximum soil water fraction in TOP soil layer to allow sowing (0-1):">1.05</SWFTopMax>
+              <Harvesting type="category" description="Harvesting Rules" />
+              <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">flowering</StageName>
+              <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
+              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-jul</CriticalDate>
+              <SilageCut type="yesno" description="Harvested for silage? (yes/no):">no</SilageCut>
+              <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
+              <Fertilizer type="category" description="Fertilizer Rules" />
+              <CropNCap type="text" description="Enter maximum N to be applied in this crop (kg/ha/cycle):">50</CropNCap>
+              <FlagGrazed type="text" description="Return N from grazing as urine?  (0 = &quot;no&quot; and 1 = &quot;yes&quot;)">0</FlagGrazed>
+              <Priority type="category" description="Crop Priority Rules" />
+              <SkipNextCrop1 type="text" description="Is the next crop an altertive to this one? (yes/no):">0</SkipNextCrop1>
+            </ui>
+            <script>
+              <text>
+              </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>if (CropOption = '[ThisCropOption]') then      ! Crop this is the next "choice" to be sown 
+
+TempAvCritSow = 0 ! FIXME (make property) oC average in the running period of calculation when sow is alowed (tested for Canterbury)
+
+IsCatchCrop = 1
+
+!!!! Set Soil Rule Variables 
+
+   SWFMax = [SWFMax]
+   SWFTopMax = [SWFTopMax]   ! Measure of "too" wet to sow in top most soil layer
+   SWFTopMin = [SWFTopMin]   ! Measure of "too" dry to sow in top most soil layer
+   
+!!! General set up 
+
+   SkipNextCrop = '[SkipNextCrop1]'
+   FlagGrazed = [FlagGrazed]
+   HeadDryRule = '[HeadDryRule]'
+   SilageCut = '[SilageCut]'
+   
+   if   (InFallow = 1) then ! If at fallow crop can be sown
+   
+   FallowDays = FallowDays + 1 
+
+!!! SOWING Rules
+
+         if (date_within('[StartSow],[EndSow]') = 1)) then
+            SowByWindow = 1
+         endif
+         if (days_after_harvest &gt; WaitTime) then
+            SowByWait = 1
+         endif
+         if (SWD_top&lt;= SWFTopMax and SWD_top&gt;= SWFTopMin) then
+            SowByMoisture = 1
+         endif
+         if (TempAvRun &gt; TempAvCritSow ) then ! FIXME this threshold needs to be defined in the crop element
+            SowByTemp = 1
+         endif
+         
+        ReadyToSow = SowByWindow * SowByWait * SowByMoisture * SowByTemp
+   
+         if       (ReadyToSow = 1)    then                  
+                        
+                        [CropName] sow plants = [Population], sowing_depth = [SowDepth], cultivar = [CultivarName], row_spacing = [RowSpace], crop_class = plant            
+                        CapN = [CropNCap]
+                        InFallow = 0
+                        CurrentCrop = '[CropName]_[CultivarName]'
+                        CurrentSpecies = '[CropName]'                        
+
+                 ! Check if this crop is a main one or a alternative one
+                        if (SkipNextCrop &gt; 0) then             
+                            rotation_counter = rotation_counter + SkipNextCrop  ! Skip the alternative crop if this one was sown
+                        endif
+                        
+                        
+         elseif  (today=date('[EndRot]')) then  ! FIXME- This date just needs to be EndSow + 1 (do not know the synthax)
+                        
+                        rotation_counter = rotation_counter + 1 ! Move to next crop option
+         endif         
+         
+   endif                                                                                                         
+
+   if   (InFallow = 0) then ! Crop on the ground so it's ok to harvest
+      
+!!! HARVESTING Rules
+         
+   ! Test Silage harvest
+            if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
+               TtPosFlow = TtPosFlow + [CropName].tt                                               
+            endif
+            if (TtPosFlow &gt; 850) then ! Reaches silage maturity at 850oCd after flowering as for maize in Wilson et al XXX
+               EndbySilage = 1
+            endif         
+
+   ! Set flags for the possible events that trigger a harvest
+
+         if [CropName].StageName = '[StageName]' then
+            EndByStage = 1
+         elseif [CropName].plant_status = '[StatusName]' then
+            EndByStatus = 1
+         elseif today=date('[CriticalDate]') then
+            EndByDate = 1
+         endif
+         
+         EndTheCrop = EndByStage + EndByStatus + EndByDate + EndbySilage ! Will give "0" for not harvest and "&gt;0" for do harvest
+   
+          if EndTheCrop &gt; 0 then
+                        OutReport do_output ! Report the chosen module             
+                        [CropName]  harvest
+                        [CropName]  end_crop                                                                
+         endif       
+               
+   endif
+
+endif</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>! Re-set all necessary variables after harvest
+if EndTheCrop &gt; 0 then  
+                        InFallow = 1
+                        CurrentCrop = 'fallow' 
+                        FallowCount = FallowCount + 1
+                        days_after_harvest = 0
+                        rotation_counter = rotation_counter + 1
+                        HarvestFlag = 1
+                        EndTheCrop = 0
+                        EndByStage = 0
+                        EndByStatus = 0
+                        EndByDate = 0
+                        EndBySilage = 0
+                        ReadyToSow = 0  
+                                         
+endif  
+
+
+
+</text>
+              <event>end_of_day</event>
+            </script>
+          </manager>
+        </folder>
+        <manager name="NitroRules">
+          <ui>
+            <Category type="category" description="Enter crop species and the stage when N application should stop:" />
+            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
+            <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
+            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
+            <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
+            <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
+            <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
+            <CropType4 type="crop" description="Crop species 4 (e.g. wheat):">canola</CropType4>
+            <EndStage4 type="text" description="    Crop 4 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">5.0</EndStage4>
+            <CropType5 type="crop" description="Crop species 5 (e.g. wheat):">potato</CropType5>
+            <EndStage5 type="text" description="    Crop 5 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.3</EndStage5>
+            <CropType6 type="crop" description="Crop species 6 (e.g. wheat):" />
+            <EndStage6 type="text" description="    Crop 6 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <CropType7 type="crop" description="Crop species 7 (e.g. wheat):" />
+            <EndStage7 type="text" description="    Crop 7 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <CropType8 type="crop" description="Crop species 8 (e.g. wheat):" />
+            <EndStage8 type="text" description="    Crop 8 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <category2 type="category" description="Define parameters for time of nitrogen application:" />
+            <StartNdateSpr type="ddmmmdate" description="START date of SPRING window of N application (dd-mmm):">21-jun</StartNdateSpr>
+            <EndNdateSpr type="ddmmmdate" description="END date of SPRING window of N application (dd-mmm):">31-dec</EndNdateSpr>
+            <StartNdateAut type="ddmmmdate" description="START date of AUTUMN window of N application (dd-mmm):">1-jan</StartNdateAut>
+            <EndNdateAut type="ddmmmdate" description="END date of AUTUMN window of N application (dd-mmm):">20-jun</EndNdateAut>
+            <MeanTempSpr type="text" description="Mean temperature above which N aplication is allowed in SPRING (oC):">8</MeanTempSpr>
+            <MeanTempAut type="text" description="Mean temperature above which N aplication is allowed in AUTUMN (oC):">10</MeanTempAut>
+            <RunMeanPeriod type="text" description="Number of days for the running mean temperature to be used:">14.0</RunMeanPeriod>
+            <NApplicationAmount type="text" description="Amount of nitrogen to apply in each event (kg/ha):">25</NApplicationAmount>
+            <TriggerNLevel type="text" description="Nitrogen amount in soil (top 3 layers) below which N fertilization is triggered (kg/ha):">50</TriggerNLevel>
+            <FertStop type="ddmmmdate" description="Date when to STOP autumn fertiliser application (dd-mmm):">1-jul</FertStop>
+            <FertStart type="ddmmmdate" description="Date when to START spring fertiliser application (dd-mmm):">2-jul</FertStart>
+          </ui>
+          <script>
+            <text>RunningMeanTemp = 15 
+Fertilising_window = 1
+trigger_level = 45           ! N content in the top 60 cm of soil below which a fertiliser event is triggered. 
+N_application_amount = 50.0  ! Amount of N applied each time trigger level is reached 
+N_available = 0.0
+RunMeanPeriod = 0.0          ! Number of days used for running mean temperature
+NAppliedToday = 0.0
+
+!!! Flags for N application
+FlagN_CropAlive = 0 ! Crop is alive
+FlagN_LowSoilN  = 0 ! Soil N is below trigger level
+FlagN_EndStage = 0  ! Crop is before the final phenological stage when N is not aplied
+FlagN_ApplyN   = 0  ! if equal 4 then allow N aplication
+
+FlagN_ReadyForN   = 'yes'  ! if equal 'yes' than OK to receive N if 'no' than should "not" recieve any fertilizer (management decision set in crop element)
+
+CropStageToday  = 0.0   ! Stage number (e.g. 6 is flowering)
+CropStatusToday = 'out' ! Status name (e.g. 'alive')
+StopStageN      = 6.0 ! Phenology stage name after when nitrogen should not be applied (make sure this is a real number with 0.0)
+
+CapN = 0   ! Cap of nitrogen fertilizer (kg/ha)
+
+Deep_N = 0 ! N in layers deeper than 60 cm
+
+meanT = 0 ! oC
+
+
+
+</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>!!! Control variables for N aplication window
+
+   FlagN_CropAlive = 0  ! Crop is alive (FIXME-EIT - Not working so turned off and assumed as 1 always - see bellow)
+   FlagN_LowSoilN  = 0  ! Soil N is below trigger level
+   FlagN_EndStage  = 0  ! Crop is before the final phenological stage when N is not aplied
+   FlagN_ApplyN    = 0  ! if equal 4 then allow N aplication
+   NAppliedToday   = 0
+   RunMeanPeriod = [RunMeanPeriod]
+   N_application_amount = [NApplicationAmount] 
+   trigger_level = [TriggerNLevel]
+
+!!! Variables to indicate soil N status
+   N_available = no3(1) + no3(2) + no3(3) + nh4(1) + nh4(2) + nh4(3) + urea(1) + urea(2) + urea(3)                              !!!!!This considers all mineral N sources in the top 60cm of soil, including undisolved fertiliser on the surface
+   Deep_N      = no3(4) + no3(5) + no3(6) + no3(7) + nh4(4) + nh4(5) + nh4(6) + nh4(7) + urea(4) + urea(5) + urea(6) + urea(7)  ! N in layers deeper than 60 cm
+
+!!!! calculate 14 day running mean temperature used to control when N is applied  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+   meanT = (maxt+mint) * 0.5
+   RunningMeanTemp = (RunningMeanTemp * (RunMeanPeriod - 1) + meanT) / RunMeanPeriod
+
+!!!! Set the fertilizing window
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+! Fertiliser exclusion window in winter based on date
+   if           (date_within('[FertStop], [FertStart]') = 1)  then
+                Fertilising_window = 0 ! No application        
+   else                                          
+                Fertilising_window = 1
+   endif 
+
+! Fertiliser exclusion window in winter based on temperature (this will have priority if not turned-off)
+   if           (date_within('[StartNdateAut], [EndNdateAut]') = 1) and      
+                RunningMeanTemp &lt; [MeanTempAut] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Autumn when the running mean temperature falls below 10 oC              
+   elseif  (date_within('[StartNdateSpr], [EndNdateSpr]') = 1) and 
+                RunningMeanTemp &lt; [MeanTempSpr] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Spring untill the running mean temperature raises above 8 oC
+   else    
+                Fertilising_window = 1
+   endif
+
+!!!! Stop N aplication at later crop stages.  Field pea omitted because will not be fertilised  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+!!! CHECK end_of_day TAB !!!
+
+!!! Now set all flags for nitrogen application (1 = Apply; 0 = Do not apply)
+   if (CropStatusToday = 'alive') then
+          FlagN_CropAlive = 1                                                              ! FIXME-EIT Not using the 'alive' status to see if it's redundant (check)
+   endif
+   if ((CropStageToday &gt; 3) and (CropStageToday &lt; StopStageN)) then                        ! Phenology is ok for N application
+          FlagN_EndStage = 1
+   endif
+   if (N_available &lt; trigger_level) then                                                   ! N level in soil is low 
+          FlagN_LowSoilN  = 1 
+   endif
+    
+   FlagN_ApplyN = Fertilising_window * FlagN_CropAlive * FlagN_EndStage * FlagN_LowSoilN * (1-IsCatchCrop) ! If this is 1 then all requirements for N application were met
+
+!!! Decision on fertilize with N or not   
+        
+   if  (FlagN_ApplyN = 1 and PTfert &lt; CapN) then
+         fertiliser apply amount = N_application_amount (kg/ha), depth = 50 (mm), type = urea_n ()
+         NAppliedToday = N_application_amount
+   endif
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>!!! Sort out crop species, state and stage to stop N application based on phenology (always start at sowing)
+   if (CurrentSpecies = '[CropType1]') then 
+       StopStageN = [EndStage1]
+       CropStageToday = [CropType1].stage
+       CropStatusToday = [CropType1].plant_status
+   elseif (CurrentSpecies = '[CropType2]') then 
+       StopStageN = [EndStage2]
+       CropStageToday = [CropType2].stage
+       CropStatusToday = [CropType2].plant_status
+   elseif (CurrentSpecies = '[CropType3]') then 
+       StopStageN = [EndStage3]
+       CropStageToday = [CropType3].stage
+       CropStatusToday = [CropType3].plant_status
+   elseif (CurrentSpecies = '[CropType4]') then 
+       StopStageN = [EndStage4]
+       CropStageToday = [CropType4].stage
+       CropStatusToday = [CropType4].plant_status
+   elseif (CurrentSpecies = '[CropType5]') then 
+       StopStageN = [EndStage5]
+       CropStageToday = [CropType5].stage
+       CropStatusToday = [CropType5].plant_status
+   elseif (CurrentSpecies = '[CropType6]') then 
+       StopStageN = [EndStage6]
+       CropStageToday = [CropType6].stage
+       CropStatusToday = [CropType6].plant_status
+   elseif (CurrentSpecies = '[CropType7]') then 
+       StopStageN = [EndStage7]
+       CropStageToday = [CropType7].stage
+       CropStatusToday = [CropType7].plant_status
+   elseif (CurrentSpecies = '[CropType8]') then 
+       StopStageN = [EndStage8]
+       CropStageToday = [CropType8].stage
+       CropStatusToday = [CropType8].plant_status
+   else
+       StopStageN = 6.0                 ! 6 is usally flowering so a good default
+       CropStatusToday = 'out'
+       CropStageToday = 3.0
+   endif
+   
+
+</text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <irrigation name="Irrigation">
+          <automatic_irrigation type="list" listvalues="on,off" description="Automatic irrigation">off</automatic_irrigation>
+          <asw_depth type="text" description="Depth to which ASW is calculated. (mm)">600</asw_depth>
+          <crit_fr_asw type="text" description="Fraction of ASW below which irrigation is applied (0-1.0)">0.5</crit_fr_asw>
+          <irrigation_efficiency type="text" description="Efficiency of the irrigation. (0-1.0)">1</irrigation_efficiency>
+          <irrigation_allocation type="list" listvalues="on,off" description="Allocation limits">off</irrigation_allocation>
+          <allocation type="text" description="Allocation in ML">0</allocation>
+          <default_no3_conc type="text" description="Nitrate concentration (ppm N)">0</default_no3_conc>
+          <default_nh4_conc type="text" description="Ammonium concentration (ppm N)">0</default_nh4_conc>
+          <default_cl_conc type="text" description="Chloride concentration (ppm Cl)">0</default_cl_conc>
+          <default_no3_conc type="text" description="Nitrate concentration (ppm N)">0</default_no3_conc>
+          <default_nh4_conc type="text" description="Ammonium concentration (ppm N)">0</default_nh4_conc>
+          <default_cl_conc type="text" description="Chloride concentration (ppm Cl)">0</default_cl_conc>
+        </irrigation>
+        <manager name="IrrigRules">
+          <ui>
+            <NoPaddock type="text" description="Number of days for irrigator to retun to paddock">2</NoPaddock>
+            <IrrigStopRain type="text" description="Rainfall amount  (mm) to trigger irrigation pause (mm):">30</IrrigStopRain>
+            <IrrigStopDay type="text" description="Number of days to pause after trigger rainfall event:">2</IrrigStopDay>
+            <IrrigApply type="text" description="Maximum amount (mm) of water irrigator applies per event:">50</IrrigApply>
+            <IrrigTrig type="text" description="Fraction of available water in the top soil layer below which irrigation is allowed (0-1):">0.6</IrrigTrig>
+            <StartDry type="ddmmmdate" description="Start date when irrigation is NOT allowed (dd-mmm):">1-jun</StartDry>
+            <EndDry type="ddmmmdate" description="End date when irrigation is NOT allowed (dd-mmm):">1-aug</EndDry>
+            <CapIrrig type="text" description="Enter limit of applied irrigation in a given crop rotation (mm/crop cycle):">1000</CapIrrig>
+          </ui>
+          <script>
+            <text>irrigation_period = 1                   ! period when we forbid irrigation (0 is no irrigation allowed; 1 is allowed to irrigate)
+number_of_paddocks = [NoPaddock]        ! number of paddocks in irrigation rotation counter (FIXME-EIT For the new rotation manager tis has to be revised)
+paddock = 0                             ! start in paddock 0
+days_since_rain_event = 0               ! counter to pause irrigation after rainfall event
+rain_event_trigger = [IrrigStopRain]    ! rainfall amount  (mm) to trigger irrigation pause
+rain_event_pause_time = [IrrigStopDay]  ! number of days to pause after trigger rainfall event
+Irrigation_amount = [IrrigApply]        ! amount (mm) of water irrigator applies
+trigger_deficit = 0.5                   ! Fraction of available water in the top 15 cm below which irrigation is allowed
+</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>
+      trigger_deficit = [IrrigTrig]
+   
+   !!! Specify irrigation season start time
+   
+   if        (date_within('[StartDry],[EndDry]') = 1) then      ! This rule prevents irrigation in winter
+               irrigation_period=0
+               paddock=0                                        ! Brings back irrigation to our paddock
+   endif
+   
+   if       (SWD_top&lt;trigger_deficit) then                      ! If the fraction of soil water in top layer is bellow the trigger limit - irrigation is allowed
+                irrigation_period=1
+   endif  
+   
+   !!! Count days since last rainfall event
+   
+   if        (rain&gt;=rain_event_trigger) then                    ! This rule pauses the irrigators rotation for a given number of days following a defined size of rainfall event
+             days_since_rain_event = 0
+   else     
+             days_since_rain_event = days_since_rain_event + 1
+   endif             
+   
+   !!! Rotate irrigator around paddocks and apply irrigation when it gets back to this paddock!!!!!!!!!!!!!
+   
+   if           (irrigation_period = 1) and (paddock = 0) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule applies irrigation when the irrigator returns to this paddock if the SWD is below a given trigger
+                  paddock = paddock + 2                                                                               !!!I This is +2 because it is skipping this paddock so the irrigator will return sooner than if it spend a day here irrigating
+                     
+                      if  (SWD_top&lt;trigger_deficit) and (InFallow = 0) and (PTirrig &lt; [CapIrrig]) then
+                            irrigation apply amount = irrigation_amount
+                            paddock = paddock - 1                                                                       !!!If an irrigation event is triggered in this paddock subtract 1 so that this paddock is considered in the irrigation rotation counter
+                     endif
+   
+   elseif  (irrigation_period = 1) and (paddock = number_of_paddocks) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule finishes the irrigators rotation and sends it back to the start (to water this paddock)
+                  paddock = 0 
+   elseif  (irrigation_period = 1) and (paddock &gt; 0) and (days_since_rain_event &gt; rain_event_pause_time) then                     !!!This rule moves the irrigator around one paddock in the rotation each day 
+                  paddock = paddock + 1
+   endif
+
+</text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="TillageRules">
+          <ui>
+            <category type="category" description="When should tillage be done" />
+            <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">01-sep</tillage_date>
+            <category type="category" description="Tillage application details" />
+            <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
+            <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
+            <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">250</tillage_depth>
+            <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.95</tillage_f_incorp>
+            <XXX type="category" description="Fraction of residue removed" />
+            <catch_res type="text" description="Main crop residue &quot;removed&quot; after harvest (0-1):">0.90</catch_res>
+            <main_res type="text" description="Green-crop residue &quot;removed&quot; after harvest (0-1):">0.90</main_res>
+            <XX type="category" description="Nitrogen from residue returned to field" />
+            <n_return_eff type="text" description="Fraction return of nitrogen from removed crop residues (0-1):">0.80</n_return_eff>
+          </ui>
+          <script>
+            <text>! Tillage
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if FallowDays = 1 then  ! Do a tillage operation on the first day after harvesting
+
+
+! Sort out crop and the amount of residue to be removed by silage or grazing
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if (CurrentCropType = 'MainCrop') then
+       removed_residue = [main_res] 
+elseif CurrentCropType = 'CatchCrop') then
+       removed_residue = [catch_res]        
+endif
+
+! Do tillage            
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = removed_residue (), tillage_depth = 0.0 ! Biomass removed from field	    
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth] ! Do actual tillage            
+
+endif
+
+
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>removed_residue = 0  ! Fraction of total residue that was removed (e.g. grazing or baling) (0-1)
+returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
+            <event>init</event>
+          </script>
+        </manager>
+      </folder>
+      <outputfile name="OutReport">
+        <filename output="yes">GridCell pixel OutReport.out</filename>
+        <title>GridCell pixel OutReport</title>
+        <variables name="Variables">
+          <variable>dd/mm/yyyy as Date</variable>
+          <variable>year</variable>
+          <variable>Met.Latitude as Lat</variable>
+          <variable>Met.Longitude as Lon</variable>
+          <variable>co2</variable>
+          <variable>rotation_counter</variable>
+          <variable>CurrentCrop</variable>
+          <variable>SowingDOY</variable>
+          <variable>HarvestDOY</variable>
+          <variable>GrowthLength </variable>
+          <variable>CarbonOutputs</variable>
+          <variable>TotalBiomass</variable>
+          <variable>TotalYield</variable>
+          <variable>IntRadSum</variable>
+          <variable>RUEtop</variable>
+          <variable>MaxLAI </variable>
+          <variable>HarvestIndex </variable>
+          <variable>WaterOutputs</variable>
+          <variable>PTirrig</variable>
+          <variable>PTeo</variable>
+          <variable>PTes</variable>
+          <variable>PTep</variable>
+          <variable>ETact</variable>
+          <variable>PTdrain</variable>
+          <variable>WUE</variable>
+          <variable>PTrain</variable>
+          <variable>NitrogenOutputs</variable>
+          <variable>PTleach</variable>
+          <variable>nitMinTot </variable>
+          <variable>PTfert</variable>
+          <variable>PTmin</variable>
+          <variable>PTcropn </variable>
+          <variable>StressByN</variable>
+          <variable>StressByW</variable>
+          <variable>SowSoil_C</variable>
+          <variable>SowSoil_W</variable>
+          <variable>SowSoil_N</variable>
+          <variable>PhenologyOutputs</variable>
+          <variable>frostDays</variable>
+          <variable>frostIntensity</variable>
+          <variable>TTsum </variable>
+          <variable>AnthesisTT </variable>
+          <variable>MaturityTT </variable>
+          <variable>BiomassAtFrost</variable>
+          <variable>YieldAtFrost</variable>
+          <variable>Met.SowOpen as SowFrostOpen</variable>
+          <variable>DrainLastYear</variable>
+          <variable>LeachLastYear</variable>
+          <variable>FloweringDOY </variable>
+          <variable>DaysToFlower </variable>
+        </variables>
+        <events name="Reporting Frequency" />
+        <Graph name="Soil_CNW">
+          <Legend>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>Circle</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>SowSoil_N</Y>
+            <YRight>SowSoil_C</YRight>
+            <Y>SowSoil_W</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+        <Graph name="Bio">
+          <Legend>
+            <CheckedTitles> GridCell pixel OutReport</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>None</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>TotalBiomass</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+      </outputfile>
+      <outputfile name="daily">
+        <filename output="yes">GridCell pixel daily.out</filename>
+        <title>GridCell pixel daily</title>
+        <variables name="Variables">
+          <variable>dd/mm/yyyy as Date</variable>
+          <variable>year</variable>
+          <variable>rotation_counter</variable>
+          <variable>CurrentCrop</variable>
+          <variable>CropOption</variable>
+          <variable>SowingDOY</variable>
+          <variable>HarvestDOY</variable>
+          <variable>GrowthLength </variable>
+          <variable>CarbonOutputs</variable>
+          <variable>TotalBiomass</variable>
+          <variable>TotalYield</variable>
+          <variable>IntRadSum</variable>
+          <variable>RUEtop</variable>
+          <variable>MaxLAI </variable>
+          <variable>HarvestIndex </variable>
+          <variable>WaterOutputs</variable>
+          <variable>PTirrig</variable>
+          <variable>PTeo</variable>
+          <variable>PTes</variable>
+          <variable>PTep</variable>
+          <variable>ETact</variable>
+          <variable>PTdrain</variable>
+          <variable>WUE</variable>
+          <variable>PTrain</variable>
+          <variable>NitrogenOutputs</variable>
+          <variable>PTleach</variable>
+          <variable>nitMinTot </variable>
+          <variable>PTfert</variable>
+          <variable>PTmin</variable>
+          <variable>PTcropn </variable>
+          <variable>StressByN</variable>
+          <variable>StressByW</variable>
+          <variable>SowSoil_C</variable>
+          <variable>SowSoil_W</variable>
+          <variable>SowSoil_N</variable>
+          <variable>PhenologyOutputs</variable>
+          <variable>frostDays</variable>
+          <variable>frostIntensity</variable>
+          <variable>TTsum </variable>
+          <variable>AnthesisTT </variable>
+          <variable>MaturityTT </variable>
+          <variable>BiomassAtFrost</variable>
+          <variable>YieldAtFrost</variable>
+          <variable>Fertilising_window</variable>
+          <variable>FlagN_CropAlive</variable>
+          <variable>FlagN_EndStage </variable>
+          <variable>FlagN_LowSoilN</variable>
+          <variable>IsCatchCrop</variable>
+          <variable>mint</variable>
+          <variable>maxt</variable>
+          <variable>SowByWindow</variable>
+          <variable>SowByWait</variable>
+          <variable>SowByMoisture</variable>
+          <variable>SowByTemp</variable>
+          <variable>SowByFrost</variable>
+          <variable>ReadyToSow</variable>
+          <variable>TempAvCritSow </variable>
+          <variable>TempAvRun</variable>
+          <variable>TempAv</variable>
+          <variable>RunningMeanTemp </variable>
+          <variable>LeachYear</variable>
+          <variable>DrainYear</variable>
+          <variable>DrainLastYear</variable>
+          <variable>LeachLastYear</variable>
+          <variable>biomass</variable>
+          <variable>sw(1)</variable>
+          <variable>SWD_top </variable>
+          <variable>one</variable>
+          <variable>SWFTopMax </variable>
+        </variables>
+        <events name="Reporting Frequency">
+          <event>Daily</event>
+        </events>
+        <Graph name="Soil_CNW">
+          <Legend>
+            <CheckedTitles> SowSoil_C, GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> SowSoil_C, {Checkpoint} GridCell pixel daily</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>Circle</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>SowSoil_N</Y>
+            <YRight>SowSoil_C</YRight>
+            <Y>SowSoil_W</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+        <Graph name="Bio">
+          <Legend>
+            <CheckedTitles> pixel.wheat.biomass</CheckedTitles>
+            <CheckedTitles> pixel.maize.biomass</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>None</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>TotalBiomass</Y>
+            <Y>pixel.wheat.biomass</Y>
+            <Y>pixel.maize.biomass</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+        <Graph name="Frost">
+          <Legend>
+            <CheckedTitles> SowByTemp</CheckedTitles>
+            <CheckedTitles> SowByFrost</CheckedTitles>
+            <CheckedTitles> mint</CheckedTitles>
+            <CheckedTitles> TotalBiomass</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>None</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>SowByTemp</Y>
+            <YRight>TotalBiomass</YRight>
+            <Y>SowByFrost</Y>
+            <Y>mint</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+        <Graph name="Leach">
+          <Legend>
+            <CheckedTitles> PTleach</CheckedTitles>
+            <CheckedTitles> LeachLastYear</CheckedTitles>
+            <CheckedTitles> TotalBiomass</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>None</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>PTleach</Y>
+            <YRight>TotalBiomass</YRight>
+            <Y>DrainYear</Y>
+            <Y>LeachYear</Y>
+            <Y>PTdrain</Y>
+            <Y>DrainLastYear</Y>
+            <Y>LeachLastYear</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+        <Graph name="SoilMoistureSow">
+          <Legend>
+            <CheckedTitles> sw(1)</CheckedTitles>
+            <CheckedTitles> SWD_top</CheckedTitles>
+            <CheckedTitles> SWFTopMax</CheckedTitles>
+          </Legend>
+          <Plot>
+            <SeriesType>Solid line</SeriesType>
+            <PointType>None</PointType>
+            <colour>
+            </colour>
+            <X>Date</X>
+            <Y>sw(1)</Y>
+            <Y>SWD_top</Y>
+            <Y>SWFTopMax</Y>
+            <GDApsimFileReader name="ApsimFileReader" />
+          </Plot>
+        </Graph>
+      </outputfile>
+    </area>
+  </simulation>
+  <simulation name="BaseSim">
+    <metfile name="met">
+      <filename name="filename" input="yes">E:\ERA-40_Reanalysis\(1971-2000)\239_38.met</filename>
+    </metfile>
+    <clock>
+      <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1981</end_date>
+    </clock>
+    <summaryfile />
+    <area name="pixel">
+      <Soil name="H">
+        <RecordNumber>0</RecordNumber>
+        <SoilType>Generic NZ heavy</SoilType>
+        <LocalName>Brigalow</LocalName>
+        <State>Hawke's Bay</State>
+        <NaturalVegetation>Brigalow, belah, wilga</NaturalVegetation>
+        <Latitude>0</Latitude>
+        <Longitude>0</Longitude>
+        <InitialWater name="Initial water">
+          <FractionFull>1</FractionFull>
+          <DepthWetSoil>NaN</DepthWetSoil>
+          <PercentMethod>FilledFromTop</PercentMethod>
+          <RelativeTo>ll15</RelativeTo>
+        </InitialWater>
+        <Water>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <BD>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.3</double>
+          </BD>
+          <AirDry>
+            <double>0.08</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+          </AirDry>
+          <LL15>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+            <double>0.16</double>
+          </LL15>
+          <DUL>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+            <double>0.32</double>
+          </DUL>
+          <SAT>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+            <double>0.4</double>
+          </SAT>
+          <KS>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+            <double>50</double>
+          </KS>
+          <SoilCrop name="Wheat">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Barley">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Oats">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="Canola">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="FieldPea">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="potato">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="maize">
+            <Thickness>
+              <double>150</double>
+              <double>150</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+              <double>300</double>
+            </Thickness>
+            <LL>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+              <double>0.16</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.07</double>
+              <double>0.06</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+        </Water>
+        <SoilWater>
+          <SummerCona>3.5</SummerCona>
+          <SummerU>6</SummerU>
+          <SummerDate>1-Nov</SummerDate>
+          <WinterCona>3.5</WinterCona>
+          <WinterU>6</WinterU>
+          <WinterDate>1-Apr</WinterDate>
+          <DiffusConst>40</DiffusConst>
+          <DiffusSlope>16</DiffusSlope>
+          <Salb>0.13</Salb>
+          <CN2Bare>1</CN2Bare>
+          <CNRed>0</CNRed>
+          <CNCov>0</CNCov>
+          <Slope>0</Slope>
+          <DischargeWidth>0</DischargeWidth>
+          <CatchmentArea>0</CatchmentArea>
+          <MaxPond>0</MaxPond>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <SWCON>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.3</double>
+          </SWCON>
+        </SoilWater>
+        <Analysis>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <Texture>
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+          </Texture>
+          <MunsellColour>
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+          </MunsellColour>
+          <PH>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+            <double>7</double>
+          </PH>
+          <PHUnits>Water</PHUnits>
+          <BoronUnits>HotWater</BoronUnits>
+        </Analysis>
+        <Sample name="Initial nitrogen">
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <NO3>
+            <double>20</double>
+            <double>10</double>
+            <double>5</double>
+            <double>2</double>
+            <double>1</double>
+            <double>1</double>
+            <double>1</double>
+          </NO3>
+          <NH4>
+            <double>2</double>
+            <double>2</double>
+            <double>0.6</double>
+            <double>0.1</double>
+            <double>0.1</double>
+            <double>0.1</double>
+            <double>0.1</double>
+          </NH4>
+          <NO3Units>kgha</NO3Units>
+          <NH4Units>kgha</NH4Units>
+          <SWUnits>Volumetric</SWUnits>
+          <OCUnits>Total</OCUnits>
+          <PHUnits>Water</PHUnits>
+        </Sample>
+        <SoilOrganicMatter>
+          <RootCN>16</RootCN>
+          <RootWt>6000</RootWt>
+          <SoilCN>11</SoilCN>
+          <EnrACoeff>7.4</EnrACoeff>
+          <EnrBCoeff>0.2</EnrBCoeff>
+          <Thickness>
+            <double>150</double>
+            <double>150</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+            <double>300</double>
+          </Thickness>
+          <OC>
+            <double>1.8</double>
+            <double>0.97</double>
+            <double>0.42</double>
+            <double>0.23</double>
+            <double>0.23</double>
+            <double>0.23</double>
+            <double>0.23</double>
+          </OC>
+          <FBiom>
+            <double>0.03</double>
+            <double>0.02</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+          </FBiom>
+          <FInert>
+            <double>0.4</double>
+            <double>0.6</double>
+            <double>0.8</double>
+            <double>0.9</double>
+            <double>0.9</double>
+            <double>0.9</double>
+            <double>0.9</double>
+          </FInert>
+          <OCUnits>Total</OCUnits>
+        </SoilOrganicMatter>
+      </Soil>
+      <surfaceom name="SurfaceOrganicMatter">
+        <PoolName description="Organic Matter pool name">wheat</PoolName>
+        <type description="Organic Matter type">wheat</type>
+        <mass description="Initial surface residue (kg/ha)">0</mass>
+        <cnr description="C:N ratio of initial residue">80.0</cnr>
+        <standing_fraction description="Fraction of residue standing">0.0</standing_fraction>
+      </surfaceom>
+      <fertiliser />
+      <maize>
+        <ini>
+          <filename input="yes">C:\apsim_dev\Projects\CCII\2013_Maize_NZ(Validation)\MaizeValidation.xml</filename>
+        </ini>
+      </maize>
+      <wheat>
+        <ini>
+          <filename input="yes">C:\apsim_dev\Model\Wheat\XML\Wheat.xml</filename>
+        </ini>
+      </wheat>
+      <folder name="Manager folder">
+        <manager name="SupportVariables">
+          <ui>
+            <crop1 type="modulename" description="Enter crop 1">maize</crop1>
+            <crop2 type="modulename" description="Enter crop 2">wheat</crop2>
+          </ui>
+          <script>
+            <text>InFallow = 1    ! No crop in the ground (starts with fallow)
+
+FlagReset = 0 ! Turns to 1 at sowing FIXME is this used?
+
+! ---- Crop variables
+HarvestIndex = 0 ! Fractional
+TotalBiomass = 0 ! kg/ha
+TotalYield = 0   ! kg/ha
+StageNameCrop = 'noCrop'
+dayGrowth = 0 ! g/m2 for stress index calculation FIXME
+
+!------ Crop calendar variables
+SowingDay = today - 2415019 ! excel format
+HarvestDay = today - 2415019 ! excel format 
+GrowthLength = 0 ! (days)
+SowingDOY = 0  ! 0-365 day
+HarvestDOY = 0 ! 0-365 day
+DaysAfterSowing = 0 ! Count days from last sowing
+LengthGrowthPeriod = 0 ! Days when both temperature and water allow crop growth
+FallowRad = 0 ! Radiation wasted during fallow period (MJ/m2) 
+FloweringDOY = 0
+DaysToFlower = 0
+
+!------- Canopy related variables
+MaxLAI = 0       ! Maximum LAI achieved during on cycle
+MaxLAIDay = 0 ! Day when MaxLAI occurred (excel date format)
+Current_lai = 0  ! Summs all crop lai's to get the current one in one single variable
+IntRadSum = 0   ! MJ/m2/year
+RadIntToday = 0 ! MJ/m2/day
+
+!-------Photosynthesis related variables
+RUEtop = 0 ! Radiation use efficiency of above-ground biomass  ("actual" for the season in g DM/MJ solar Rad)
+
+! -------Water related variables
+EswSowing = 0 ! Extractable soil water available at sowing (mm)
+WUE = 0 ! Water use efficiency (mm water evapotraspired / kg biomass)
+SWDtop = 0 ! Soil water deficit of upper layers ("also" initialized here but calculated in Rotation manager to avoid warnings)
+
+! ----Soil related variables
+EmergSoil_N = 0 ! Total soil nitrogen (kg/ha) at emergence
+
+EmergSoil_C = 0 ! Total soil carbon (kg/ha) at emergence
+EmergSoil_W = 0 ! Total soil water (kg/ha) at emergence
+
+SowSoil_N = 0 ! Total soil nitrogen (kg/ha) at sowing - check as I believe this gets values "just" before sowin and re-set
+SowSoil_C = 0 ! Total soil carbon (kg/ha) at sowing
+SowSoil_W = 0 ! Total soil water (kg/ha) at sowing
+
+nitMinTot = 0      ! Total soil nitrogen (kg/ha)
+
+!----- Crop residue variables
+ResidueDmAtSow = 0! kg dry matter per ha
+ResidueNitAtSow = 0 ! kg N per ha
+
+!------ Stress indexes
+StressByN = 0 ! kg DM / ha lost due to nitrogen stress
+StressByW = 0 ! kg DM / ha lost due to water stress
+
+!------------------- Totals accumulated for cycle
+   PTirrig = 0 ! Total irrigation applied in one rotation cycle (mm)
+   PTes = 0    ! Total soil evaporation (mm)
+   PTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+   PTep = 0    ! Total plant transpiration (mm)
+   PTrain = 0
+   PTrunoff = 0
+   PTdrain = 0
+   PTfert = 0  ! Total nitrogen fertilizer applied in one rotation cycle (kg nitrogen/ha)
+   PTleach = 0
+   PTmin = 0
+   PTmin_res = 0
+   PTdnit = 0 
+   PTcropn = 0 ! kg/ha sum of all layers and has a negative value by APSIM default
+   ETact = 0 ! actual plant evapotranspiration (mm)
+
+!------------------- Totals accumulated for fallow period
+   FTes = 0    ! Total soil evaporation (mm)
+   FTeo = 0    ! Total Potential Evapotranspiration (check if PennMann or other Method) (mm)
+   FTrain = 0
+   FTrunoff = 0
+   FTdrain = 0
+   FTmin = 0
+   FTmin_res = 0
+   FTdnit = 0 
+
+!---- Frost
+
+frostDays = 0
+frostIntensity = 0
+BiomassAtFrost = 0 ! kg/ha
+YieldAtFrost = 0 ! kg/ha
+
+!--- Phenology
+   AnthesisDoy = 0
+   AnthesisTT = 0
+   MaturityDoy = 0
+   MaturityTT = 0
+   TTsum = 0
+
+! Leaching and drainage in one whole year (to look into system)
+LeachYear = 0
+DrainYear = 0
+LeachLastYear = 0
+DrainLastYear = 0
+
+one = 1</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>!----------- Manage totals for crop phases
+reset_PT = 0 ! Do not reset totals
+FlagReset = 0 ! Turns to 1 at sowing ! FIXME: is this used?
+
+
+!------------ Crop calendars-------------------------
+DaysAfterSowing = DaysAfterSowing + 1
+HarvestDay = today - 2415019 ! This converts APSIM date te into Excel date counting
+GrowthLength = HarvestDay - SowingDay ! This date is only true at harvest when it's last reported
+HarvestDOY = day 
+
+! ----- Stress index calculations
+
+dayGrowth = [crop1].dlt_dm + [crop2].dlt_dm
+
+StressByN = StressByN + dayGrowth  * [crop1].n_stress_photo  ! kg DM / ha lost due to nitrogen stress
+StressByW = StressByW + dayGrowth  * [crop1].sw_stress_photo ! kg DM / ha lost due to water stress
+
+!!!!! Gets stage name for different crops
+         
+         if ([crop1].plant_status = 'alive') then
+              StageNameCrop = [crop1].stagename
+              TTsum = TTsum + [crop1].TT
+
+         elseif ([crop2].plant_status = 'alive') then
+              StageNameCrop = [crop2].stagename 
+              TTsum = TTsum + [crop2].TT 
+                
+         endif 
+
+              if (StageNameCrop = 'flowering') then
+              AnthesisDoy = day
+              AnthesisTT = TTsum
+              endif
+
+              if (StageNameCrop = 'maturity') then  !FIXME: ask if maturity is silage or grain maturity
+              MaturityDoy = day 
+              MaturityTT = TTsum
+              endif
+
+!--------- Soil Mineral N (kg/ha)
+   nitMinTot = no3() + nh4() 
+
+
+
+   
+
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>if (InFallow = 0) then ! Note all PT sums are calculated only for the crop cycle
+
+! Intercepted radiation sum and RUE (setting a minimum biomass of 2t/ha to avoid calculations at failed crops)
+!-------------------------------------------------
+
+RadIntToday = ([crop1].cover_green + [crop2].cover_green) * radn
+
+IntRadSum = IntRadSum + RadIntToday
+
+if (IntRadSum &gt; 0 and TotalBiomass &gt; 3000) then
+   RUEtop = (TotalBiomass * 0.1) / IntRadSum ! converts biomass to g/m2
+endif
+
+!----------- Dry matter----------------------------
+
+TotalYield = [crop1].yield + [crop2].yield                             
+TotalBiomass = ([crop1].biomass + [crop2].biomass)
+
+! ------- Harvest index (fractional) -----------
+
+if (TotalBiomass &gt; 0) then
+HarvestIndex = TotalYield / TotalBiomass
+endif
+
+! ------- Water use efficiency (kg DM/mm plant transpiration)-----(setting a minimum biomass of 3t/ha to avoid calculations at failed crops)
+if (PTep &gt; 0 and TotalBiomass &gt; 3000) then
+WUE = TotalBiomass / PTep
+endif
+
+! -------------- Leaf Area Index -------------------
+
+Current_lai = ([crop1].lai + [crop2].lai)
+
+if (Current_lai &gt; MaxLAI) then
+   MaxLAI = Current_lai
+   MaxLAIDay = today - 2415019 ! converts to excel date format
+endif
+
+
+!------------ Water balance -------------------
+PTirrig = PTirrig + irrigation
+PTes = PTes + es   ! soil evaporation (mm)
+PTeo = PTeo + eo   ! "Potential" evapotranspiration (mm)
+PTep = PTep + [crop1].ep + [crop2].ep ! Plant transpiration
+ETact = PTep + PTes ! Actual plant avapotarnspiration
+PTrain = PTrain + rain
+PTrunoff = PTrunoff + runoff
+PTdrain = PTdrain + drain
+
+!------------  Nitrogen balance variable rotation phase totals (PT)
+PTfert = PTfert + fertiliser
+PTleach = PTleach + leach_no3 + leach_nh4 ! Assumes last soil layer 
+PTmin = PTmin + dlt_n_min()  ! FIXME
+PTmin_res = PTmin_res + dlt_n_min_res()! FIXME
+PTdnit = PTdnit + dnit() 
+PTcropn = PTcropn + [crop1].no3_uptake() + [crop2].no3_uptake()
+
+!--- Frost events ----------------------------------------------
+if (mint &lt; 0) then
+frostDays = frostDays + 1
+frostIntensity = frostIntensity + (mint)
+endif
+
+if (frostDays = 1) then ! Retrives yield in the first frost event
+BiomassAtFrost = TotalBiomass
+YieldAtFrost = TotalYield
+endif
+
+else ! Calculates fallow related variables so InFallow = 1
+
+   FTes = FTes + es    ! Total soil evaporation (mm)
+   FTeo = FTeo + eo    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+   FTrain = FTrain + rain
+   FTrunoff = FTrunoff + runoff
+   FTdrain = FTdrain + drain
+   FTmin = FTmin + dlt_n_min()
+   FTmin_res = FTmin_res + dlt_n_min_res()
+   FTdnit = FTdnit + dnit() 
+
+
+endif
+
+! ------------ Leaching and N by whole year (done every day) - resets in early spring (1-aug)
+LeachYear = LeachYear + leach_no3 + leach_nh4 ! Assumes last soil layer 
+DrainYear = DrainYear + drain
+if (today = date('1-aug')) then
+LeachLastYear = LeachYear
+DrainLastYear = DrainYear
+LeachYear = 0 
+DrainYear = 0
+endif 
+
+! ----- Flowering day
+if ([crop1].stage = 7 or [crop2].stage = 7) then ! flowering is often 7 in APSIM plant
+FloweringDOY = day
+  if (FloweringDOY &lt; SowingDOY) then 
+    DaysToFlower = FloweringDOY + 365 - SowingDOY ! corrects for change in year
+    else
+    DaysToFlower = FloweringDOY - SowingDOY ! corrects for change in year
+  endif
+endif
+
+</text>
+            <event>end_of_day</event>
+          </script>
+          <script>
+            <text>! ------------------ Crop calendars
+SowingDay = today - 2415019 ! This converts APSIM date te into Excel date counting
+SowingDOY = day  ! 0-365 day
+HarvestDOY = 0 ! 0-365 day
+FloweringDOY = 0
+DaysToFlower = 0
+
+!------------------- Set flag for crop presence
+InFallow = 0 ! ONE if there is a crop growing ! FIXME: this action is duplicated in Rotation manager
+
+!--------------------Retrieve Amounts of carbon, nitrogen and water in the soil
+SowSoil_N = nitMinTot  ! 
+SowSoil_C = carbon_tot !
+SowSoil_W = esw        !
+ResidueDmAtSow =  surfaceom_wt! kg dry matter per ha
+ResidueNitAtSow = surfaceom_n ! kg N per ha
+
+!-------------------- Reset variables at sowing
+PTirrig = 0 ! Total irrigation applied in one rotation cycle (mm)
+PTes = 0    ! Total soil evaporation (mm)
+PTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+PTep = 0    ! Total plant transpiration (mm)
+PTrain = 0
+PTrunoff = 0
+PTdrain = 0
+PTfert = 0  ! Total nitrogen fertilizer applied in one rotation cycle (kg nitrogen/ha)
+PTleach = 0
+PTmin = 0
+PTmin_res = 0
+PTdnit = 0 
+PTcropn = 0
+ETact = 0
+
+FTes = 0    ! Total soil evaporation (mm)
+FTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
+FTrain = 0
+FTrunoff = 0
+FTdrain = 0
+FTmin = 0
+FTmin_res = 0
+FTdnit = 0 
+
+
+StressByN = 0
+StressByW = 0
+HarvestDay = 0
+IntRadSum = 0
+MaxLAI = 0
+MaxLAIDay = 0
+
+DaysAfterSowing = 0 !
+
+frostDays = 0
+frostIntensity = 0
+
+AnthesisDoy = 0
+AnthesisTT = 0
+MaturityDoy = 0
+MaturityTT = 0
+TTsum = 0
+
+BiomassAtFrost = 0 ! kg/ha
+YieldAtFrost = 0 ! kg/ha
+
+
+</text>
+            <event>sowing</event>
+          </script>
+          <script>
+            <text>EmergSoil_N = nitMinTot  ! 
+EmergSoil_C = carbon_tot !
+EmergSoil_W = esw      !
+
+</text>
+            <event>emergence</event>
+          </script>
+        </manager>
+        <folder name="RotManager">
+          <manager name="RotationManager">
+            <ui>
+              <FirstRotation type="text" description="Enter the crop number you want the rotation to start:">1</FirstRotation>
+              <Crop1 type="text" description="Enter 1st crop:">MaizeSpr</Crop1>
+              <Crop2 type="text" description="Enter 2nd crop:">CatchCrop</Crop2>
+              <Crop3 type="text" description="Enter 3rd crop:">nil</Crop3>
+              <Crop4 type="text" description="Enter 4th crop:">nil</Crop4>
+              <Crop5 type="text" description="Enter 5th crop:">nil</Crop5>
+              <Crop6 type="text" description="Enter 6th crop:">nil</Crop6>
+              <Crop7 type="text" description="Enter 7th crop:">nil</Crop7>
+              <Crop8 type="text" description="Enter 8th crop:">nil</Crop8>
+              <Crop9 type="text" description="Enter 9th crop:">nil</Crop9>
+              <Crop10 type="text" description="Enter 10th crop:">nil</Crop10>
+              <Crop11 type="text" description="Enter 11th crop:">nil</Crop11>
+              <General type="category" description="General" />
+              <RewindRotation type="text" description="Enter number of sequences before rewinding to rotation 1:">100</RewindRotation>
+              <WaitTime type="text" description="Minimum number of days between harvest and sowing:">2</WaitTime>
+            </ui>
+            <script>
+              <text>!!! Control variables
+   rotation_counter = [FirstRotation]    ! Rotations always start with a fallow period
+   days_after_harvest = 0
+   FallowDays = 0          ! Number of days in fallow
+   InFallow = 1            ! FallowPhase is 1 ... CropPhase is 0 (analogous to old variable "fallow")
+   FallowCount = 0         ! Number of fallow periods
+   CropOption = 'NoCrop'   ! Crop choice to be considered for sowing today (i.e. next option)
+   WaitTime = 0            ! Minimum number of days between harvest and next sowing
+   SkipNextCrop = 0     ! Flag to ignore a number of alternative crops when teh main one was sown
+   CurrentCrop = 'Fallow'  ! Name of current crop and cultivar on the ground - FIXME-EIT This should ba named CurrentCultivar
+   CurrentSpecies = 'NoCrop' ! Current crop species on the ground
+   CurrentCropType = 'NoCrop' ! Crop Option on the ground today
+   ThisCropOption = 0      ! Name of crop set in "each" crop elements (i.e. the ID of the crop)
+   HarvestFlag = 0         ! Turns to 1 only in the day of harvest
+   CapN = 0  ! kg/ha per cycle 
+   
+!!! Harvest related variables   
+   TtPosFlow = 0
+   SilageCut = 'no'    ! Is this crop to be harvested for silage? (yes/no)
+   EndTheCrop = 0        ! Flag that indicates crop should be harvested and end 
+   EndByStage = 0        ! Flag that indicates crop should be harvested and end due to its STAGE
+   EndByStatus = 0       ! Flag that indicates crop should be harvested and end due to its STATUS
+   EndByDate = 0         ! Flag that indicates crop should be harvested and end due to DATE
+   EndbySilage = 0           ! Silage maturity for harvest is "1" (ready to harvest) or "0" (don't harvest)
+
+!!! Water variables for irrigation trigger
+   SWD = 0          ! Fraction of potentially available soil water today in three upper layers
+   SWD_top = 0      ! Fraction of potentially available soil water today in TOP layers 
+   SWFMax = 0              ! Maximum fraction of available soil water in top 3 layers (0-1) for sowing to be allowed - set in crop elements
+   SWFTopMax = 0           ! Maximum fraction of available soil water in top most layers (0-1) for sowing to be allowed - set in crop elements
+   SWFTopMin = 0           ! Minimum fraction of available soil water in top most layers (0-1) for sowing to be allowed - set in crop elements
+      
+!!! Sowing variables
+SowByWindow = 0    ! 0 is not sowing and 1 is sowing allowed
+SowByWait = 0      ! 0 is not sowing and 1 is sowing allowed
+SowByMoisture = 0  ! 0 is not sowing and 1 is sowing allowed
+ReadyToSow = 0     ! 0 is not sowing and 1 is sowing allowed
+SowByTemp = 0      !
+SowByFrost = 0 ! Flag to read sowing window from met file
+
+!!! Running average temperature for sowing FIXME: Need to make temperture limit as crop-specific
+TempAv = 0 ! today's average temp
+TempAvRun = 15 ! oC running mean today
+TempAvPer = 15 ! period in days in which running temperature is calculated
+TempAvCritSow = 0
+
+
+ </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>!--------- Calendar variables -----------------------------------------------------------
+WaitTime = [WaitTime] 
+days_after_harvest = days_after_harvest + 1
+
+!-------- Soil water deficit used to trigger sowing rules (fraction of water in soil)
+SWD = ((sw(1) + sw(2) + sw(3)) - (ll15(1) + ll15(2) +ll15(3)))/((dul(1) + dul(2) + dul(3)) - (ll15(1) + ll15(2) + ll15(3)))
+SWD_top = (sw(1) - ll15(1))/(dul(1) - ll15(1)) ! Fraction of plant available water in top layer (fractional)
+ 
+!-------- Rewind rotations as per properties tab user input -------------------------------
+if (InFallow = 1 and (rotation_counter = [RewindRotation] or CropOption = 'nil')) then 
+   rotation_counter = 1
+endif
+
+!!! Rotation Counter-----------------------------------------------------------------------
+ 
+      if (rotation_counter = 1) then         ! Every "rotation" is composed of a fallow phase followed by a crop phase
+         CropOption = '[Crop1]'              ! This is the first crop to be tried in the first crop phase
+      elseif (rotation_counter = 2) then
+         CropOption = '[Crop2]'
+      elseif (rotation_counter = 3) then
+        CropOption = '[Crop3]'
+      elseif (rotation_counter = 4) then
+         CropOption = '[Crop4]'
+      elseif (rotation_counter = 5) then
+         CropOption = '[Crop5]'
+      elseif (rotation_counter = 6) then
+         CropOption = '[Crop6]'
+      elseif (rotation_counter = 7) then
+         CropOption = '[Crop7]'
+      elseif (rotation_counter = 8) then
+         CropOption = '[Crop8]'
+      elseif (rotation_counter = 9) then
+        CropOption = '[Crop9]'
+      elseif (rotation_counter = 10) then
+        CropOption = '[Crop10]'           ! Set rotation to first crop
+      elseif (rotation_counter = 11) then
+        CropOption = '[Crop11]'           ! Set rotation to first crop
+      endif
+</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>HarvestFlag = 0                            ! End the day assuming tomorrow is a non harvest day
+
+!Running average temperature
+       TempAv = (maxt + mint) * 0.5
+       TempAvRun = (TempAvRun  * (TempAvPer  - 1) + TempAv ) / TempAvPer
+
+!!! Sowing variables
+SowByWindow = 0    ! 0 is not sowing and 1 is sowing allowed
+SowByWait = 0      ! 0 is not sowing and 1 is sowing allowed
+SowByMoisture = 0  ! 0 is not sowing and 1 is sowing allowed
+SowByTemp = 0
+ReadyToSow = 0     ! 0 is not sowing and 1 is sowing allowed
+SowByFrost = 0 ! Flag to read sowing window from met file
+
+</text>
+              <event>end_of_day</event>
+            </script>
+            <script>
+              <text>CurrentCropType = CropOption
+TtPosFlow = 0
+
+</text>
+              <event>sowing</event>
+            </script>
+          </manager>
+          <manager name="MaizeSpr">
+            <ui>
+              <FirstCropOption type="category" description="First crop to be tried" />
+              <ThisCropOption type="text" description="Enter the place this crop has in the crop sequence (e.g. 1 is the first crop option):">MaizeSpr</ThisCropOption>
+              <CropName type="crop" description="Crop species:">maize</CropName>
+              <CultivarName type="cultivars" description="Cultivar:">medium</CultivarName>
+              <Population type="text" description="Plant population (/m2)">12</Population>
+              <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
+              <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-aug</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-aug</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-aug</EndRot>
+              <General type="category" description="General criteria for sowing" />
+              <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
+              <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
+              <SWFTopMax type="text" description="Maximum soil water fraction in TOP soil layer to allow sowing (0-1):">10</SWFTopMax>
+              <Harvesting type="category" description="Harvesting Rules" />
+              <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">maturity</StageName>
+              <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
+              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-apr</CriticalDate>
+              <SilageCut type="yesno" description="Harvested for silage? (yes/no):">yes</SilageCut>
+              <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
+              <Fertilizer type="category" description="Fertilizer Rules" />
+              <CropNCap type="text" description="Enter maximum N to be applied in this crop (kg/ha/cycle):">300</CropNCap>
+              <FlagGrazed type="text" description="Return N from grazing as urine?  (0 = &quot;no&quot; and 1 = &quot;yes&quot;)">0</FlagGrazed>
+              <Priority type="category" description="Crop Priority Rules" />
+              <SkipNextCrop1 type="text" description="Is the next crop an altertive to this one? (yes/no):">0</SkipNextCrop1>
+            </ui>
+            <script>
+              <text>
+              </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>if (CropOption = '[ThisCropOption]') then      ! Crop this is the next "choice" to be sown 
+
+TempAvCritSow = 0 ! FIXME (make property) oC average in the running period of calculation when sow is alowed (tested for Canterbury)
+
+IsCatchCrop = 0
+
+!!!! Set Soil Rule Variables 
+
+   SWFMax = [SWFMax]
+   SWFTopMax = [SWFTopMax]   ! Measure of "too" wet to sow in top most soil layer
+   SWFTopMin = [SWFTopMin]   ! Measure of "too" dry to sow in top most soil layer
+   
+!!! General set up 
+
+   SkipNextCrop = '[SkipNextCrop1]'
+   FlagGrazed = [FlagGrazed]
+   HeadDryRule = '[HeadDryRule]'
+   SilageCut = '[SilageCut]'
+   
+   if   (InFallow = 1) then ! If at fallow crop can be sown
+   
+   FallowDays = FallowDays + 1 
+
+!!! SOWING Rules
+
+         if (date_within('[StartSow],[EndSow]') = 1)) then
+            SowByWindow = 1
+         endif
+         if (days_after_harvest &gt; WaitTime) then
+            SowByWait = 1
+         endif
+         if (SWD_top&lt;= SWFTopMax and SWD_top&gt;= SWFTopMin) then
+            SowByMoisture = 1
+         endif
+         if (TempAvRun &gt; TempAvCritSow ) then ! FIXME this threshold needs to be defined in the crop element
+            SowByTemp = 1
+         endif
+      !   if (day &gt;= Met.SowOpen or day &lt; Met.SowClose) then
+      !      SowByFrost = 1
+      !   endif
+
+         
+        ReadyToSow = SowByWindow * SowByWait * SowByMoisture * SowByTemp !* SowByFrost
+
+   
+         if       (ReadyToSow = 1)    then                  
+                        
+                        [CropName] sow plants = [Population], sowing_depth = [SowDepth], cultivar = [CultivarName], row_spacing = [RowSpace], crop_class = plant            
+                        CapN = [CropNCap]
+                        InFallow = 0
+                        CurrentCrop = '[CropName]_[CultivarName]'
+                        CurrentSpecies = '[CropName]'                        
+
+                 ! Check if this crop is a main one or a alternative one
+                        if (SkipNextCrop &gt; 0) then             
+                            rotation_counter = rotation_counter + SkipNextCrop  ! Skip the alternative crop if this one was sown
+                        endif
+                        
+                        
+         elseif  (today=date('[EndRot]')) then  ! FIXME- This date just needs to be EndSow + 1 (do not know the synthax)
+                        
+                        rotation_counter = rotation_counter + 1 ! Move to next crop option
+         endif         
+         
+   endif                                                                                                         
+
+   if   (InFallow = 0) then ! Crop on the ground so it's ok to harvest
+      
+!!! HARVESTING Rules
+         
+   ! Test Silage harvest
+            if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
+               TtPosFlow = TtPosFlow + [CropName].tt    
+ 
+              if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 80% of tt to maturity (empirical assumption)
+                 EndbySilage = 1
+              endif     
+                                         
+            endif       
+
+   ! Set flags for the possible events that trigger a harvest
+
+         if [CropName].StageName = '[StageName]' then
+            EndByStage = 1
+         elseif [CropName].plant_status = '[StatusName]' then
+            EndByStatus = 1
+         elseif today=date('[CriticalDate]') then
+            EndByDate = 1
+         endif
+         
+         EndTheCrop = EndByStage + EndByStatus + EndByDate + EndbySilage ! Will give "0" for not harvest and "&gt;0" for do harvest
+   
+          if EndTheCrop &gt; 0 then
+                        OutReport do_output ! Report the chosen module             
+                        [CropName]  harvest
+                        [CropName]  end_crop                                                                
+         endif       
+               
+   endif
+
+endif</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>! Re-set all necessary variables after harvest
+if EndTheCrop &gt; 0 then  
+                        InFallow = 1
+                        CurrentCrop = 'fallow' 
+                        FallowCount = FallowCount + 1
+                        days_after_harvest = 0
+                        rotation_counter = rotation_counter + 1
+                        HarvestFlag = 1
+                        EndTheCrop = 0
+                        EndByStage = 0
+                        EndByStatus = 0
+                        EndByDate = 0
+                        EndBySilage = 0
+                        ReadyToSow = 0  
+                                         
+endif  
+
+
+
+</text>
+              <event>end_of_day</event>
+            </script>
+          </manager>
+          <manager name="CatchCrop">
+            <ui>
+              <FirstCropOption type="category" description="First crop to be tried" />
+              <ThisCropOption type="text" description="Enter the place this crop has in the crop sequence (e.g. 1 is the first crop option):">CatchCrop</ThisCropOption>
+              <CropName type="crop" description="Crop species:">wheat</CropName>
+              <CultivarName type="cultivars" description="Cultivar:">exceed</CultivarName>
+              <Population type="text" description="Plant population (/m2)">400</Population>
+              <SowDepth type="text" description="Sowing Depth (mm):">30</SowDepth>
+              <RowSpace type="text" description="Row Spacing (mm):">150</RowSpace>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">01-jan</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">02-jul</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">03-jul</EndRot>
+              <General type="category" description="General criteria for sowing" />
+              <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
+              <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
+              <SWFTopMax type="text" description="Maximum soil water fraction in TOP soil layer to allow sowing (0-1):">1.05</SWFTopMax>
+              <Harvesting type="category" description="Harvesting Rules" />
+              <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">flowering</StageName>
+              <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
+              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-jul</CriticalDate>
+              <SilageCut type="yesno" description="Harvested for silage? (yes/no):">no</SilageCut>
+              <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
+              <Fertilizer type="category" description="Fertilizer Rules" />
+              <CropNCap type="text" description="Enter maximum N to be applied in this crop (kg/ha/cycle):">50</CropNCap>
+              <FlagGrazed type="text" description="Return N from grazing as urine?  (0 = &quot;no&quot; and 1 = &quot;yes&quot;)">0</FlagGrazed>
+              <Priority type="category" description="Crop Priority Rules" />
+              <SkipNextCrop1 type="text" description="Is the next crop an altertive to this one? (yes/no):">0</SkipNextCrop1>
+            </ui>
+            <script>
+              <text>
+              </text>
+              <event>init</event>
+            </script>
+            <script>
+              <text>if (CropOption = '[ThisCropOption]') then      ! Crop this is the next "choice" to be sown 
+
+TempAvCritSow = 0 ! FIXME (make property) oC average in the running period of calculation when sow is alowed (tested for Canterbury)
+
+IsCatchCrop = 1
+
+!!!! Set Soil Rule Variables 
+
+   SWFMax = [SWFMax]
+   SWFTopMax = [SWFTopMax]   ! Measure of "too" wet to sow in top most soil layer
+   SWFTopMin = [SWFTopMin]   ! Measure of "too" dry to sow in top most soil layer
+   
+!!! General set up 
+
+   SkipNextCrop = '[SkipNextCrop1]'
+   FlagGrazed = [FlagGrazed]
+   HeadDryRule = '[HeadDryRule]'
+   SilageCut = '[SilageCut]'
+   
+   if   (InFallow = 1) then ! If at fallow crop can be sown
+   
+   FallowDays = FallowDays + 1 
+
+!!! SOWING Rules
+
+         if (date_within('[StartSow],[EndSow]') = 1)) then
+            SowByWindow = 1
+         endif
+         if (days_after_harvest &gt; WaitTime) then
+            SowByWait = 1
+         endif
+         if (SWD_top&lt;= SWFTopMax and SWD_top&gt;= SWFTopMin) then
+            SowByMoisture = 1
+         endif
+         if (TempAvRun &gt; TempAvCritSow ) then ! FIXME this threshold needs to be defined in the crop element
+            SowByTemp = 1
+         endif
+         
+        ReadyToSow = SowByWindow * SowByWait * SowByMoisture * SowByTemp
+   
+         if       (ReadyToSow = 1)    then                  
+                        
+                        [CropName] sow plants = [Population], sowing_depth = [SowDepth], cultivar = [CultivarName], row_spacing = [RowSpace], crop_class = plant            
+                        CapN = [CropNCap]
+                        InFallow = 0
+                        CurrentCrop = '[CropName]_[CultivarName]'
+                        CurrentSpecies = '[CropName]'                        
+
+                 ! Check if this crop is a main one or a alternative one
+                        if (SkipNextCrop &gt; 0) then             
+                            rotation_counter = rotation_counter + SkipNextCrop  ! Skip the alternative crop if this one was sown
+                        endif
+                        
+                        
+         elseif  (today=date('[EndRot]')) then  ! FIXME- This date just needs to be EndSow + 1 (do not know the synthax)
+                        
+                        rotation_counter = rotation_counter + 1 ! Move to next crop option
+         endif         
+         
+   endif                                                                                                         
+
+   if   (InFallow = 0) then ! Crop on the ground so it's ok to harvest
+      
+!!! HARVESTING Rules
+         
+   ! Test Silage harvest
+            if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
+               TtPosFlow = TtPosFlow + [CropName].tt                                               
+            endif
+            if (TtPosFlow &gt; 850) then ! Reaches silage maturity at 850oCd after flowering as for maize in Wilson et al XXX
+               EndbySilage = 1
+            endif         
+
+   ! Set flags for the possible events that trigger a harvest
+
+         if [CropName].StageName = '[StageName]' then
+            EndByStage = 1
+         elseif [CropName].plant_status = '[StatusName]' then
+            EndByStatus = 1
+         elseif today=date('[CriticalDate]') then
+            EndByDate = 1
+         endif
+         
+         EndTheCrop = EndByStage + EndByStatus + EndByDate + EndbySilage ! Will give "0" for not harvest and "&gt;0" for do harvest
+   
+          if EndTheCrop &gt; 0 then
+                        OutReport do_output ! Report the chosen module             
+                        [CropName]  harvest
+                        [CropName]  end_crop                                                                
+         endif       
+               
+   endif
+
+endif</text>
+              <event>start_of_day</event>
+            </script>
+            <script>
+              <text>! Re-set all necessary variables after harvest
+if EndTheCrop &gt; 0 then  
+                        InFallow = 1
+                        CurrentCrop = 'fallow' 
+                        FallowCount = FallowCount + 1
+                        days_after_harvest = 0
+                        rotation_counter = rotation_counter + 1
+                        HarvestFlag = 1
+                        EndTheCrop = 0
+                        EndByStage = 0
+                        EndByStatus = 0
+                        EndByDate = 0
+                        EndBySilage = 0
+                        ReadyToSow = 0  
+                                         
+endif  
+
+
+
+</text>
+              <event>end_of_day</event>
+            </script>
+          </manager>
+        </folder>
+        <manager name="NitroRules">
+          <ui>
+            <Category type="category" description="Enter crop species and the stage when N application should stop:" />
+            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
+            <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
+            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
+            <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
+            <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
+            <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
+            <CropType4 type="crop" description="Crop species 4 (e.g. wheat):">canola</CropType4>
+            <EndStage4 type="text" description="    Crop 4 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">5.0</EndStage4>
+            <CropType5 type="crop" description="Crop species 5 (e.g. wheat):">potato</CropType5>
+            <EndStage5 type="text" description="    Crop 5 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.3</EndStage5>
+            <CropType6 type="crop" description="Crop species 6 (e.g. wheat):" />
+            <EndStage6 type="text" description="    Crop 6 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <CropType7 type="crop" description="Crop species 7 (e.g. wheat):" />
+            <EndStage7 type="text" description="    Crop 7 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <CropType8 type="crop" description="Crop species 8 (e.g. wheat):" />
+            <EndStage8 type="text" description="    Crop 8 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+            <category2 type="category" description="Define parameters for time of nitrogen application:" />
+            <StartNdateSpr type="ddmmmdate" description="START date of SPRING window of N application (dd-mmm):">21-jun</StartNdateSpr>
+            <EndNdateSpr type="ddmmmdate" description="END date of SPRING window of N application (dd-mmm):">31-dec</EndNdateSpr>
+            <StartNdateAut type="ddmmmdate" description="START date of AUTUMN window of N application (dd-mmm):">1-jan</StartNdateAut>
+            <EndNdateAut type="ddmmmdate" description="END date of AUTUMN window of N application (dd-mmm):">20-jun</EndNdateAut>
+            <MeanTempSpr type="text" description="Mean temperature above which N aplication is allowed in SPRING (oC):">8</MeanTempSpr>
+            <MeanTempAut type="text" description="Mean temperature above which N aplication is allowed in AUTUMN (oC):">10</MeanTempAut>
+            <RunMeanPeriod type="text" description="Number of days for the running mean temperature to be used:">14.0</RunMeanPeriod>
+            <NApplicationAmount type="text" description="Amount of nitrogen to apply in each event (kg/ha):">25</NApplicationAmount>
+            <TriggerNLevel type="text" description="Nitrogen amount in soil (top 3 layers) below which N fertilization is triggered (kg/ha):">50</TriggerNLevel>
+            <FertStop type="ddmmmdate" description="Date when to STOP autumn fertiliser application (dd-mmm):">1-jul</FertStop>
+            <FertStart type="ddmmmdate" description="Date when to START spring fertiliser application (dd-mmm):">2-jul</FertStart>
+          </ui>
+          <script>
+            <text>RunningMeanTemp = 15 
+Fertilising_window = 1
+trigger_level = 45           ! N content in the top 60 cm of soil below which a fertiliser event is triggered. 
+N_application_amount = 50.0  ! Amount of N applied each time trigger level is reached 
+N_available = 0.0
+RunMeanPeriod = 0.0          ! Number of days used for running mean temperature
+NAppliedToday = 0.0
+
+!!! Flags for N application
+FlagN_CropAlive = 0 ! Crop is alive
+FlagN_LowSoilN  = 0 ! Soil N is below trigger level
+FlagN_EndStage = 0  ! Crop is before the final phenological stage when N is not aplied
+FlagN_ApplyN   = 0  ! if equal 4 then allow N aplication
+
+FlagN_ReadyForN   = 'yes'  ! if equal 'yes' than OK to receive N if 'no' than should "not" recieve any fertilizer (management decision set in crop element)
+
+CropStageToday  = 0.0   ! Stage number (e.g. 6 is flowering)
+CropStatusToday = 'out' ! Status name (e.g. 'alive')
+StopStageN      = 6.0 ! Phenology stage name after when nitrogen should not be applied (make sure this is a real number with 0.0)
+
+CapN = 0   ! Cap of nitrogen fertilizer (kg/ha)
+
+Deep_N = 0 ! N in layers deeper than 60 cm
+
+meanT = 0 ! oC
+
+
+
+</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>!!! Control variables for N aplication window
+
+   FlagN_CropAlive = 0  ! Crop is alive (FIXME-EIT - Not working so turned off and assumed as 1 always - see bellow)
+   FlagN_LowSoilN  = 0  ! Soil N is below trigger level
+   FlagN_EndStage  = 0  ! Crop is before the final phenological stage when N is not aplied
+   FlagN_ApplyN    = 0  ! if equal 4 then allow N aplication
+   NAppliedToday   = 0
+   RunMeanPeriod = [RunMeanPeriod]
+   N_application_amount = [NApplicationAmount] 
+   trigger_level = [TriggerNLevel]
+
+!!! Variables to indicate soil N status
+   N_available = no3(1) + no3(2) + no3(3) + nh4(1) + nh4(2) + nh4(3) + urea(1) + urea(2) + urea(3)                              !!!!!This considers all mineral N sources in the top 60cm of soil, including undisolved fertiliser on the surface
+   Deep_N      = no3(4) + no3(5) + no3(6) + no3(7) + nh4(4) + nh4(5) + nh4(6) + nh4(7) + urea(4) + urea(5) + urea(6) + urea(7)  ! N in layers deeper than 60 cm
+
+!!!! calculate 14 day running mean temperature used to control when N is applied  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+   meanT = (maxt+mint) * 0.5
+   RunningMeanTemp = (RunningMeanTemp * (RunMeanPeriod - 1) + meanT) / RunMeanPeriod
+
+!!!! Set the fertilizing window
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+! Fertiliser exclusion window in winter based on date
+   if           (date_within('[FertStop], [FertStart]') = 1)  then
+                Fertilising_window = 0 ! No application        
+   else                                          
+                Fertilising_window = 1
+   endif 
+
+! Fertiliser exclusion window in winter based on temperature (this will have priority if not turned-off)
+   if           (date_within('[StartNdateAut], [EndNdateAut]') = 1) and      
+                RunningMeanTemp &lt; [MeanTempAut] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Autumn when the running mean temperature falls below 10 oC              
+   elseif  (date_within('[StartNdateSpr], [EndNdateSpr]') = 1) and 
+                RunningMeanTemp &lt; [MeanTempSpr] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Spring untill the running mean temperature raises above 8 oC
+   else    
+                Fertilising_window = 1
+   endif
+
+!!!! Stop N aplication at later crop stages.  Field pea omitted because will not be fertilised  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+!!! CHECK end_of_day TAB !!!
+
+!!! Now set all flags for nitrogen application (1 = Apply; 0 = Do not apply)
+   if (CropStatusToday = 'alive') then
+          FlagN_CropAlive = 1                                                              ! FIXME-EIT Not using the 'alive' status to see if it's redundant (check)
+   endif
+   if ((CropStageToday &gt; 3) and (CropStageToday &lt; StopStageN)) then                        ! Phenology is ok for N application
+          FlagN_EndStage = 1
+   endif
+   if (N_available &lt; trigger_level) then                                                   ! N level in soil is low 
+          FlagN_LowSoilN  = 1 
+   endif
+    
+   FlagN_ApplyN = Fertilising_window * FlagN_CropAlive * FlagN_EndStage * FlagN_LowSoilN * (1-IsCatchCrop) ! If this is 1 then all requirements for N application were met
+
+!!! Decision on fertilize with N or not   
+        
+   if  (FlagN_ApplyN = 1 and PTfert &lt; CapN) then
+         fertiliser apply amount = N_application_amount (kg/ha), depth = 50 (mm), type = urea_n ()
+         NAppliedToday = N_application_amount
+   endif
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>!!! Sort out crop species, state and stage to stop N application based on phenology (always start at sowing)
+   if (CurrentSpecies = '[CropType1]') then 
+       StopStageN = [EndStage1]
+       CropStageToday = [CropType1].stage
+       CropStatusToday = [CropType1].plant_status
+   elseif (CurrentSpecies = '[CropType2]') then 
+       StopStageN = [EndStage2]
+       CropStageToday = [CropType2].stage
+       CropStatusToday = [CropType2].plant_status
+   elseif (CurrentSpecies = '[CropType3]') then 
+       StopStageN = [EndStage3]
+       CropStageToday = [CropType3].stage
+       CropStatusToday = [CropType3].plant_status
+   elseif (CurrentSpecies = '[CropType4]') then 
+       StopStageN = [EndStage4]
+       CropStageToday = [CropType4].stage
+       CropStatusToday = [CropType4].plant_status
+   elseif (CurrentSpecies = '[CropType5]') then 
+       StopStageN = [EndStage5]
+       CropStageToday = [CropType5].stage
+       CropStatusToday = [CropType5].plant_status
+   elseif (CurrentSpecies = '[CropType6]') then 
+       StopStageN = [EndStage6]
+       CropStageToday = [CropType6].stage
+       CropStatusToday = [CropType6].plant_status
+   elseif (CurrentSpecies = '[CropType7]') then 
+       StopStageN = [EndStage7]
+       CropStageToday = [CropType7].stage
+       CropStatusToday = [CropType7].plant_status
+   elseif (CurrentSpecies = '[CropType8]') then 
+       StopStageN = [EndStage8]
+       CropStageToday = [CropType8].stage
+       CropStatusToday = [CropType8].plant_status
+   else
+       StopStageN = 6.0                 ! 6 is usally flowering so a good default
+       CropStatusToday = 'out'
+       CropStageToday = 3.0
+   endif
+   
+
+</text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <irrigation name="Irrigation">
+          <automatic_irrigation type="list" listvalues="on,off" description="Automatic irrigation">off</automatic_irrigation>
+          <asw_depth type="text" description="Depth to which ASW is calculated. (mm)">600</asw_depth>
+          <crit_fr_asw type="text" description="Fraction of ASW below which irrigation is applied (0-1.0)">0.5</crit_fr_asw>
+          <irrigation_efficiency type="text" description="Efficiency of the irrigation. (0-1.0)">1</irrigation_efficiency>
+          <irrigation_allocation type="list" listvalues="on,off" description="Allocation limits">off</irrigation_allocation>
+          <allocation type="text" description="Allocation in ML">0</allocation>
+          <default_no3_conc type="text" description="Nitrate concentration (ppm N)">0</default_no3_conc>
+          <default_nh4_conc type="text" description="Ammonium concentration (ppm N)">0</default_nh4_conc>
+          <default_cl_conc type="text" description="Chloride concentration (ppm Cl)">0</default_cl_conc>
+          <default_no3_conc type="text" description="Nitrate concentration (ppm N)">0</default_no3_conc>
+          <default_nh4_conc type="text" description="Ammonium concentration (ppm N)">0</default_nh4_conc>
+          <default_cl_conc type="text" description="Chloride concentration (ppm Cl)">0</default_cl_conc>
+        </irrigation>
+        <manager name="IrrigRules">
+          <ui>
+            <NoPaddock type="text" description="Number of days for irrigator to retun to paddock">2</NoPaddock>
+            <IrrigStopRain type="text" description="Rainfall amount  (mm) to trigger irrigation pause (mm):">30</IrrigStopRain>
+            <IrrigStopDay type="text" description="Number of days to pause after trigger rainfall event:">2</IrrigStopDay>
+            <IrrigApply type="text" description="Maximum amount (mm) of water irrigator applies per event:">50</IrrigApply>
+            <IrrigTrig type="text" description="Fraction of available water in the top soil layer below which irrigation is allowed (0-1):">0.6</IrrigTrig>
+            <StartDry type="ddmmmdate" description="Start date when irrigation is NOT allowed (dd-mmm):">1-jun</StartDry>
+            <EndDry type="ddmmmdate" description="End date when irrigation is NOT allowed (dd-mmm):">1-aug</EndDry>
+            <CapIrrig type="text" description="Enter limit of applied irrigation in a given crop rotation (mm/crop cycle):">1000</CapIrrig>
+          </ui>
+          <script>
+            <text>irrigation_period = 1                   ! period when we forbid irrigation (0 is no irrigation allowed; 1 is allowed to irrigate)
+number_of_paddocks = [NoPaddock]        ! number of paddocks in irrigation rotation counter (FIXME-EIT For the new rotation manager tis has to be revised)
+paddock = 0                             ! start in paddock 0
+days_since_rain_event = 0               ! counter to pause irrigation after rainfall event
+rain_event_trigger = [IrrigStopRain]    ! rainfall amount  (mm) to trigger irrigation pause
+rain_event_pause_time = [IrrigStopDay]  ! number of days to pause after trigger rainfall event
+Irrigation_amount = [IrrigApply]        ! amount (mm) of water irrigator applies
+trigger_deficit = 0.5                   ! Fraction of available water in the top 15 cm below which irrigation is allowed
+</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>
+      trigger_deficit = [IrrigTrig]
+   
+   !!! Specify irrigation season start time
+   
+   if        (date_within('[StartDry],[EndDry]') = 1) then      ! This rule prevents irrigation in winter
+               irrigation_period=0
+               paddock=0                                        ! Brings back irrigation to our paddock
+   endif
+   
+   if       (SWD_top&lt;trigger_deficit) then                      ! If the fraction of soil water in top layer is bellow the trigger limit - irrigation is allowed
+                irrigation_period=1
+   endif  
+   
+   !!! Count days since last rainfall event
+   
+   if        (rain&gt;=rain_event_trigger) then                    ! This rule pauses the irrigators rotation for a given number of days following a defined size of rainfall event
+             days_since_rain_event = 0
+   else     
+             days_since_rain_event = days_since_rain_event + 1
+   endif             
+   
+   !!! Rotate irrigator around paddocks and apply irrigation when it gets back to this paddock!!!!!!!!!!!!!
+   
+   if           (irrigation_period = 1) and (paddock = 0) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule applies irrigation when the irrigator returns to this paddock if the SWD is below a given trigger
+                  paddock = paddock + 2                                                                               !!!I This is +2 because it is skipping this paddock so the irrigator will return sooner than if it spend a day here irrigating
+                     
+                      if  (SWD_top&lt;trigger_deficit) and (InFallow = 0) and (PTirrig &lt; [CapIrrig]) then
+                            irrigation apply amount = irrigation_amount
+                            paddock = paddock - 1                                                                       !!!If an irrigation event is triggered in this paddock subtract 1 so that this paddock is considered in the irrigation rotation counter
+                     endif
+   
+   elseif  (irrigation_period = 1) and (paddock = number_of_paddocks) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule finishes the irrigators rotation and sends it back to the start (to water this paddock)
+                  paddock = 0 
+   elseif  (irrigation_period = 1) and (paddock &gt; 0) and (days_since_rain_event &gt; rain_event_pause_time) then                     !!!This rule moves the irrigator around one paddock in the rotation each day 
+                  paddock = paddock + 1
+   endif
+
+</text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="TillageRules">
+          <ui>
+            <category type="category" description="When should tillage be done" />
+            <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">01-sep</tillage_date>
+            <category type="category" description="Tillage application details" />
+            <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
+            <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
+            <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">250</tillage_depth>
+            <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.95</tillage_f_incorp>
+            <XXX type="category" description="Fraction of residue removed" />
+            <catch_res type="text" description="Main crop residue &quot;removed&quot; after harvest (0-1):">0.90</catch_res>
+            <main_res type="text" description="Green-crop residue &quot;removed&quot; after harvest (0-1):">0.90</main_res>
+            <XX type="category" description="Nitrogen from residue returned to field" />
+            <n_return_eff type="text" description="Fraction return of nitrogen from removed crop residues (0-1):">0.80</n_return_eff>
+          </ui>
+          <script>
+            <text>! Tillage
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if FallowDays = 1 then  ! Do a tillage operation on the first day after harvesting
+
+
+! Sort out crop and the amount of residue to be removed by silage or grazing
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if (CurrentCropType = 'MainCrop') then
+       removed_residue = [main_res] 
+elseif CurrentCropType = 'CatchCrop') then
+       removed_residue = [catch_res]        
+endif
+
+! Do tillage            
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = removed_residue (), tillage_depth = 0.0 ! Biomass removed from field	    
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth] ! Do actual tillage            
+
+endif
+
+
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>removed_residue = 0  ! Fraction of total residue that was removed (e.g. grazing or baling) (0-1)
+returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
+            <event>init</event>
+          </script>
+        </manager>
+      </folder>
+      <outputfile name="OutReport">
+        <filename output="yes">BaseSim pixel OutReport.out</filename>
+        <title>BaseSim pixel OutReport</title>
+        <variables name="Variables">
+          <variable>dd/mm/yyyy as Date</variable>
+          <variable>year</variable>
+          <variable>Met.Latitude as Lat</variable>
+          <variable>Met.Longitude as Lon</variable>
+          <variable>co2</variable>
+          <variable>rotation_counter</variable>
+          <variable>CurrentCrop</variable>
+          <variable>SowingDOY</variable>
+          <variable>HarvestDOY</variable>
+          <variable>GrowthLength </variable>
+          <variable>CarbonOutputs</variable>
+          <variable>TotalBiomass</variable>
+          <variable>TotalYield</variable>
+          <variable>IntRadSum</variable>
+          <variable>RUEtop</variable>
+          <variable>MaxLAI </variable>
+          <variable>HarvestIndex </variable>
+          <variable>WaterOutputs</variable>
+          <variable>PTirrig</variable>
+          <variable>PTeo</variable>
+          <variable>PTes</variable>
+          <variable>PTep</variable>
+          <variable>ETact</variable>
+          <variable>PTdrain</variable>
+          <variable>WUE</variable>
+          <variable>PTrain</variable>
+          <variable>NitrogenOutputs</variable>
+          <variable>PTleach</variable>
+          <variable>nitMinTot </variable>
+          <variable>PTfert</variable>
+          <variable>PTmin</variable>
+          <variable>PTcropn </variable>
+          <variable>StressByN</variable>
+          <variable>StressByW</variable>
+          <variable>SowSoil_C</variable>
+          <variable>SowSoil_W</variable>
+          <variable>SowSoil_N</variable>
+          <variable>PhenologyOutputs</variable>
+          <variable>frostDays</variable>
+          <variable>frostIntensity</variable>
+          <variable>TTsum </variable>
+          <variable>AnthesisTT </variable>
+          <variable>MaturityTT </variable>
+          <variable>BiomassAtFrost</variable>
+          <variable>YieldAtFrost</variable>
+          <variable>Met.SowOpen as SowFrostOpen</variable>
+          <variable>DrainLastYear</variable>
+          <variable>LeachLastYear</variable>
+          <variable>FloweringDOY </variable>
+          <variable>DaysToFlower </variable>
+        </variables>
+        <events name="Reporting Frequency" />
+      </outputfile>
+    </area>
+  </simulation>
+</folder>
