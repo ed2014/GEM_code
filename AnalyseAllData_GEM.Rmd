@@ -254,9 +254,6 @@ persp3D(x, y, z, theta=60, phi=10, expand=0.75, main= paste0(df_sel$rowsSel[p],"
 
 ```
 
-
-
-
 ## Find hybrid x sow date with **highest yield** in each pixel
 
 > This is to check the data "sensibility"
