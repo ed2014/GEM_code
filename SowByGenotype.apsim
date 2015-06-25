@@ -36,6 +36,7 @@ Temp crit for sowing and soil moisture were turned OFF to allow sowing date to a
         <NaturalVegetation>Brigalow, belah, wilga</NaturalVegetation>
         <Latitude>0</Latitude>
         <Longitude>0</Longitude>
+        <YearOfSampling>0</YearOfSampling>
         <InitialWater name="Initial water">
           <FractionFull>1</FractionFull>
           <DepthWetSoil>NaN</DepthWetSoil>

@@ -54,7 +54,7 @@ summary(DATA_GEM)
 
 > Subset to keep only maize (exclude winter forage wheat) and order factors
 
-```{r TidyUp, include=FALSE}
+```{r TidyUp, echo = FALSE, include=FALSE}
 # Remove wheat (catch crop rotation) and keep only maize data
 
 workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
@@ -72,6 +72,28 @@ summary(workDF)
 
 ```
 
+
+
+```{r AddRegionCode, echo = FALSE, include = FALSE}
+
+# Read region data
+df_region <- as.data.frame(read.csv(file = 
+                                        paste0("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\",
+                                   "RegionPerPixel.csv") ))
+head(df_region)
+
+df_region <- df_region %>%
+  select(row, col, region)
+
+
+workDF <- merge(workDF, df_region, by = c("col", "row"))
+
+summary(workDF)
+
+```
+
+
+
 ## Graph some results
 
 > Total silage biomass by sowing date (kg/ha)
@@ -82,15 +104,19 @@ summary(workDF)
 
 # Total biomass
 workDF %>%
+#subset(region == 4 |region == 11 | region == 13) %>%
 ggplot(aes(x= thisSow , y=TotalBiomass)) +  
 geom_boxplot() +
-facet_grid( .~ thisHyb)
+#facet_grid(region ~ thisHyb)
+facet_grid(.~ thisHyb)
 
 # Total Yield
 workDF %>%
+#subset(region == 4 |region == 11 | region == 13) %>%
 ggplot(aes(x= thisSow , y=TotalYield)) +  
 geom_boxplot() +
-facet_grid( .~ thisHyb)
+#facet_grid(region ~ thisHyb)
+facet_grid(.~ thisHyb)
 
 # Harvest Index
 workDF %>%
@@ -116,7 +142,6 @@ ggplot(aes(x= thisSow , y=WUE)) +
 geom_boxplot() +
 facet_grid( .~ thisHyb)
 
-
 ```
 
 > Total silage biomass by hybrid type (kg/ha)
@@ -130,9 +155,11 @@ This form of display seems more interesting.
 # Pooled response to Hybrid (Bio)
 # Total biomass
 workDF %>%
+#subset(region == 4 |region == 11 | region == 13) %>%
 ggplot(aes(x= thisHyb , y=TotalBiomass)) +  
 geom_boxplot() +
-facet_grid( .~ thisSow)
+#facet_grid( region~ thisSow)
+facet_grid(.~ thisSow)
 
 # Total Yield
 workDF %>%
@@ -182,7 +209,31 @@ facet_grid( .~ thisSow)
 workDF %>%
   group_by(thisSow, thisHyb) %>%
   summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisHyb , y=CVperc)) +  geom_point() +
+  ggplot(aes(x= thisHyb , y=CVperc)) +  
+  geom_point() +
+  facet_grid( .~ thisSow)
+
+workDF %>%
+  group_by(thisSow, thisHyb) %>%
+  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  ggplot(aes(x= thisSow , y=CVperc)) +  
+  geom_point() +
+  facet_grid( .~ thisHyb)
+
+
+workDF %>%
+  group_by(thisSow, thisHyb) %>%
+  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  ggplot(aes(x= thisSow , y=CVperc, fill=thisSow)) +  
+  geom_bar(stat='identity') +
+  facet_grid( .~ thisHyb)
+
+
+workDF %>%
+  group_by(thisSow, thisHyb) %>%
+  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  ggplot(aes(x= thisHyb , y=CVperc, fill=thisHyb)) +  
+  geom_bar(stat='identity') +
   facet_grid( .~ thisSow)
 
 ```
@@ -574,7 +625,7 @@ gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colou
 gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
-# All plotted together
+# All plotted together (TODO: Do it by region)
 fontSize <- 14
 si_df_final %>%
   group_by(thisLat, thisLong) %>%
@@ -600,7 +651,7 @@ si_df_final %>%
 
 > Let's plot it: 
 
-```{r, echo = FALSE, warning=FALSE}
+```{r MapSi, echo = FALSE, warning=FALSE}
 outNames <- colnames(si_df_final)
 outNames <- gsub(" ","",outNames )
 par(mfrow=c(1,(length(mainFact)+1)))
@@ -610,7 +661,7 @@ spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
 
-
+# TODO: add a region code and then plot it for each region in the loop
 for(o in length(mainFact):length(outNames)){
 
   # For aggregate
@@ -637,8 +688,6 @@ for(o in length(mainFact):length(outNames)){
   factNames <- c("xx","xx", "Hybrid","Sow date", "Weather", "Interactions")
    plot(rast[[o]], main = paste0(factNames[o]))
   # map('nz')
-  
-  
 }
 #map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
 
