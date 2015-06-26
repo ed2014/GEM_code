@@ -260,10 +260,8 @@ workDF_med <- workDF %>%
              Y_sdv = sd(TotalYield, na.rm = TRUE),
              Y_cv = (Y_sdv/Y_mean)*100,
              HI_med = median(HarvestIndex, na.rm = TRUE)) %>%
-  # Unique ID for the pixel in a hxs scenario (FIXME: maybe redundant now)
-  # mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow),
-        # pixel_ID=paste0(row,"_",col))   
-     mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow))  
+             mutate(scenID = paste0(thisHyb,"_",thisSow)) %>%
+             mutate(pixel_scenID=paste0(row,"_",col,"_",thisHyb,"_",thisSow))  
 
 # make hybrid and sow date as numbers (for using in raster later) 
 # FIXME: do this in a prettier way later
@@ -284,7 +282,6 @@ tail(workDF_med)
 
 ```
 
-
 Select some pixels across the range of results
 
 ```{r 3DGraphsByPixel, echo = FALSE}
@@ -296,7 +293,6 @@ df_p <- workDF_med %>%
 
 head(df_p)
 summary(df_p$perc)
-
 
 # select 3 "sample" pixels to graph
 
@@ -366,75 +362,34 @@ persp3D(x, y, z, theta=60, phi=10, expand=0.75,
 
 
 ```{r FindHighBio, echo=FALSE}
-# select line with maximum yield per pixel
+# select line with maximum biomass per pixel
 df_maxBio <- workDF_med %>% 
   group_by(row, col) %>%
+ # mutate(coord_code = paste0(thisHyb,"_",thisSow)) %>%
   filter(Bio_med == max(Bio_med))
 
-head(df_maxBio)
-nrow(df_maxBio)
-
-#summary(df_maxBio)
-
-#PLot histograms
-hg1 <- ggplot(df_maxBio, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 <- ggplot(df_maxBio, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-
-# Plot (pixels with highest yield in each category of sowing date and hybrid)
-grid.arrange(hg1, hg2,ncol=2)
-```
-
-## Find highest **grain yield** per pixel
-
-> Allmost same results for grain
-
-```{r FindHighestYield, echo=FALSE}
-# select line with maximum yield per pixel
+# highest yield
 df_maxY <- workDF_med %>% 
   group_by(row, col) %>%
-  filter(Y_med == max(Y_med))
+#  mutate(coord_code = paste0(thisHyb,"_",thisSow)) %>%
+   filter(Y_med == max(Y_med))
 
-head(df_maxY, 25)
-nrow(df_maxY)
-
-#summary(df_maxY)
-
-#PLot histograms
-hg1 <- ggplot(df_maxY, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 <- ggplot(df_maxY, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-
-# Plot
-grid.arrange(hg1, hg2,ncol=2)
-```
-
-## Find hybrid x sow date with **lowest inter-annual variability** in each pixel
-
-> A bit more spread of frequencies here
-
-> In most pixels, sowing date 2 and 3 are less variable
-
-> Longer hybrids (Hybrid 3,4 and 5) are less variable
-
-
-```{r FindLowCV, echo = FALSE}
+# lowest CV
 df_minSd <- workDF_med %>% 
  group_by(row, col) %>%
+#mutate(coord_code = paste0(thisHyb,"_",thisSow)) %>%
  filter(Bio_cv == min(Bio_cv))
 
-head(df_minSd)
-nrow(df_minSd)
-#summary(df_minSd)
 
-#summary(df_maxY)
 
 #PLot histograms
-hg1 <- ggplot(df_minSd, aes(x=thisSow_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-hg2 <- ggplot(df_minSd, aes(x=thisHyb_n)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg1 <- ggplot(df_maxBio, aes(x=scenID)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg2 <- ggplot(df_maxY, aes(x=scenID)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+hg3 <- ggplot(df_minSd, aes(x=scenID)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 
-# Plot distributions of Si
-grid.arrange(hg1, hg2, ncol=2)
-
+# Plot (pixels with highest yield in each category of sowing date and hybrid)
+grid.arrange(hg1, hg2,hg3, ncol=3)
 ```
 
 # How is total biomass and inter-annual variability related?
@@ -448,7 +403,7 @@ workDF_med$Bio_meanTons <- workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
 #different panels by hybrid
 workDF_med %>%
 ggplot(aes(x= Bio_meanTons , y=Bio_cv)) +  
-geom_point(aes(colour = factor(thisHyb )) ) +
+geom_point(aes(colour = factor(regions )) ) +
 facet_grid(thisSow ~thisHyb, scales="free")
 
 ```
@@ -562,7 +517,9 @@ pixels <- unique(workDF_med$pixel_ID)
 
 summary(workDF) # Should I use workDF?
 
-for (p in 1:length(pixels)) {
+# for (p in 1:4) { # for script test
+ for (p in 1:length(pixels)) {
+
   
   # thisPixDF <- filter(workDF_med, pixel_ID == pixels[[p]])
   thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
@@ -596,18 +553,23 @@ for (p in 1:length(pixels)) {
   # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
  
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
-                   thisLong = thisPixDF$thisLong[1], 
+                   thisLong = thisPixDF$thisLong[1],
+                   thisRegion = thisPixDF$region[1],
                    df_ss$SS_p[1], 
                    df_ss$SS_p[2], 
                    df_ss$SS_p[3],
                    df_ss$SS_p[4]
                    )
   
+ # isolate factor labels from data
+ factNames <- colnames (df_si)[-grep('ss',colnames (df_si))] # isolate the main factors from anova
+ noFactors <- length(factNames)  # counts row names that do not have ":" i.e. from interaction
+ 
   # label Si df FIXME: Automate this
-  colnames(df_si)[3] <- gsub(" ","",paste0("Si_",mainFact[1]))
-  colnames(df_si)[4] <- gsub(" ","",paste0("Si_",mainFact[2]))
-  colnames(df_si)[5] <- gsub(" ","",paste0("Si_",mainFact[3]))
-  colnames(df_si)[6] <- "Si_Interac"
+  colnames(df_si)[noFactors+1] <- gsub(" ","",paste0("Si_",mainFact[1]))
+  colnames(df_si)[noFactors+2] <- gsub(" ","",paste0("Si_",mainFact[2]))
+  colnames(df_si)[noFactors+3] <- gsub(" ","",paste0("Si_",mainFact[3]))
+  colnames(df_si)[noFactors+4] <- "Si_Interac"
   
   # Appends to final Si df
   if(p==1){ 
@@ -628,6 +590,7 @@ gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colou
 # All plotted together (TODO: Do it by region)
 fontSize <- 14
 si_df_final %>%
+  subset(thisRegion == 6:8) %>%
   group_by(thisLat, thisLong) %>%
   gather(factName, siVal, 3:6) %>%
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
