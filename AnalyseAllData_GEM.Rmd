@@ -251,6 +251,7 @@ workDF_med <- workDF %>%
   group_by(row,col,pixel_ID, thisHyb,thisSow) %>%
   summarise( thisLat = mean(thisLat, na.rm = TRUE),
              thisLong = mean(thisLong, na.rm = TRUE),
+             thisRegion = mean(region),
              Bio_mean = mean(TotalBiomass, na.rm = TRUE),
              Bio_med = median(TotalBiomass, na.rm = TRUE),
              Bio_sdv = sd(TotalBiomass, na.rm = TRUE),
@@ -403,7 +404,7 @@ workDF_med$Bio_meanTons <- workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
 #different panels by hybrid
 workDF_med %>%
 ggplot(aes(x= Bio_meanTons , y=Bio_cv)) +  
-geom_point(aes(colour = factor(regions )) ) +
+geom_point(aes(colour = factor(thisRegion )) ) +
 facet_grid(thisSow ~thisHyb, scales="free")
 
 ```
@@ -587,23 +588,37 @@ gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colou
 gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
+# Give same names to the regions in df
+df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16, 99),  
+                           regNames = c("Northland", "Auckland", "Waikato", 
+                                       "BOP", "Gisborne", "HawkesBay", "Taranaki",
+                                       "Manuatu", "Wellington", "WestCoast", 
+                                       "Canterbury", "Otago", "Southland", 
+                                       "Tasman", "Nelson", "Malborough", 
+                                       "Others"))
+si_df_final <- merge(si_df_final, df_reg_names, by = c("thisRegion"))
+
 # All plotted together (TODO: Do it by region)
 fontSize <- 14
 si_df_final %>%
-  subset(thisRegion == 6:8) %>%
+  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 11 | thisRegion == 13) %>%
   group_by(thisLat, thisLong) %>%
-  gather(factName, siVal, 3:6) %>%
+  gather(factName, siVal, 4:7) %>%
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
   geom_histogram(aes(y=..density..), binwidth=.8, alpha=0) +
+ # geom_histogram(binwidth=1, alpha=0) +
   geom_density(alpha=0.2,size=1.5) +
+ # facet_grid(thisRegion~. , scales="free") +
+  facet_wrap(~regNames, scales="free") +
   xlab("Percent of total variability (%)") +
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) +
   theme(legend.position = c(0, 1), 
-       legend.justification = c(-3, 1)) 
+       legend.justification = c(-4, 1)) 
 
 # Plot distributions of Si
 #grid.arrange(gH, gS, gW,gI, nrow=4)
+
 ```
 
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
