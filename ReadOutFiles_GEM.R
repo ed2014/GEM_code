@@ -1,6 +1,7 @@
 gc()
 # set wd
 setwd("E:\\SowByGenotype")
+#setwd("C:\\Dropbox\\2014-GEM_paper\\rawData")
 
 # Get all files including from sub-folders (recursive)
 files = list.files(getwd(),

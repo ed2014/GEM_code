@@ -20,11 +20,11 @@ Attention:
 Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date</memo>
   <simulation name="GridCell">
     <metfile name="met">
-      <filename name="filename" input="yes">E:\ERA-40_Reanalysis\(1971-2000)\239_38.met</filename>
+      <filename name="filename" input="yes">F:\ERA-40_Reanalysis\(1971-2000)\238_38.met</filename>
     </metfile>
     <clock>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1981</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1975</end_date>
     </clock>
     <summaryfile />
     <area name="pixel">
@@ -538,7 +538,7 @@ Temp crit for sowing and soil moisture were turned OFF to allow sowing date to a
       <fertiliser />
       <maize>
         <ini>
-          <filename input="yes">C:\apsim_dev\Projects\CCII\2013_Maize_NZ(Validation)\MaizeValidation.xml</filename>
+          <filename input="yes">Maize_GEM.xml</filename>
         </ini>
       </maize>
       <wheat>
@@ -1038,7 +1038,7 @@ TtPosFlow = 0
               <FirstCropOption type="category" description="First crop to be tried" />
               <ThisCropOption type="text" description="Enter the place this crop has in the crop sequence (e.g. 1 is the first crop option):">MaizeSpr</ThisCropOption>
               <CropName type="crop" description="Crop species:">maize</CropName>
-              <CultivarName type="cultivars" description="Cultivar:">medium</CultivarName>
+              <CultivarName type="cultivars" description="Cultivar:">Pioneer_39G12</CultivarName>
               <Population type="text" description="Plant population (/m2)">12</Population>
               <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
               <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
@@ -1707,6 +1707,7 @@ returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
           <variable>LeachLastYear</variable>
           <variable>FloweringDOY </variable>
           <variable>DaysToFlower </variable>
+          <variable>leaf_no</variable>
         </variables>
         <events name="Reporting Frequency" />
         <Graph name="Soil_CNW">

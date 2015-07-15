@@ -29,6 +29,7 @@ Quantify **uncertanty** (sensitivity of model to?) coming from the choice of (po
 # Data Manipulation
 
 ```{r LoadLibs, echo=TRUE, include=FALSE}
+gc()
 library(ggplot2)
 library(dplyr)
 library(plot3D)
@@ -82,8 +83,8 @@ df_region <- as.data.frame(read.csv(file =
                                    "RegionPerPixel.csv") ))
 head(df_region)
 
-df_region <- df_region %>%
-  select(row, col, region)
+#df_region <- df_region %>%
+#  select(row, col, region)
 
 
 workDF <- merge(workDF, df_region, by = c("col", "row"))
@@ -458,9 +459,7 @@ if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
 
 ```
 
-
 ## Show maps when selecting run with **lowest variability**
-
 
 ```{r MapsLowCv, echo=FALSE, warning=FALSE}
 par(mfrow=c(1,1))
@@ -497,7 +496,6 @@ if (o == 12) {next} # other label to ignore
 }
 
 ```
-
 
 ## Calculate the relative variability for factors
 
@@ -598,7 +596,7 @@ df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 1
                                        "Others"))
 si_df_final <- merge(si_df_final, df_reg_names, by = c("thisRegion"))
 
-# All plotted together (TODO: Do it by region)
+# All plotted together by region
 fontSize <- 14
 si_df_final %>%
   subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 11 | thisRegion == 13) %>%
@@ -639,6 +637,10 @@ spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
 
+
+# FIXME: This is by hand now
+factNames <- c("Region", "Latitude","Longitude", "Si Hybrid","Si Sow date", "Si Weather", "Si Interactions", "Regions")
+
 # TODO: add a region code and then plot it for each region in the loop
 for(o in length(mainFact):length(outNames)){
 
@@ -663,8 +665,10 @@ for(o in length(mainFact):length(outNames)){
   writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
   
   # plot them
-  factNames <- c("xx","xx", "Hybrid","Sow date", "Weather", "Interactions")
-   plot(rast[[o]], main = paste0(factNames[o]))
+  if (o %in% 4:7) {
+    plot(rast[[o]], main = paste0(factNames[o]))
+  }
+   
   # map('nz')
 }
 #map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
@@ -673,4 +677,93 @@ for(o in length(mainFact):length(outNames)){
 
 
 
+```{r TrendByYear}
+
+workDF %>%
+filter(pixel_ID == "149_131") %>%
+select(year, TotalBiomass, thisSow, thisHyb) %>%
+#summarise_each(funs(mean)) %>%
+ggplot(aes(x= year , y=TotalBiomass)) +  
+geom_smooth(method=lm) +  
+geom_point() +
+#facet_grid( region~ thisSow)
+facet_grid(thisHyb ~ thisSow)
+
+
+workDF <- workDF %>%
+  mutate(TTav = TTsum/GrowthLength)
+
+
+head(workDF)
+head(si_df_final)
+
+# TODO: Bring average temperature and radiation in the pixel to teh Si dataframe (is Si responding to climate?)
+#si_df_final_new <- merge(si_df_final, xxxxx, by = c("col", "row"))
+
+
+
+
+```
+
+
+```{r YieldChangeTime}
+
+# Loop though each pixel/hyb/sowDate combination and calculate the slope of years per year
+# Is yield potential changing in past 30 years?
+
+pixels <- unique(workDF$pixel_ID)
+sowDates <- unique(workDF$thisSow)
+hybrids <- unique(workDF$thisHyb)
+
+# FIXME: Very slow 
+reg.Bio.DF <- NULL
+for (p in 1:length(pixels)) { 
+  for (s in 1:length(sowDates)) {
+    for (h in 1:length(hybrids))    { 
+  temp <- NULL
+  thisPixDF <- subset(workDF, pixel_ID == pixels[[p]] & thisSow == sowDates[[s]] & thisHyb == hybrids[[h]])
+  
+  this.lm <- lm(TotalBiomass ~ year, data=thisPixDF)
+  
+  tb <- summary(this.lm)
+  
+  # Select row if slope is not 0 at a significance of 5%
+  if (tb$coefficients[8] <= 0.05) { 
+    temp <- data.frame(row = thisPixDF$row[1] , col = thisPixDF$col[1], 
+                    hyb = thisPixDF$thisHyb[1], sow = thisPixDF$thisSow[1], 
+                    lat = thisPixDF$thisLat[1], long = thisPixDF$thisLong[1], reg =  thisPixDF$region[1],
+                    int = tb$coefficients[1], slope = tb$coefficients[2], pval = tb$coefficients[8])
+
+        reg.Bio.DF <- rbind(reg.Bio.DF, temp)
+        }
+  # print (c(p, s, h))
+     }
+    }
+   }
+  
+
+# Find the lowest slope
+reg.Bio.DF %>%
+  filter(slope == min(slope))
+  #filter(rank(slope, ties.method="first")==1)
+
+# Find the highest slope
+reg.Bio.DF %>%
+  filter(slope == max(slope))
+
+
+workDF %>%
+  group_by(pixel_ID, thisSow, thisHyb) %>%
+  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
+  mutate(slope = summary(mod)$coeff[2], intercept = summary(mod)$coeff[1], pval = summary(mod)$coeff[8]) %>%
+  filter (pval <= 0.05) %>%
+  select(-mod)
+
+
+
+
+
+# Loop through hyb and sow date combinations and show map of change in potential yield (what about the TE efect)
+
+```
 
