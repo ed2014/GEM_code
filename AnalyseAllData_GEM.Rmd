@@ -751,19 +751,69 @@ reg.Bio.DF %>%
 reg.Bio.DF %>%
   filter(slope == max(slope))
 
-
-workDF %>%
+slopesDF <- NULL
+slopesDF <- workDF %>%
   group_by(pixel_ID, thisSow, thisHyb) %>%
-  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
-  mutate(slope = summary(mod)$coeff[2], intercept = summary(mod)$coeff[1], pval = summary(mod)$coeff[8]) %>%
+ do(mod = lm(TotalBiomass ~ year, data = .)) %>%
+  mutate(slope = summary(mod)$coeff[2], 
+         intercept = summary(mod)$coeff[1], 
+         pval = summary(mod)$coeff[8]) %>%
   filter (pval <= 0.05) %>%
   select(-mod)
 
-
-
-
-
 # Loop through hyb and sow date combinations and show map of change in potential yield (what about the TE efect)
+# get coordinates for pixel
+slopesDF <- merge(slopesDF, workDF, by = c("pixel_ID", "thisSow", "thisHyb"))
+
+# map the slopes
+mapDF <- slopesDF %>%
+  filter(thisSow == "s3" & thisHyb == "h3")
+
+outNames <- colnames(si_df_final)
+outNames <- gsub(" ","",outNames )
+par(mfrow=c(1,(length(mainFact)+1)))
+
+# ignore first 6 factors
+spg <- list() # dataframe list to be coerced as spatial object
+rast <- list() # raster
+s <- list()
+
+
+# FIXME: This is by hand now
+factNames <- c("Region", "Latitude","Longitude", "Si Hybrid","Si Sow date", "Si Weather", "Si Interactions", "Regions")
+
+# TODO: add a region code and then plot it for each region in the loop
+for(o in length(mainFact):length(outNames)){
+
+  # For aggregate
+  spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
+  coordinates(spg[[o]]) = ~ si_df_final.thisLong + si_df_final.thisLat # Attention to variable names
+ 
+  # Common to both methods (grid, raterise and project)
+  gridded(spg[[o]]) <- TRUE
+  rast[[o]] <- raster(spg[[o]])
+  proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+  # stack them
+  if(o == 1) {
+    s <- NULL
+    s <- stack(rast[[o]])} 
+  else {
+    s[[o]] <- rast[[o]]
+  }
+  
+  # save raster as
+  writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+  
+  # plot them
+  if (o %in% 4:7) {
+    plot(rast[[o]], main = paste0(factNames[o]))
+  }
+   
+  # map('nz')
+}
+#map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
+
 
 ```
 
