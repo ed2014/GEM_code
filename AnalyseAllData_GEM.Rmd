@@ -679,19 +679,11 @@ for(o in length(mainFact):length(outNames)){
 
 ```{r TrendByYear}
 
-workDF %>%
-filter(pixel_ID == "149_131") %>%
-select(year, TotalBiomass, thisSow, thisHyb) %>%
-#summarise_each(funs(mean)) %>%
-ggplot(aes(x= year , y=TotalBiomass)) +  
-geom_smooth(method=lm) +  
-geom_point() +
-#facet_grid( region~ thisSow)
-facet_grid(thisHyb ~ thisSow)
+
 
 
 workDF <- workDF %>%
-  mutate(TTav = TTsum/GrowthLength)
+  
 
 
 head(workDF)
@@ -711,46 +703,6 @@ head(si_df_final)
 # Loop though each pixel/hyb/sowDate combination and calculate the slope of years per year
 # Is yield potential changing in past 30 years?
 
-pixels <- unique(workDF$pixel_ID)
-sowDates <- unique(workDF$thisSow)
-hybrids <- unique(workDF$thisHyb)
-
-# FIXME: Very slow 
-reg.Bio.DF <- NULL
-for (p in 1:length(pixels)) { 
-  for (s in 1:length(sowDates)) {
-    for (h in 1:length(hybrids))    { 
-  temp <- NULL
-  thisPixDF <- subset(workDF, pixel_ID == pixels[[p]] & thisSow == sowDates[[s]] & thisHyb == hybrids[[h]])
-  
-  this.lm <- lm(TotalBiomass ~ year, data=thisPixDF)
-  
-  tb <- summary(this.lm)
-  
-  # Select row if slope is not 0 at a significance of 5%
-  if (tb$coefficients[8] <= 0.05) { 
-    temp <- data.frame(row = thisPixDF$row[1] , col = thisPixDF$col[1], 
-                    hyb = thisPixDF$thisHyb[1], sow = thisPixDF$thisSow[1], 
-                    lat = thisPixDF$thisLat[1], long = thisPixDF$thisLong[1], reg =  thisPixDF$region[1],
-                    int = tb$coefficients[1], slope = tb$coefficients[2], pval = tb$coefficients[8])
-
-        reg.Bio.DF <- rbind(reg.Bio.DF, temp)
-        }
-  # print (c(p, s, h))
-     }
-    }
-   }
-  
-
-# Find the lowest slope
-reg.Bio.DF %>%
-  filter(slope == min(slope))
-  #filter(rank(slope, ties.method="first")==1)
-
-# Find the highest slope
-reg.Bio.DF %>%
-  filter(slope == max(slope))
-
 slopesDF <- NULL
 slopesDF <- workDF %>%
   group_by(pixel_ID, thisSow, thisHyb) %>%
@@ -758,61 +710,50 @@ slopesDF <- workDF %>%
   mutate(slope = summary(mod)$coeff[2], 
          intercept = summary(mod)$coeff[1], 
          pval = summary(mod)$coeff[8]) %>%
-  filter (pval <= 0.05) %>%
+  filter (pval <= 0.05) %>% # select pixels with significant slope
   select(-mod)
 
-# Loop through hyb and sow date combinations and show map of change in potential yield (what about the TE efect)
-# get coordinates for pixel
-slopesDF <- merge(slopesDF, workDF, by = c("pixel_ID", "thisSow", "thisHyb"))
+  slopesDF <- merge(slopesDF, workDF, by = c("pixel_ID", "thisSow", "thisHyb"))
 
-# map the slopes
-mapDF <- slopesDF %>%
-  filter(thisSow == "s3" & thisHyb == "h3")
 
-outNames <- colnames(si_df_final)
-outNames <- gsub(" ","",outNames )
-par(mfrow=c(1,(length(mainFact)+1)))
+# Test some pixels
+workDF %>%
+filter(pixel_ID == "149_131") %>%
+select(year, TotalBiomass, thisSow, thisHyb) %>%
+ggplot(aes(x= year , y=TotalBiomass)) +  
+geom_smooth(method=lm) +  
+geom_point() +
+facet_grid(thisHyb ~ thisSow)
 
-# ignore first 6 factors
+# map the pixels with change 
+
 spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
-
-
-# FIXME: This is by hand now
-factNames <- c("Region", "Latitude","Longitude", "Si Hybrid","Si Sow date", "Si Weather", "Si Interactions", "Regions")
-
-# TODO: add a region code and then plot it for each region in the loop
-for(o in length(mainFact):length(outNames)){
-
+sow <- c("s1", "s2", "s3", "s4", "s5")
+hyb <- c("h1", "h2", "h3", "h4", "h5")
+count <- 0
+par(mfrow=5))
+for(s in 1:length(sow)) {
+  for(h in 1:length(hyb))  {
+  count <- count + 1  
+  
+  mapDF <- slopesDF %>%
+  filter(thisSow == sow[s] & thisHyb == hyb[h])
+    
   # For aggregate
-  spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
-  coordinates(spg[[o]]) = ~ si_df_final.thisLong + si_df_final.thisLat # Attention to variable names
- 
+  spg[[count]] <- data.frame(mapDF$thisLong, mapDF$thisLat, mapDF$slope)
+  coordinates(spg[[count]]) <- ~ mapDF.thisLong + mapDF.thisLat # Attention to variable names
+  
   # Common to both methods (grid, raterise and project)
-  gridded(spg[[o]]) <- TRUE
-  rast[[o]] <- raster(spg[[o]])
-  proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-
-  # stack them
-  if(o == 1) {
-    s <- NULL
-    s <- stack(rast[[o]])} 
-  else {
-    s[[o]] <- rast[[o]]
-  }
+  gridded(spg[[count]]) <- TRUE
+  rast[[count]] <- raster(spg[[count]])
+  proj4string(rast[[count]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   
-  # save raster as
-  writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+  plot(rast[[count]], main = paste0(sow[s]," ",hyb[h]))
   
-  # plot them
-  if (o %in% 4:7) {
-    plot(rast[[o]], main = paste0(factNames[o]))
+    }
   }
-   
-  # map('nz')
-}
-#map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
 
 
 ```
