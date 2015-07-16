@@ -69,11 +69,14 @@ workDF$pixel_ID <- paste0(workDF$row,"_",workDF$col)
 # Creates a year field as factor
 workDF$yearAsFact <- as.factor(paste0(workDF$year,"_Y"))
 
+# Average TT accumulation per day of regrowth (proxy for average Temp during cycle) 
+workDF <- workDF %>%  mutate(TTav = TTsum/GrowthLength)
+
 summary(workDF)
 
 ```
 
-
+Get data on different regions
 
 ```{r AddRegionCode, echo = FALSE, include = FALSE}
 
@@ -83,17 +86,11 @@ df_region <- as.data.frame(read.csv(file =
                                    "RegionPerPixel.csv") ))
 head(df_region)
 
-#df_region <- df_region %>%
-#  select(row, col, region)
-
-
 workDF <- merge(workDF, df_region, by = c("col", "row"))
 
 summary(workDF)
 
 ```
-
-
 
 ## Graph some results
 
@@ -225,7 +222,7 @@ workDF %>%
 workDF %>%
   group_by(thisSow, thisHyb) %>%
   summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisSow , y=CVperc, fill=thisSow)) +  
+  ggplot(aes(x= thisSow , y=CVperc)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisHyb)
 
@@ -233,11 +230,25 @@ workDF %>%
 workDF %>%
   group_by(thisSow, thisHyb) %>%
   summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisHyb , y=CVperc, fill=thisHyb)) +  
+  ggplot(aes(x= thisHyb , y=CVperc)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisSow)
 
 ```
+
+
+```{r DrivingFactors}
+# Factors explaining variability
+workDF %>%
+group_by(thisSow, thisHyb) %>%
+select(thisSow, thisHyb,IntRadSum, TotalBiomass ) %>%
+summarise_each(funs(mean)) %>%
+ggplot(aes(x= IntRadSum , y=TotalBiomass, colour = factor(thisSow))) +
+geom_smooth(method=lm) +  
+geom_point(aes(shape = thisHyb, size = 20)) 
+
+```
+
 
 ## Values pooled (median, mean, stdev) across **years** 
 
@@ -576,11 +587,12 @@ summary(workDF) # Should I use workDF?
     } else {
     si_df_final <- rbind(si_df_final, df_si)
     }
-  
 }
 
 summary(si_df_final)
 nrow(si_df_final)
+
+# Graph Si for eacj main factor and interaction
 gH <- ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
@@ -599,7 +611,7 @@ si_df_final <- merge(si_df_final, df_reg_names, by = c("thisRegion"))
 # All plotted together by region
 fontSize <- 14
 si_df_final %>%
-  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 11 | thisRegion == 13) %>%
+  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 11 | thisRegion == 12) %>%
   group_by(thisLat, thisLong) %>%
   gather(factName, siVal, 4:7) %>%
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
@@ -610,9 +622,10 @@ si_df_final %>%
   facet_wrap(~regNames, scales="free") +
   xlab("Percent of total variability (%)") +
   ylab("Frequency distribution") +
-  theme(text = element_text(size=fontSize)) +
+  theme(text = element_text(size=fontSize)) + 
   theme(legend.position = c(0, 1), 
        legend.justification = c(-4, 1)) 
+ # scale_fill_discrete(name="Factors", labels=c("Hybrids","Sowing date","Weather", "Interactions")) +
 
 # Plot distributions of Si
 #grid.arrange(gH, gS, gW,gI, nrow=4)
@@ -630,7 +643,8 @@ si_df_final %>%
 ```{r MapSi, echo = FALSE, warning=FALSE}
 outNames <- colnames(si_df_final)
 outNames <- gsub(" ","",outNames )
-par(mfrow=c(1,(length(mainFact)+1)))
+#par(mfrow=c(1,(length(mainFact)+1)))
+par(mfrow=c(2,2))
 
 # ignore first 6 factors
 spg <- list() # dataframe list to be coerced as spatial object
@@ -675,32 +689,10 @@ for(o in length(mainFact):length(outNames)){
 
 ```
 
-
-
-```{r TrendByYear}
-
-
-
-
-workDF <- workDF %>%
-  
-
-
-head(workDF)
-head(si_df_final)
-
-# TODO: Bring average temperature and radiation in the pixel to teh Si dataframe (is Si responding to climate?)
-#si_df_final_new <- merge(si_df_final, xxxxx, by = c("col", "row"))
-
-
-
-
-```
-
+Test yield over time
 
 ```{r YieldChangeTime}
 
-# Loop though each pixel/hyb/sowDate combination and calculate the slope of years per year
 # Is yield potential changing in past 30 years?
 
 slopesDF <- NULL
@@ -725,6 +717,22 @@ geom_smooth(method=lm) +
 geom_point() +
 facet_grid(thisHyb ~ thisSow)
 
+```
+
+Get NZ shape file
+
+```{r GetNZmap}
+# get the NZ map
+library(ggmap)
+library(scales)
+library(maptools)
+NZshapeFile <- sf
+names(NZshapeFile)
+NZshapeFile <- fortify(NZshapeFile, region="REGC2013") # makes it digestible as df to ggplot
+plot(NZshapeFile)
+```
+
+```{r }
 # map the pixels with change 
 
 spg <- list() # dataframe list to be coerced as spatial object
@@ -733,7 +741,7 @@ s <- list()
 sow <- c("s1", "s2", "s3", "s4", "s5")
 hyb <- c("h1", "h2", "h3", "h4", "h5")
 count <- 0
-par(mfrow=5))
+par(mfrow=c(1,2))
 for(s in 1:length(sow)) {
   for(h in 1:length(hyb))  {
   count <- count + 1  
@@ -754,7 +762,5 @@ for(s in 1:length(sow)) {
   
     }
   }
-
-
 ```
 
