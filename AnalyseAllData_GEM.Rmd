@@ -462,7 +462,7 @@ if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
   }
   
   # save raster as
-  #writeRaster(rast[[o]], file=paste0(cropNames[c],"\\",thisCrop,"_", outNames[o],"_var",".tiff"), overwrite=TRUE) 
+  writeRaster(rast[[o]], file=paste0(outNames[o],"_var",".tiff"), overwrite=TRUE) 
 }
 
 ```
@@ -672,12 +672,14 @@ for(o in length(mainFact):length(outNames)){
     s[[o]] <- rast[[o]]
   }
   
-  # save raster as
-  writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
   
   # plot them
   if (o %in% 4:7) {
     plot(rast[[o]], main = paste0(factNames[o]))
+    
+    # save raster as
+    writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+
   }
    
   # map('nz')
@@ -694,42 +696,61 @@ Test yield over time
 
 slopesDF <- NULL
 slopesDF <- workDF %>%
-  group_by(pixel_ID, thisSow, thisHyb) %>%
+ # select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
+ group_by(pixel_ID, thisSow, thisHyb) %>%
+ filter(TotalBiomass > 100) %>%
  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
   mutate(slope = summary(mod)$coeff[2], 
          intercept = summary(mod)$coeff[1], 
          pval = summary(mod)$coeff[8]) %>%
   filter (pval <= 0.05) %>% # select pixels with significant slope
   select(-mod)
+  head(slopesDF)
 
-  slopesDF <- merge(slopesDF, workDF, by = c("pixel_ID", "thisSow", "thisHyb"))
+  #FIXME: this merge is multiplying unecesary pixels
+  slopesDF <- workDF %>%
+ # select(pixel_ID, thisSow, thisHyb, TotalBiomass, thisLat, thisLong) %>%
+  group_by(pixel_ID, thisSow, thisHyb) %>%
+  summarise_each(funs(mean)) %>%
+  merge(slopesDF, by = c("pixel_ID", "thisSow", "thisHyb"))
 
+# slopesDF <- merge(slopesDF, xx, by = c("pixel_ID", "thisSow", "thisHyb"))
+
+```
+
+
+```{r SlopeAnalysis}
+slopesDF %>%
+  select(thisSow, thisHyb, slope) %>%
+  ggplot(aes(x=thisSow, y=slope)) +
+  geom_boxplot() +
+  geom_jitter(aes(colour = thisHyb))
+
+
+slopesDF %>%
+  select(thisLat, thisSow, thisHyb, slope) %>%
+  ggplot(aes(x=thisLat, y=slope)) +
+  geom_point(aes(colour = thisHyb)) +
+  facet_grid(thisSow~.)
+
+head(slopesDF)
 
 # Test some pixels
 workDF %>%
-filter(pixel_ID == "149_131") %>%
+filter(pixel_ID == "149_131" & TotalBiomass > 100) %>%
 select(year, TotalBiomass, thisSow, thisHyb) %>%
 ggplot(aes(x= year , y=TotalBiomass)) +  
 geom_smooth(method=lm) +  
 geom_point() +
 facet_grid(thisHyb ~ thisSow)
 
+
 ```
 
-Get NZ shape file
+Map slope
 
-```{r GetNZmap}
-# get the NZ map
-library(ggmap)
-library(scales)
-library(maptools)
-NZshapeFile <- sf
-names(NZshapeFile)
-NZshapeFile <- fortify(NZshapeFile, region="REGC2013") # makes it digestible as df to ggplot
-plot(NZshapeFile)
-```
+```{r MapYieldSlope}
 
-```{r }
 # map the pixels with change 
 
 spg <- list() # dataframe list to be coerced as spatial object
@@ -744,7 +765,7 @@ for(s in 1:length(sow)) {
   count <- count + 1  
   
   mapDF <- slopesDF %>%
-  filter(thisSow == sow[s] & thisHyb == hyb[h])
+  subset(thisSow == sow[s] & thisHyb == hyb[h])
     
   # For aggregate
   spg[[count]] <- data.frame(mapDF$thisLong, mapDF$thisLat, mapDF$slope)
@@ -756,8 +777,9 @@ for(s in 1:length(sow)) {
   proj4string(rast[[count]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   
   plot(rast[[count]], main = paste0(sow[s]," ",hyb[h]))
+  writeRaster(rast[[count]], file=paste0("Slope_", paste0(sow[s],"_",hyb[h],".tiff")), overwrite=TRUE) 
+ 
   
     }
   }
 ```
-
