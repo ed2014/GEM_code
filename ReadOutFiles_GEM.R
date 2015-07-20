@@ -1,6 +1,6 @@
 gc()
 # set wd
-setwd("E:\\SowByGenotype")
+setwd("F:\\SowByGenotype")
 #setwd("C:\\Dropbox\\2014-GEM_paper\\rawData")
 
 # Get all files including from sub-folders (recursive)

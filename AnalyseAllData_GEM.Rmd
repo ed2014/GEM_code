@@ -31,12 +31,12 @@ Quantify **uncertanty** (sensitivity of model to?) coming from the choice of (po
 ```{r LoadLibs, echo=TRUE, include=FALSE}
 gc()
 library(ggplot2)
-library(dplyr)
 library(plot3D)
 library(gridExtra)
 library(tidyr)
 library(raster)
 library(mapproj)
+library(dplyr)
 ```
 
 ## Retrieve data and check
@@ -61,7 +61,8 @@ summary(DATA_GEM)
 workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
 
 # order sow dates
-workDF$thisSow = factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
+workDF$thisSow <- factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
+workDF$thisHyb <- factor(workDF$thisHyb, levels = c('h1', 'h2', 'h3', 'h4', 'h5'))
 
 #creates ID for each pixel
 workDF$pixel_ID <- paste0(workDF$row,"_",workDF$col)
@@ -74,16 +75,12 @@ workDF <- workDF %>%  mutate(TTav = TTsum/GrowthLength)
 
 summary(workDF)
 
-```
-
-Get data on different regions
-
-```{r AddRegionCode, echo = FALSE, include = FALSE}
-
 # Read region data
 df_region <- as.data.frame(read.csv(file = 
                                         paste0("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\",
                                    "RegionPerPixel.csv") ))
+
+df_region <- df_region %>% select (-X)
 head(df_region)
 
 workDF <- merge(workDF, df_region, by = c("col", "row"))
@@ -213,7 +210,7 @@ workDF %>%
 
 workDF %>%
   group_by(thisSow, thisHyb) %>%
-  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
   ggplot(aes(x= thisSow , y=CVperc)) +  
   geom_point() +
   facet_grid( .~ thisHyb)
@@ -221,7 +218,7 @@ workDF %>%
 
 workDF %>%
   group_by(thisSow, thisHyb) %>%
-  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
   ggplot(aes(x= thisSow , y=CVperc)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisHyb)
@@ -229,7 +226,7 @@ workDF %>%
 
 workDF %>%
   group_by(thisSow, thisHyb) %>%
-  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
+  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
   ggplot(aes(x= thisHyb , y=CVperc)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisSow)
