@@ -607,6 +607,7 @@ si_df_final_m %>%
 
 ```
 
+
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
 
 
@@ -627,11 +628,47 @@ head(si_weather_merged)
 # "year  day	maxt	mint	radn	rain	co2"
 
 si_weather_merged %>%
-  ggplot(aes(x=maxt, y=Si_thisHyb)) +
-  geom_point()
+  ggplot(aes(x=meant, y=Si_thisHyb)) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  theme(text = element_text(size=25)) 
 
-plot(si_weather_merged)
+si_weather_merged %>%
+  ggplot(aes(x=meant, y=Si_thisSow)) +
+  geom_point() +
+  geom_smooth() 
 
+si_weather_merged %>%
+  ggplot(aes(x=meant, y=Si_yearAsFact)) +
+  geom_point() +
+  geom_smooth() 
+
+si_weather_merged %>%
+  ggplot(aes(x=meant, y=Si_Interac)) +
+  geom_point() +
+  geom_smooth() 
+
+
+# radiation
+si_weather_merged %>%
+  ggplot(aes(x=radn, y=Si_thisHyb)) +
+  geom_point() +
+  geom_smooth() 
+
+si_weather_merged %>%
+  ggplot(aes(x=radn, y=Si_thisSow)) +
+  geom_point() +
+  geom_smooth() 
+
+si_weather_merged %>%
+  ggplot(aes(x=radn, y=Si_yearAsFact)) +
+  geom_point() +
+  geom_smooth() 
+
+si_weather_merged %>%
+  ggplot(aes(x=radn, y=Si_Interac)) +
+  geom_point() +
+  geom_smooth() 
 
 ```
 
