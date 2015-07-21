@@ -614,15 +614,23 @@ si_df_final_m %>%
 
 weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\MetFiles_1971_2000\\SummaryResults\\RasterOutput_base.csv")
 weatherPixel <- data.frame(weatherPixel)
-
+head(weatherPixel)
 summary(weatherPixel)
+si_weather_merged <- NULL
+si_weather_merged <- merge(si_df_final, weatherPixel, by = c("thisLat","thisLong")) # FIXME: do row/col as its safer
 
-si_weather_merged <- merge(si_df_final, weatherPixel, by = c("row","col"))
+si_weather_merged <- si_weather_merged %>%
+  mutate(meant = (maxt+mint)*0.5)
+  
+
+head(si_weather_merged)
 # "year  day	maxt	mint	radn	rain	co2"
 
 si_weather_merged %>%
-  ggplot(aes(x=maxt, y=Si_hyb)) %>%
+  ggplot(aes(x=maxt, y=Si_thisHyb)) +
   geom_point()
+
+plot(si_weather_merged)
 
 
 ```
