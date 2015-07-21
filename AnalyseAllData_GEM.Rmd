@@ -223,12 +223,12 @@ workDF %>%
 # map CVs
 
 mapDf <- workDF %>%
-  select(thisLat, thisLong, thisSow, thisHyb, TotalBiomass) %>%
-  group_by(thisSow, thisHyb) %>%
+#  select(thisLat, thisLong, thisSow, thisHyb, TotalBiomass) %>%
+  group_by(row, col, thisLat, thisLong) %>%
   summarise_each(funs(sd, mean)) %>%
-#  select(thisLat, thisLong, thisSow, thisHyb,TotalBiomass_sd, TotalBiomass_mean) %>%
+  select(thisLat, thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100)
-
+head(mapDf)
 par(mfrow = c(1,1))
 outNames <- colnames(mapDf) # Using maximum grain yield
 
