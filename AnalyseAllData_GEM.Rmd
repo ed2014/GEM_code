@@ -201,33 +201,22 @@ facet_grid( .~ thisSow)
 
 ```{r GraphCVs, echo =FALSE}
 # polled CV across hybrids and sowing dates
-workDF %>%
-  group_by(thisSow, thisHyb) %>%
-  summarise(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisHyb , y=CVperc)) +  
-  geom_point() +
-  facet_grid( .~ thisSow)
+# Not working
 
 workDF %>%
-  group_by(thisSow, thisHyb) %>%
-  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisSow , y=CVperc)) +  
-  geom_point() +
-  facet_grid( .~ thisHyb)
-
+  group_by(row, col, thisLat, thisLong) %>%
+  summarise_each(funs(sd, mean)) %>%
+  select(thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
+  mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
+  ggplot(aes(x= thisLat , y=CV)) +  
+  geom_point()
 
 workDF %>%
   group_by(thisSow, thisHyb) %>%
-  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisSow , y=CVperc)) +  
-  geom_bar(stat='identity') +
-  facet_grid( .~ thisHyb)
-
-
-workDF %>%
-  group_by(thisSow, thisHyb) %>%
-  mutate(CVperc = sd(TotalBiomass, na.rm = TRUE)/mean(TotalBiomass, na.rm = TRUE)*100) %>%
-  ggplot(aes(x= thisHyb , y=CVperc)) +  
+  summarise_each(funs(sd, mean)) %>%
+  select(thisSow, thisHyb,TotalBiomass_sd, TotalBiomass_mean) %>%
+  mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
+  ggplot(aes(x= thisHyb , y=CV)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisSow)
 
@@ -631,22 +620,36 @@ si_weather_merged %>%
   ggplot(aes(x=meant, y=Si_thisHyb)) +
   geom_point() +
   geom_smooth(method=lm) +
-  theme(text = element_text(size=25)) 
+  theme(text = element_text(size=20)) +
+  xlab("Average temperature (oC)") +
+  ylab("Sensitivity to hybrid\n(% of total variability)")
 
 si_weather_merged %>%
   ggplot(aes(x=meant, y=Si_thisSow)) +
   geom_point() +
-  geom_smooth() 
+  geom_smooth()  +
+  theme(text = element_text(size=20)) +
+  xlab("Average temperature (oC)") +
+  ylab("Sensitivity to sowing date\n(% of total variability)")
+
 
 si_weather_merged %>%
   ggplot(aes(x=meant, y=Si_yearAsFact)) +
   geom_point() +
-  geom_smooth() 
+  geom_smooth()  +
+   theme(text = element_text(size=20)) +
+  xlab("Average temperature (oC)") +
+  ylab("Sensitivity to weather\n(% of total variability)")
+
 
 si_weather_merged %>%
   ggplot(aes(x=meant, y=Si_Interac)) +
   geom_point() +
-  geom_smooth() 
+  geom_smooth()  +
+  theme(text = element_text(size=20)) +
+  xlab("Average temperature (oC)") +
+  ylab("Sensitivity to interactions\n(% of total variability)")
+
 
 
 # radiation
@@ -740,9 +743,9 @@ Test yield over time
 
 slopesDF <- NULL
 slopesDF <- workDF %>%
- # select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
+  select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
  group_by(pixel_ID, thisSow, thisHyb) %>%
- filter(TotalBiomass > 100) %>%
+# filter(TotalBiomass > 100) %>%
  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
   mutate(slope = summary(mod)$coeff[2], 
          intercept = summary(mod)$coeff[1], 
