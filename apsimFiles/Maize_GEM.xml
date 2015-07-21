@@ -1,5 +1,4 @@
 <Type name="maize">
-<!-- Changing only aspects that are required to run NZ maize hybrids - when mature cultivar changes should move to release version (eit) -->
   <MetaData>
     <UItype>CSUserInterface.EmptyUI</UItype>
     <IsCrop>Yes</IsCrop>
@@ -228,11 +227,11 @@
     <svp_fract description="(0-1)">0.75  </svp_fract>
     <eo_crop_factor_default description="default crop factor for limiting soil">100.0  </eo_crop_factor_default>
     <co2level>350.0</co2level>
-	<!-- EIT: TE response copied from wheat -->
+	<!-- EIT: TE response copied from wheat: Not considering it for the GEM study historical climate -->
     <co2_level_te>   0  350   700   1000   </co2_level_te>
-    <te_co2_modifier>0  1.0   1.37  1.69</te_co2_modifier>
+    <te_co2_modifier>0  1.0   1.0  1.0</te_co2_modifier>
 	<x_co2_nconc_modifier units="ppm co2">350  700   1000</x_co2_nconc_modifier>
-    <y_co2_nconc_modifier>1.0  0.93  0.9</y_co2_nconc_modifier>
+    <y_co2_nconc_modifier>1.0  1.0  1.0</y_co2_nconc_modifier>
 	<co2_level_nconc>350.0</co2_level_nconc>
     <nconc_co2_modifier>1.0</nconc_co2_modifier>
 	<!--  water demand to some fraction/multiple
@@ -356,8 +355,10 @@
     <leaf_no_dead_slope>0.00035</leaf_no_dead_slope>
     <lai_sen_light units="m^2/m^2" description="induced senescence occurs (m^2/m^2)">4.0</lai_sen_light>
     <sen_light_slope description="sensitivity of leaf area senescence to shading">0.008</sen_light_slope>
-    <x_temp_senescence description="minimum temperature for frost senescence table (oC)">-2.2 0           </x_temp_senescence> <!-- EIT: Bullock et al.(Purdue Uni) /-->
+    <x_temp_senescence description="minimum temperature for frost senescence table (oC)">-2.0 2.0           </x_temp_senescence>
     <y_senescence_fac description="daily fraction of leaf area senesced due to frost (0-1)">1   0              </y_senescence_fac>
+      <x_maxt_senescence description="minimum temperature for heat senescence table (oC)">34.0 34.1 45.0     </x_maxt_senescence>
+      <y_heatsenescence_fac description="daily fraction of leaf area senesced due to heat (0-1)">0  0.0  0.0       </y_heatsenescence_fac> 	
     <sen_rate_water description="slope in linear eqn relating soil water stress during photosynthesis to leaf senesence rate">0.05</sen_rate_water>
     <!-- ______________________________________________________________________________
       DETACHMENT
@@ -1505,270 +1506,535 @@
       <tt_flower_to_start_grain units="oC days">170</tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC days">1</tt_maturity_to_ripe>
     </cresemillas>
-	<Pioneer_39G12 cultivar="yes">
-	<!-- NZ hybrid eit 30 Oct 2013 -->
-	<!-- Grain growth -->
-		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
-		<grain_gth_rate description="(mg/grain/day)">8.0</grain_gth_rate>
-	<!-- Phenology -->
-      <tt_emerg_to_endjuv units="oC">180</tt_emerg_to_endjuv>
-      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
-      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
-      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
-      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>980</tt_flower_to_maturity>
-      <tt_flag_to_flower>50</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
-      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
-	<!-- Structure -->  
-      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
-      <y_height units="mm" description="plant canopy height">0  2000</y_height>	
-	</Pioneer_39G12>
-	<Pioneer_39V43 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">170</tt_emerg_to_endjuv>
-      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
-      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
-      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
-      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
-      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+        <!--  West Timor variety
+      -->
+    <timor_local cultivar="yes">
+      <!-- ________________________________________________________________________________________________________
+         GRAIN GROWTH
+         ________________________________________________________________________________________________________
+         -->
+      <head_grain_no_max>520</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">8.9</grain_gth_rate>
+      <!-- ________________________________________________________________________________________________________
+         CANOPY HEIGHT - function of stem biomass per plant (need to adjust this for density effects)
+         ________________________________________________________________________________________________________
+         -->
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
+      <!-- ________________________________________________________________________________________________________
+         PHENOLOGY
+         ________________________________________________________________________________________________________
          -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_39V43>
-	<Pioneer_34K77 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">260</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">140</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <photoperiod_slope>10.0</photoperiod_slope>
+      <tt_flower_to_maturity description="">850 </tt_flower_to_maturity>
+      <tt_flag_to_flower>10</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="(oC)">80 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+    </timor_local>
+    <timor_biloto cultivar="yes">
+      <!-- ________________________________________________________________________________________________________
+         GRAIN GROWTH
+         ________________________________________________________________________________________________________
+         -->
+      <head_grain_no_max>300</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">8.9</grain_gth_rate>
+      <!-- ________________________________________________________________________________________________________
+         CANOPY HEIGHT - function of stem biomass per plant (need to adjust this for density effects)
+         ________________________________________________________________________________________________________
+         -->
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
+      <!-- ________________________________________________________________________________________________________
+         PHENOLOGY
+         ________________________________________________________________________________________________________
          -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_34K77>
-	<Pioneer_38H20 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">170</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">210</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <photoperiod_slope>24.0</photoperiod_slope>
+      <tt_flower_to_maturity description="">900 </tt_flower_to_maturity>
+      <tt_flag_to_flower>120</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="(oC)">230 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+    </timor_biloto>
+    <timor_open-poll cultivar="yes">
+      <!-- ________________________________________________________________________________________________________
+         GRAIN GROWTH
+         ________________________________________________________________________________________________________
+         -->
+      <head_grain_no_max>300</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">10.7</grain_gth_rate>
+      <!-- ________________________________________________________________________________________________________
+         CANOPY HEIGHT - function of stem biomass per plant (need to adjust this for density effects)
+         ________________________________________________________________________________________________________
+         -->
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
+      <!-- ________________________________________________________________________________________________________
+         PHENOLOGY
+         ________________________________________________________________________________________________________
          -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_38H20>
-	<Pioneer_33M54 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">170</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">150</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
-      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <photoperiod_crit2 units="hours">24.0</photoperiod_crit2>
+      <photoperiod_slope>23.0</photoperiod_slope>
+      <tt_flower_to_maturity description="">920 </tt_flower_to_maturity>
+      <tt_flag_to_flower>10</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="(oC)">80 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+    </timor_open-poll>
+    <timor_kakaniuk cultivar="yes">
+      <!-- ________________________________________________________________________________________________________
+         GRAIN GROWTH
+         ________________________________________________________________________________________________________
+         -->
+      <head_grain_no_max>300</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">12.7</grain_gth_rate>
+      <!-- ________________________________________________________________________________________________________
+         CANOPY HEIGHT - function of stem biomass per plant (need to adjust this for density effects)
+         ________________________________________________________________________________________________________
+         -->
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
+      <!-- ________________________________________________________________________________________________________
+         PHENOLOGY
+         ________________________________________________________________________________________________________
          -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_33M54>
-	<Pioneer_39D34 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">170</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">231</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <photoperiod_slope>41.0</photoperiod_slope>
+      <tt_flower_to_maturity description="">1000 </tt_flower_to_maturity>
+      <tt_flag_to_flower>10</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="(oC)">110 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+    </timor_kakaniuk>
+    <timor_oebola cultivar="yes">
+      <!-- ________________________________________________________________________________________________________
+         GRAIN GROWTH
+         ________________________________________________________________________________________________________
+         -->
+      <head_grain_no_max>300</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">10.7</grain_gth_rate>
+      <!-- ________________________________________________________________________________________________________
+         CANOPY HEIGHT - function of stem biomass per plant (need to adjust this for density effects)
+         ________________________________________________________________________________________________________
+         -->
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
+      <!-- ________________________________________________________________________________________________________
+         PHENOLOGY
+         ________________________________________________________________________________________________________
          -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_39D34>
-	<Pioneer_3902 cultivar="yes">
-	<!-- NZ hybrid eit -->
-	<head_grain_no_max description="750 ! 650 ()">850 </head_grain_no_max>
-      <grain_gth_rate description="9.17 (mg/grain/day)">8.0 </grain_gth_rate>
-      <tt_emerg_to_endjuv units="oC">170</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">231</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>702</tt_flower_to_maturity>
-      <tt_flag_to_flower>44</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <photoperiod_slope>41.0</photoperiod_slope>
+      <tt_flower_to_maturity description="">1000 </tt_flower_to_maturity>
+      <tt_flag_to_flower>10</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="(oC)">110 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+    </timor_oebola>   
+
+	
+	
+	
+	
+	
+	<!-- maize hybrids added by SVA on Nov 24, 2014 -->
+
+	
+	<!-- calibrated hybrids from Iowa (Agronomy J 106: 1025-1040)
+	note: the number after the name indicates relative maturity (e.g. 104 days). 
+	Pioneer_35P12_104
+	Pioneer_P04612XR_106
+	DKC_6018_110
+	DKC_5139_101 -->
+	
+	
+	<!-- Iowa, USA -->
+	
+	<Pioneer_35P12_104 cultivar="yes">
+	<tt_emerg_to_endjuv units="oC">250</tt_emerg_to_endjuv>
+	<tt_flower_to_maturity>802</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>
-      <!--  *** Variety parameters not used **************
-         **********************************************
-         -->
-      <hi_incr units="1/days">0.018</hi_incr>
-      <hi_max_pot units="g/g">0.55</hi_max_pot>
-      <pp_endjuv_to_init description="not used">0</pp_endjuv_to_init>
-      <main_stem_coef>2.88</main_stem_coef>
-      <tpla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.015</tpla_prod_coef>
-      <!--  production function
-         -->
-      <tpla_inflection units="oC" description="inflection point of leaf area production">404.8</tpla_inflection>
-      <!--  function
-         -->
-      <spla_prod_coef units="1/oC" description="curvature coefficient for leaf area">0.010</spla_prod_coef>
-      <!--  senescence function
-         -->
-      <spla_intercept units="oC" description="intercept of regression for calculating">-321.0</spla_intercept>		
-	</Pioneer_3902>
-    <H_1 cultivar="yes">
-	<!-- Test for CCII in Bonn Germany -->
-	<!-- Grain growth -->
-		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
-		<grain_gth_rate description="(mg/grain/day)">8.0</grain_gth_rate>
-	<!-- Phenology -->
-      <tt_emerg_to_endjuv units="oC">162</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
       <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>929</tt_flower_to_maturity>
-      <tt_flag_to_flower>50</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">170 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
-	<!-- Structure -->  
+	</Pioneer_35P12_104>
+
+	<Pioneer_P04612XR_106 cultivar="yes">
+	<tt_emerg_to_endjuv units="oC">250</tt_emerg_to_endjuv>
+	<tt_flower_to_maturity>812</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
-      <y_height units="mm" description="plant canopy height">0  2000</y_height>	
-	</H_1>
-    <short cultivar="yes">
-	<!-- Test for CCII RA2 -->
-	<!-- Grain growth -->
-		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
-		<grain_gth_rate description="(mg/grain/day)">8.0</grain_gth_rate>
-	<!-- Phenology -->
-      <tt_emerg_to_endjuv units="oC">100</tt_emerg_to_endjuv>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
       <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>850</tt_flower_to_maturity>
-      <tt_flag_to_flower>50</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">170 </tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
-	<!-- Structure -->  
+	</Pioneer_P04612XR_106>
+	
+			
+	<DKC_6018_110 cultivar="yes">
+	<tt_emerg_to_endjuv units="oC">250</tt_emerg_to_endjuv>
+	<tt_flower_to_maturity>832</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
-      <y_height units="mm" description="plant canopy height">0  2000</y_height>	
-	</short>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">170 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</DKC_6018_110>
+	
+	<DKC_5139_101 cultivar="yes">
+	<tt_emerg_to_endjuv units="oC">210</tt_emerg_to_endjuv>
+	<tt_flower_to_maturity>785</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</DKC_5139_101>
+	
+	
+	
+	<!-- generic hybrids used for teaching and as initial values when i am setting up a new simulation  
+	
+	A_80, A_90, A_100, A_105, A_110, A_115, A_120, A_130
+	B_80, B_90, B_100, B_105, B_110, B_115, B_120, B_130 
+	
+	see attached PDF page 27 (fig 3) about the methodology used to derive these hybrids. 
+    The number after the first letter indicates relative maturity (e.g. 100 days) 
+    The letters A and B refer to two different seed companies
+    The both A and B hybrids have the same GDD to maturity but different GDD to flowering -->	
+	
+	
+	
+	<A_80 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">162</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>615</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_80>
+	
+	<A_90 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">185</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>691</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_90>
+	
+		
+	<A_100 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">207</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>766</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_100>
+		
+	<A_105 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">218</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>804</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_105>
+	
+	
+	<A_110 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">229</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>842</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_110>
+	
+	<A_115 cultivar="yes">
+	  <tt_emerg_to_endjuv units="oC">240</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>879</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_115>
+	
+	
+	<A_120 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">251</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>917</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_120>	
+	
+	
+	<A_130 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">274</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>992</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</A_130>	
+				
+		
+	
+	
+	
+	<B_80 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">168</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>599</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_80>
+	
+
+	<B_90 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">183</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>695</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_90>
+	
+
+	
+	<B_100 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">198</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>790</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_100>
+		
+	<B_105 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">206</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>838</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_105>
+	
+	
+	<B_110 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">214</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>885</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_110>
+	
+	<B_115 cultivar="yes">
+	  <tt_emerg_to_endjuv units="oC">221</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>933</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_115>
+	
+	
+	<B_120 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">229</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>981</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_120>	
+	
+	
+	<B_130 cultivar="yes">
+	 <tt_emerg_to_endjuv units="oC">244</tt_emerg_to_endjuv>
+	  <tt_flower_to_maturity>1078</tt_flower_to_maturity>
+      <head_grain_no_max>800</head_grain_no_max>
+      <grain_gth_rate units="mg/grain/day">9.17</grain_gth_rate>
+      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+      <y_height units="mm" description="plant canopy height">0  2000</y_height>
+      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+      <photoperiod_slope>0.0</photoperiod_slope>
+      <tt_flag_to_flower>1</tt_flag_to_flower>
+      <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
+      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+	</B_130>	
 	<medium cultivar="yes">
 	<!-- Test for CCII RA2 -->
 	<!-- Grain growth -->
@@ -1788,27 +2054,7 @@
 	<!-- Structure -->  
       <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
       <y_height units="mm" description="plant canopy height">0  2000</y_height>	
-	</medium>	
-    <long cultivar="yes">
-	<!-- Test for CCII RA2 -->
-	<!-- Grain growth -->
-		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
-		<grain_gth_rate description="(mg/grain/day)">8.0</grain_gth_rate>
-	<!-- Phenology -->
-      <tt_emerg_to_endjuv units="oC">220</tt_emerg_to_endjuv>
-      <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
-      <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
-      <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
-      <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
-      <photoperiod_slope>0.0</photoperiod_slope>
-      <tt_flower_to_maturity>950</tt_flower_to_maturity>
-      <tt_flag_to_flower>50</tt_flag_to_flower>
-      <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
-      <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
-	<!-- Structure -->  
-      <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
-      <y_height units="mm" description="plant canopy height">0  2000</y_height>	
-	</long>		
+	</medium>		
   </Model>
   
 </Type>
