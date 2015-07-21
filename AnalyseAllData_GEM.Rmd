@@ -242,7 +242,9 @@ select(thisSow, thisHyb,IntRadSum, TotalBiomass ) %>%
 summarise_each(funs(mean)) %>%
 ggplot(aes(x= IntRadSum , y=TotalBiomass, colour = factor(thisSow))) +
 geom_smooth(method=lm) +  
-geom_point(aes(shape = thisHyb, size = 20)) 
+geom_point(aes(shape = thisHyb, size = 1)) +
+  theme(text = element_text(size=25)) 
+
 
 ```
 
@@ -430,8 +432,16 @@ facet_grid(thisSow ~thisHyb, scales="free")
 
 ```{r MapsHighYield, echo=FALSE, warning=FALSE, include = FALSE}
 
+df_maxY <- df_maxY %>% filter(thisHyb != "h2"| thisHyb != "h4"| thisSow != "s1"| thisSow != "s5")
+
+mapDf <- workDF %>% 
+  select(pixel_ID, thisLat, thisLong, TotalBiomass) %>%
+  group_by(pixel_ID)  %>% 
+  summarise(Bio_mean = mean(TotalBiomass, na.rm = TRUE), Bio_sd = sd(TotalBiomass, na.rm = TRUE))  %>% 
+  mutate(Bio_cv = (Bio_sd/Bio_mean*100)) - # FIXME: not finished
+
 par(mfrow = c(1,1))
-outNames <- colnames(df_maxY) # Using maximum grain yield
+outNames <- colnames(mapDf) # Using maximum grain yield
 
 outNames <- gsub(" ","",outNames )
 
@@ -440,12 +450,12 @@ spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
 
-for(o in 7:length(outNames)){
+for(o in 2:length(outNames)){
 if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
 
   # For each variable aggregation
-  spg[[o]] <- data.frame(df_maxY$thisLong, df_maxY$thisLat, df_maxY[[o]])
-  coordinates(spg[[o]]) <- ~ df_maxY.thisLong + df_maxY.thisLat # Attention to variable names
+  spg[[o]] <- data.frame(mapDf$thisLong, mapDf$thisLat, mapDf[[o]])
+  coordinates(spg[[o]]) <- ~ mapDf.thisLong + mapDf.thisLat # Attention to variable names
  
   # Common to both methods (grid, raterise and project)
   gridded(spg[[o]]) <- TRUE
@@ -467,43 +477,6 @@ if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
 
 ```
 
-## Show maps when selecting run with **lowest variability**
-
-```{r MapsLowCv, echo=FALSE, warning=FALSE}
-par(mfrow=c(1,1))
-outNames = colnames(df_minSd)
-outNames =gsub(" ","",outNames )
-
-# ignore first 6 factors
-spg = list() # dataframe list to be coerced as spatial object
-rast = list() # raster
-s=list()
-for(o in 7:length(outNames)){
-if (o == 12) {next} # other label to ignore
-
-  # For aggregate
-  spg[[o]] = data.frame(df_minSd$thisLong, df_minSd$thisLat, df_minSd[[o]])
-  coordinates(spg[[o]]) = ~ df_minSd.thisLong + df_minSd.thisLat # Attention to variable names
- 
-  # Common to both methods (grid, raterise and project)
-  gridded(spg[[o]]) <- TRUE
-  rast[[o]] = raster(spg[[o]])
-  proj4string(rast[[o]]) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-
- plot(rast[[o]], main = paste0(outNames[o]))
-
-  # stack them
-  if(o == 1) {
-    s = stack(rast[[o]])} 
-  else {
-    s[[o]] = rast[[o]]
-  }
-  
-  # save raster as
-  #writeRaster(rast[[o]], file=paste0(cropNames[c],"\\",thisCrop,"_", outNames[o],"_var",".tiff"), overwrite=TRUE) 
-}
-
-```
 
 ## Calculate the relative variability for factors
 
@@ -519,12 +492,14 @@ if (o == 12) {next} # other label to ignore
 
 ```{r ANOVA, echo =FALSE}
 # do an anova for each pixel 
+# This loop takes ages!
+
 si_df_final <- NULL
-pixels <- unique(workDF_med$pixel_ID)
+pixels <- unique(workDF$pixel_ID)
 
 summary(workDF) # Should I use workDF?
 
-# for (p in 1:4) { # for script test
+ #for (p in 1:10) { # for script test
  for (p in 1:length(pixels)) {
 
   
@@ -584,9 +559,10 @@ summary(workDF) # Should I use workDF?
     } else {
     si_df_final <- rbind(si_df_final, df_si)
     }
+ print(paste0("In pixel ",p))
 }
 
-summary(si_df_final)
+head(si_df_final)
 nrow(si_df_final)
 
 # Graph Si for eacj main factor and interaction
@@ -596,19 +572,21 @@ gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, co
 gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 # Give same names to the regions in df
-df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16, 99),  
+df_reg_names <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RegionPerPixel.csv")
+#FIXME: Add region names from csv file or env names
+df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18, 99),  
                            regNames = c("Northland", "Auckland", "Waikato", 
                                        "BOP", "Gisborne", "HawkesBay", "Taranaki",
                                        "Manuatu", "Wellington", "WestCoast", 
                                        "Canterbury", "Otago", "Southland", 
                                        "Tasman", "Nelson", "Malborough", 
                                        "Others"))
-si_df_final <- merge(si_df_final, df_reg_names, by = c("thisRegion"))
+si_df_final_m <- merge(si_df_final,df_reg_names, by = c("thisRegion"))
 
 # All plotted together by region
 fontSize <- 14
-si_df_final %>%
-  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 11 | thisRegion == 12) %>%
+si_df_final_m %>%
+  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
   group_by(thisLat, thisLong) %>%
   gather(factName, siVal, 4:7) %>%
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
@@ -630,6 +608,27 @@ si_df_final %>%
 ```
 
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
+
+
+```{r SiAnalysis}
+
+weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\MetFiles_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+weatherPixel <- data.frame(weatherPixel)
+
+summary(weatherPixel)
+
+si_weather_merged <- merge(si_df_final, weatherPixel, by = c("row","col"))
+# "year  day	maxt	mint	radn	rain	co2"
+
+si_weather_merged %>%
+  ggplot(aes(x=maxt, y=Si_hyb)) %>%
+  geom_point()
+
+
+```
+
+
+
 
 ## Map Si index
 
