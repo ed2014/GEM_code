@@ -20,11 +20,11 @@ Attention:
 Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date</memo>
   <simulation name="GridCell">
     <metfile name="met">
-      <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\189_106_Canterbury.met</filename>
+      <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\65_180_Waikato.met</filename>
     </metfile>
     <clock>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1981</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1980</end_date>
     </clock>
     <summaryfile />
     <area name="pixel">
@@ -571,7 +571,7 @@ HarvestDay = today - 2415019 ! excel format
 GrowthLength = 0 ! (days)
 SowingDOY = 0  ! 0-365 day
 HarvestDOY = 0 ! 0-365 day
-DaysAfterSowing = 0 ! Count days from last sowing
+DaysAfterSow = 0 ! Count days from last sowing
 LengthGrowthPeriod = 0 ! Days when both temperature and water allow crop growth
 FallowRad = 0 ! Radiation wasted during fallow period (MJ/m2) 
 FloweringDOY = 0
@@ -670,7 +670,7 @@ FlagReset = 0 ! Turns to 1 at sowing ! FIXME: is this used?
 
 
 !------------ Crop calendars-------------------------
-DaysAfterSowing = DaysAfterSowing + 1
+DaysAfterSow = DaysAfterSow + 1
 HarvestDay = today - 2415019 ! This converts APSIM date te into Excel date counting
 GrowthLength = HarvestDay - SowingDay ! This date is only true at harvest when it's last reported
 HarvestDOY = day 
@@ -764,9 +764,9 @@ PTrain = PTrain + rain
 PTrunoff = PTrunoff + runoff
 PTdrain = PTdrain + drain
 Tempsum = Tempsum + TempAv 
-!if(DaysAfterSowing &gt; 0) then
-!  PTtemp = Tempsum / DaysAfterSowing
-!endif
+if (DaysAfterSow &gt; 0) then
+  PTtemp = Tempsum / DaysAfterSow
+endif
 
 !------------  Nitrogen balance variable rotation phase totals (PT)
 PTfert = PTfert + fertiliser
@@ -877,7 +877,7 @@ IntRadSum = 0
 MaxLAI = 0
 MaxLAIDay = 0
 
-DaysAfterSowing = 0 !
+DaysAfterSow = 0 !
 
 frostDays = 0
 frostIntensity = 0
@@ -1399,9 +1399,9 @@ TtPosFlow = 0
               <Population type="text" description="Plant population (/m2)">12</Population>
               <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
               <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
-              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-nov</StartSow>
-              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-nov</EndSow>
-              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-nov</EndRot>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-sep</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-sep</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-sep</EndRot>
               <General type="category" description="General criteria for sowing" />
               <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
               <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
@@ -1652,10 +1652,12 @@ IsCatchCrop = 1
          
    ! Test Silage harvest
             if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
-               TtPosFlow = TtPosFlow + [CropName].tt                                               
-            endif
-            if (TtPosFlow &gt; 850) then ! Reaches silage maturity at 850oCd after flowering as for maize in Wilson et al XXX
-               EndbySilage = 1
+               TtPosFlow = TtPosFlow + [CropName].tt    
+ 
+              if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 80% of tt to maturity (empirical assumption)
+                 EndbySilage = 1
+              endif     
+                                         
             endif         
 
    ! Set flags for the possible events that trigger a harvest
@@ -1756,13 +1758,9 @@ endif
           <variable>MaturityTT </variable>
           <variable>BiomassAtFrost</variable>
           <variable>YieldAtFrost</variable>
-          <variable>Met.SowOpen as SowFrostOpen</variable>
-          <variable>DrainLastYear</variable>
-          <variable>LeachLastYear</variable>
           <variable>FloweringDOY </variable>
           <variable>DaysToFlower </variable>
           <variable>PTtemp </variable>
-          <variable>DaysAfterSowing </variable>
         </variables>
         <events name="Reporting Frequency" />
         <Graph name="Soil_CNW">
@@ -1875,15 +1873,18 @@ endif
           <variable>sw_stress_photo</variable>
           <variable>sw()</variable>
           <variable>no3()</variable>
-          <variable>DaysAfterSowing</variable>
+          <variable>DaysAfterSow</variable>
+          <variable>PTtemp</variable>
         </variables>
         <events name="Reporting Frequency">
           <event>Daily</event>
         </events>
         <Graph name="Soil_CNW">
           <Legend>
-            <CheckedTitles> no3()</CheckedTitles>
-            <CheckedTitles> sw()</CheckedTitles>
+            <CheckedTitles> no3(), GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> no3(), {Checkpoint} GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> sw(), GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> sw(), {Checkpoint} GridCell pixel daily</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -1898,8 +1899,8 @@ endif
         </Graph>
         <Graph name="Bio">
           <Legend>
-            <CheckedTitles> pixel.wheat.biomass</CheckedTitles>
-            <CheckedTitles> pixel.maize.biomass</CheckedTitles>
+            <CheckedTitles> pixel.maize.biomass, GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> pixel.maize.biomass, {Checkpoint} GridCell pixel daily</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -1996,6 +1997,9 @@ endif
         </Graph>
         <Graph name="daysAfterSow">
           <Legend>
+            <CheckedTitles> DaysAfterSow, GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> DaysAfterSow, GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> TotalBiomass, GridCell pixel daily</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -2003,6 +2007,9 @@ endif
             <colour>
             </colour>
             <X>Date</X>
+            <Y>DaysAfterSow</Y>
+            <YRight>TotalBiomass</YRight>
+            <Y>DaysAfterSow</Y>
             <GDApsimFileReader name="ApsimFileReader" />
           </Plot>
         </Graph>
