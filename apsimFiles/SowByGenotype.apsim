@@ -20,7 +20,7 @@ Attention:
 Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date</memo>
   <simulation name="GridCell">
     <metfile name="met">
-      <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\65_180_Waikato.met</filename>
+      <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\189_106_Canterbury.met</filename>
     </metfile>
     <clock>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
@@ -1399,9 +1399,9 @@ TtPosFlow = 0
               <Population type="text" description="Plant population (/m2)">12</Population>
               <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
               <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
-              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-sep</StartSow>
-              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-sep</EndSow>
-              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-sep</EndRot>
+              <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-nov</StartSow>
+              <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-nov</EndSow>
+              <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-nov</EndRot>
               <General type="category" description="General criteria for sowing" />
               <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
               <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
@@ -1498,7 +1498,7 @@ IsCatchCrop = 0
             if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
                TtPosFlow = TtPosFlow + [CropName].tt    
  
-              if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 80% of tt to maturity (empirical assumption)
+              if (TtPosFlow &gt; 0.9*phase_tt(8)) then ! Reaches silage maturity at 90% of tt to maturity (empirical assumption)
                  EndbySilage = 1
               endif     
                                          
