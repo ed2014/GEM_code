@@ -5,12 +5,12 @@ library("ncdf")
 library(XML)
 
 # Parameters and paths
+gc()
 
-#metFolder = "E:\\ERA-40_Reanalysis\\(1971-2000)\\"                                   # set folder locations (comment the ones not used)
-#simFolder = "C:\\apsim_dev\\Projects\\CCII\\simFiles\\SowByGenotype\\"               # sim folder to save new .sims
+# Select folders and file locations
 metFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\metFiles\\ERA_40_Rean\\"                                                  # set folder locations (comment the ones not used)
-simFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\simFiles"                                                   # sim folder to save new .sims
-rootSimFile <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\simFiles\\baseSim\\BaseSim.sim" # find base simulation
+simFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\simFiles\\"                                                   # sim folder to save new .sims
+rootSimFile <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\baseSim\\BaseSim.sim" # find base simulation
 climates <- c("Base\\")                                                                # Define climate scenarios to run as different folders
 sowDate <- c("-sep","-oct","-nov","-dec","-jan")                                       # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
 #metFiles = c("67_180.met", "189_60.met", "228_80.met")                              # Option 1: select pixels (row_column) from met files
@@ -18,7 +18,7 @@ load("C:\\apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEn
 metFiles <- metList
 hybrids = c("h1","h2", "h3","h4","h5")                                               # select hybrids
 p1 <-  c(120,145,170,195,220) # parameter values for emergence to end of juvenile
-p2 <-   c(850,875,900,925,950)# parameter values for flowering to maturity
+p2 <- c(850,875,900,925,950) # parameter values for flowering to maturity
 
 length(metFiles)
 
@@ -46,13 +46,13 @@ for(cl in 1:length(climates)){
   # choose dates for the current climate scenario
   if(climates[cl] == "Base\\") {
     
-    stDate = "01/01/1971"
-    enDate = "30/12/2000"
+    stDate <- "01/01/1971"
+    enDate <- "30/12/2000"
     
   } else {
     
-    stDate = "01/01/2063"
-    enDate = "01/01/2098"
+    stDate <- "01/01/2063"
+    enDate <- "01/01/2098"
   }
   
   # change scenario

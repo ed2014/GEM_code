@@ -27,7 +27,7 @@ Revised version July 2015 in Bonn Uni</memo>
     </metfile>
     <clock>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1975</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/2000</end_date>
     </clock>
     <summaryfile />
     <area name="pixel">
