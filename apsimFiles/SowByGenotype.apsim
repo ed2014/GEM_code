@@ -1,9 +1,7 @@
 <folder version="36" creator="Apsim 7.6-r3499" name="simulations">
   <memo name="readMe">Simulation set up for CCII-NIWA 2013 project. Validating APSIM-maize against rainshelter data full N (250kg/ha) for irrigated and rain-fed conditions.
 GridCell simulation is a test for multiple years of a simple rotation to be run in the while of NZ
-FIXME:
-This is running with "frost senescence" off because it was too sensitive in Canterbury (needs to be re-defined)
-Silage harvest rule is a "hardcoded" draft at the moment (harvest at 550oCd after flowering) and does not match the 850oCd from Winson et al (check it)
+Silage harvested at 90% of tt to maturity (empirical guess based on Canterbury conditions)
 Residue management has to be defined (e.g. remove part for silage on the day of harvest and incorporate the rest)
 FIX N total to around 50 kg/ha - APSIM changed initial from ppm to kg/ha
 
@@ -17,14 +15,15 @@ South: 239_38
 
 Attention:
 
-Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date</memo>
+Temp crit for sowing and soil moisture were turned OFF to allow sowing date to accur by date
+Reinitialising soil and running ONLY maize now</memo>
   <simulation name="GridCell">
     <metfile name="met">
       <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\189_106_Canterbury.met</filename>
     </metfile>
     <clock>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1980</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1975</end_date>
     </clock>
     <summaryfile />
     <area name="pixel">
@@ -907,22 +906,10 @@ EmergSoil_W = esw      !
         <manager name="NitroRules">
           <ui>
             <Category type="category" description="Enter crop species and the stage when N application should stop:" />
-            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
+            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">maize</CropType1>
             <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
-            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
+            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">wheat</CropType2>
             <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
-            <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
-            <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
-            <CropType4 type="crop" description="Crop species 4 (e.g. wheat):">canola</CropType4>
-            <EndStage4 type="text" description="    Crop 4 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">5.0</EndStage4>
-            <CropType5 type="crop" description="Crop species 5 (e.g. wheat):">potato</CropType5>
-            <EndStage5 type="text" description="    Crop 5 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.3</EndStage5>
-            <CropType6 type="crop" description="Crop species 6 (e.g. wheat):" />
-            <EndStage6 type="text" description="    Crop 6 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
-            <CropType7 type="crop" description="Crop species 7 (e.g. wheat):" />
-            <EndStage7 type="text" description="    Crop 7 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
-            <CropType8 type="crop" description="Crop species 8 (e.g. wheat):" />
-            <EndStage8 type="text" description="    Crop 8 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
             <category2 type="category" description="Define parameters for time of nitrogen application:" />
             <StartNdateSpr type="ddmmmdate" description="START date of SPRING window of N application (dd-mmm):">21-jun</StartNdateSpr>
             <EndNdateSpr type="ddmmmdate" description="END date of SPRING window of N application (dd-mmm):">31-dec</EndNdateSpr>
@@ -1047,30 +1034,6 @@ meanT = 0 ! oC
        StopStageN = [EndStage2]
        CropStageToday = [CropType2].stage
        CropStatusToday = [CropType2].plant_status
-   elseif (CurrentSpecies = '[CropType3]') then 
-       StopStageN = [EndStage3]
-       CropStageToday = [CropType3].stage
-       CropStatusToday = [CropType3].plant_status
-   elseif (CurrentSpecies = '[CropType4]') then 
-       StopStageN = [EndStage4]
-       CropStageToday = [CropType4].stage
-       CropStatusToday = [CropType4].plant_status
-   elseif (CurrentSpecies = '[CropType5]') then 
-       StopStageN = [EndStage5]
-       CropStageToday = [CropType5].stage
-       CropStatusToday = [CropType5].plant_status
-   elseif (CurrentSpecies = '[CropType6]') then 
-       StopStageN = [EndStage6]
-       CropStageToday = [CropType6].stage
-       CropStatusToday = [CropType6].plant_status
-   elseif (CurrentSpecies = '[CropType7]') then 
-       StopStageN = [EndStage7]
-       CropStageToday = [CropType7].stage
-       CropStatusToday = [CropType7].plant_status
-   elseif (CurrentSpecies = '[CropType8]') then 
-       StopStageN = [EndStage8]
-       CropStageToday = [CropType8].stage
-       CropStatusToday = [CropType8].plant_status
    else
        StopStageN = 6.0                 ! 6 is usally flowering so a good default
        CropStatusToday = 'out'
@@ -1782,7 +1745,6 @@ endif
         <Graph name="Bio">
           <Legend>
             <CheckedTitles> GridCell pixel OutReport</CheckedTitles>
-            <CheckedTitles> {Checkpoint} GridCell pixel OutReport</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -1899,8 +1861,9 @@ endif
         </Graph>
         <Graph name="Bio">
           <Legend>
-            <CheckedTitles> pixel.maize.biomass, GridCell pixel daily</CheckedTitles>
-            <CheckedTitles> pixel.maize.biomass, {Checkpoint} GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> TotalBiomass</CheckedTitles>
+            <CheckedTitles> pixel.wheat.biomass</CheckedTitles>
+            <CheckedTitles> pixel.maize.biomass</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
