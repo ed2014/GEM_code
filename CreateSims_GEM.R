@@ -16,7 +16,7 @@ sowDate <- c("-sep","-oct","-nov","-dec","-jan")   # Define months (-mmm) Obs: i
 #metFiles <- c("67_180.met", "189_60.met", "228_80.met")                           # Option 1: select pixels (row_column) from met files
 load("C:\\apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
 metFiles <- metList
-hybrids = c("h1","h2", "h3","h4","h5")                                               # select hybrids
+hybrids <- c("h1","h2", "h3","h4","h5")                                               # select hybrids
 p1 <-  c(120,145,170,195,220) # parameter values for emergence to end of juvenile
 p2 <- c(850,875,900,925,950) # parameter values for flowering to maturity
 
