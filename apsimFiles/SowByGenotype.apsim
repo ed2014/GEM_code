@@ -629,16 +629,6 @@ StressByW = 0 ! kg DM / ha lost due to water stress
    Tempsum = 0 ! Summing average temperature within a growth period
    PTtemp = 0 ! average temperature during (running) growth period
 
-!------------------- Totals accumulated for fallow period
-   FTes = 0    ! Total soil evaporation (mm)
-   FTeo = 0    ! Total Potential Evapotranspiration (check if PennMann or other Method) (mm)
-   FTrain = 0
-   FTrunoff = 0
-   FTdrain = 0
-   FTmin = 0
-   FTmin_res = 0
-   FTdnit = 0 
-
 !---- Frost
 
 frostDays = 0
@@ -788,15 +778,7 @@ endif
 
 else ! Calculates fallow related variables so InFallow = 1
 
-   FTes = FTes + es    ! Total soil evaporation (mm)
-   FTeo = FTeo + eo    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
-   FTrain = FTrain + rain
-   FTrunoff = FTrunoff + runoff
-   FTdrain = FTdrain + drain
-   FTmin = FTmin + dlt_n_min()
-   FTmin_res = FTmin_res + dlt_n_min_res()
-   FTdnit = FTdnit + dnit() 
-
+! removed fallow period variables
 
 endif
 
@@ -858,16 +840,6 @@ PTcropn = 0
 ETact = 0
 Tempsum = 0 ! Summing average temperature within a growth period
 PTtemp = 0 ! average temperature during (running) growth period
-
-FTes = 0    ! Total soil evaporation (mm)
-FTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
-FTrain = 0
-FTrunoff = 0
-FTdrain = 0
-FTmin = 0
-FTmin_res = 0
-FTdnit = 0 
-
 
 StressByN = 0
 StressByW = 0
