@@ -523,17 +523,31 @@ if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
 # do an anova for each pixel 
 # This loop takes ages!
 
+#climZones <- read.csv("Z:\\sowByHybridResults_2015\\RES_CLuster.csv")
+head(climZones)
+write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
+               append=FALSE, quote=FALSE)
+
 si_df_final <- NULL
 pixels <- unique(workDF$pixel_ID)
 
 summary(workDF) # Should I use workDF?
+head(workDF)
+
 
  #for (p in 1:10) { # for script test
  for (p in 1:length(pixels)) {
 
   
   # thisPixDF <- filter(workDF_med, pixel_ID == pixels[[p]])
+ # thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
   thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
+  
+ # Remove slected sowing dates and hybrids from the analysis (not working)
+ # thisPixDF <- subset(thisPixDF, thisHyb != "h2" | 
+                     #   thisHyb != "h4" |
+                     #   thisSow != "s1" |
+                     #   thisSow != "s5" )
   
   head(thisPixDF)
   summary(thisPixDF)
@@ -562,10 +576,12 @@ summary(workDF) # Should I use workDF?
   df_ss$SS_p <- round((df_ss$SS/sum(df_ss$SS))*100,3)
   df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
   # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
- 
+  df_si <- NULL
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1],
                    thisRegion = thisPixDF$region[1],
+                   row = thisPixDF$row[1],
+                   col = thisPixDF$col[1],
                    df_ss$SS_p[1], 
                    df_ss$SS_p[2], 
                    df_ss$SS_p[3],
@@ -595,10 +611,10 @@ head(si_df_final)
 nrow(si_df_final)
 
 # Graph Si for eacj main factor and interaction
-gH <- ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
-gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+#gH <- ggplot(si_df_final, aes(x=Si_thisHyb)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+#gS <- ggplot(si_df_final, aes(x=Si_thisSow)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+#gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
+#gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
 # Give same names to the regions in df
 df_reg_names <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RegionPerPixel.csv")
@@ -612,12 +628,17 @@ df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18
                                        "Others"))
 si_df_final_m <- merge(si_df_final,df_reg_names, by = c("thisRegion"))
 
+head(si_df_final_m)
+# save this DF 
+write.table(si_df_final_m, file="Si_by_Pixel.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
+               append=FALSE, quote=FALSE)
+
 # All plotted together by region
-fontSize <- 14
+fontSize <- 25
 si_df_final_m %>%
   subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
   group_by(thisLat, thisLong) %>%
-  gather(factName, siVal, 4:7) %>%
+  gather(factName, siVal, 4:7) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
   geom_histogram(aes(y=..density..), binwidth=.8, alpha=0) +
  # geom_histogram(binwidth=1, alpha=0) +
@@ -628,12 +649,12 @@ si_df_final_m %>%
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
   theme(legend.position = c(0, 1), 
-       legend.justification = c(-4, 1)) 
+       legend.justification = c(-3.5, 1)) 
  # scale_fill_discrete(name="Factors", labels=c("Hybrids","Sowing date","Weather", "Interactions")) +
 
 # Plot distributions of Si
 #grid.arrange(gH, gS, gW,gI, nrow=4)
-
+#si_df_final_m_bkp <- si_df_final_m
 ```
 
 
@@ -780,19 +801,23 @@ Test yield over time
 ```{r YieldChangeTime}
 
 # Is yield potential changing in past 30 years?
-
+# FIXME: not working now
 slopesDF <- NULL
 slopesDF <- workDF %>%
-  select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
+ select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
  group_by(pixel_ID, thisSow, thisHyb) %>%
 # filter(TotalBiomass > 100) %>%
  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
-  mutate(slope = summary(mod)$coeff[2], 
-         intercept = summary(mod)$coeff[1], 
-         pval = summary(mod)$coeff[8]) %>%
-  filter (pval <= 0.05) %>% # select pixels with significant slope
+  mutate(Slope = coef(mod)[2], 
+         Intercept = coef(mod)[1], 
+         Pval = coef(mod)[8]) %>%
+  filter (Pval <= 0.05) %>% # select pixels with significant slope
   select(-mod)
   head(slopesDF)
+
+# Try data table
+library(data.table)
+setDT(workDF)[, list(Slope = summary(lm(TotalBiomass ~ year))$coeff[2]),  pixel_ID] # how to agregate by many
 
   #FIXME: this merge is multiplying unecesary pixels
   slopesDF <- workDF %>%
