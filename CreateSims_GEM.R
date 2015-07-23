@@ -8,12 +8,12 @@ library(XML)
 gc()
 
 # Select folders and file locations
-metFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\metFiles\\ERA_40_Rean\\"                                                  # set folder locations (comment the ones not used)
-simFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\simFiles\\"                                                   # sim folder to save new .sims
+metFolder <- "\\\\simplace.net\\projects\\nz\\weatherHistorical\\metFiles\\"                                                  # set folder locations (comment the ones not used)
+simFolder <- "Z:\\simFiles\\"                                                   # sim folder to save new .sims
 rootSimFile <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\baseSim\\BaseSim.sim" # find base simulation
 climates <- c("Base\\")                                                                # Define climate scenarios to run as different folders
-sowDate <- c("-sep","-oct","-nov","-dec","-jan")                                       # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
-#metFiles = c("67_180.met", "189_60.met", "228_80.met")                              # Option 1: select pixels (row_column) from met files
+sowDate <- c("-sep","-oct","-nov","-dec","-jan")   # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
+#metFiles <- c("67_180.met", "189_60.met", "228_80.met")                           # Option 1: select pixels (row_column) from met files
 load("C:\\apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
 metFiles <- metList
 hybrids = c("h1","h2", "h3","h4","h5")                                               # select hybrids
