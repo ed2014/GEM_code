@@ -1,0 +1,379 @@
+---
+title: "netCDFToMet_test"
+author: "edmar.teixeira@me.com"
+date: "Wednesday February 11, 2015"  "Friday, January 16, 2015"
+output: html_document
+---
+
+# Purpose: read netCDF climate from NIWA and create .met files for APSIM 
+# plus .frost files
+# 16 NOV 2014 Using this "RCP" version for any scenario (updated one)  
+# 10 Feb 2015 Removed frost calculation to simplify it
+# 24 July 2015 Prepared it for ERA dataset for the GEM work in Bonn University
+
+# Memory to clean up and libraries to load  
+```{r Libs, echo=FALSE, include=FALSE}
+gc()
+memory.limit(size=4095)
+library("knitr")
+library("ncdf")
+library("chron")
+library("plyr")
+library("dplyr")
+```
+
+# Set RCP first
+
+```{r DefineParam, echo=FALSE, include=FALSE}
+
+setwd("F:\\ERA-40_Reanalysis\\")
+
+RCP <- "ERA" #"RCPpast" # RCPpast RCP8.5 ; using 2.6 for ERA (historical)
+
+climDir <- getwd() # actual directory where climate data should be
+
+```
+
+# CO2 per year function (retrieves from RCP data from NIWA (Brett Mullan 2014)
+
+```{r CO2Set, echo=FALSE}
+co2PerRCP  <- 
+  read.table(paste0("C:\\Apsim_dev\\Projects\\CCII\\CO2_files\\CO2_",RCP,".txt"), sep="\t", header=T)
+
+# Check CO2
+co2PerRCP$co2 <- as.double(co2PerRCP$co2)
+head(co2PerRCP)
+tail(co2PerRCP)
+summary(co2PerRCP)
+plot(co2PerRCP)
+```
+
+# Alternative CO2 calculation option - comment out if not A2
+
+```{r Co2CalcFunc, echo=FALSE, include=FALSE}
+#co2Year = function(y) {0.0285*y^2 - 112.09*y + 110541} 
+# empirical fit from NIWA's A2 data used in SLMACC-2012
+#Test CO2 function
+#test_Year = 1976
+#co2Year (test_Year)
+
+# Create a co2 for A2 - comment out if doing other scenarios
+#co2PerRCP = data.frame(year = c(1971:2120))
+#co2PerRCP$co2 = co2Year(co2PerRCP$year)
+head(co2PerRCP)
+tail(co2PerRCP)
+```
+
+# Define file naming of netCDFs
+
+```{r OrderDataLabel}
+
+# ---- Attention (names as per NIWA standard)
+
+factorName <- c('maxt','mint','radn', 'rain') # renamed .nc for simplification
+
+# Obs: rain is last factor to speed the finding of -9999 or NA in maxt records
+```
+
+# Define the first year of each netCDF file <---- Change Period
+
+```{r SetFirstYears}
+
+#firstYear <- c(1971,1981,1991,2001,2011,2021,2031,2041,2051,2061,2071,2081,2091) 
+#firstYear <- c(1971,1981,1991)
+firstYear <- c(1971, 1981,1991)
+#firstYear <- c(2081,2091)
+
+# ---- Attention changed name of last netCDF to match name convention
+
+# label for folder that will store .met
+runPeriod <- paste0(firstYear[1],"_",max(firstYear)+9)
+```
+
+```{r SetOutFolder}
+# set output folder
+outFolder <- paste0(climDir,"/metFiles_",RCP,"_",runPeriod,"/")
+suppressWarnings(dir.create(outFolder))
+```
+
+# Data conversion and other date functions
+
+```{r SetFuncs}
+# Functions used for weather data conversion
+kToC <- function(k) {return(k-273.15)} # Converts kelvin to celcius (oC)
+
+WattToMJ <- function(w) {return(w*0.0864)} # Converts watts/m2 to MJ/m2
+
+# day of year (1-366)
+doy.func <- function (dayCount, startYear) {
+  date <- chron(dayCount-1, 
+               format = c(dates = "dd/mm/yy"), 
+               origin=c(month=1,day=1,year=startYear))
+  
+  doy <- as.numeric(strftime(date, format = "%j"))  
+  
+  return (doy)
+}
+
+# year function
+year.func <- function (dayCount, startYear) {
+  date <- chron(dayCount-1, 
+               format = c(dates = "dd/mm/yy"), 
+               origin=c(month=1,day=1,year=startYear)) 
+  year <- as.POSIXlt(date)$year+1900
+  return (year)
+}
+```
+
+# Find and create the temporal dimensions as day of year (doy) and year
+```{r GetTime}
+
+fileName <- NULL
+
+files <- list.files(climDir,pattern='.nc', full.names=FALSE) # find files
+files
+# creates day and year common vectors in APSIM format for whole period
+thisFile <- NULL
+doy <- NULL  # vector with appended doy
+year <- NULL # vector with appended year
+
+# loop years
+for (y in 1:length(firstYear)) {
+  
+  # Get one "sample"" file to get doy and year
+  thisFile <- paste(factorName[4],"_",firstYear[y],"-",firstYear[y]+9,".nc", sep = "", collapse = NULL)
+  
+  # open netCDF
+  base.nc <- open.ncdf(paste0(climDir,"\\",thisFile))
+  
+  # loop daily to get doy and year dimensions
+  for (t in 1:length(get.var.ncdf(base.nc, "time"))) {       
+    # FIXME: Dealing with bug in NIWAs data, some years should be leep after 2040
+    # So 2040 on the doy and year function gine NAs on some years
+    # This needs checking in final version
+    if(is.na(doy.func(t,firstYear[y]))) { 
+      doy <- c(doy, 1) # make it doy 1
+      year <- c(year, (1+year.func(t,firstYear[y]))) # make it next year
+      print(paste(c("Bug in NIWAs data for doy calculation:",
+                    t, y, 
+                    year.func(t,firstYear[y]), 
+                    doy.func(t,firstYear[y]))))
+    } else {
+      doy <- c(doy, doy.func(t,firstYear[y]))
+      year <- c(year, year.func(t,firstYear[y])) 
+    }
+    rowNo <- base.nc$dim$latitude$len
+    colNo <- base.nc$dim$longitude$len
+  }
+  close(base.nc)
+}
+
+# check lengths of vectors are the same
+length (doy)
+length (year)
+```
+
+```{r setStartTime}
+timeStart = Sys.time() # just for control of simulation time
+```
+
+# Read data
+
+Loop through netCDF files
+
+```{r ReadNetCDFData}
+
+#TODO: Select arable grid-cells
+
+LUFilter <- 
+  read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseFilter_Allcats.txt", 
+             header = TRUE)
+
+print(paste0("Found ", nrow(LUFilter), " pixels"))
+
+arableLUFilter <- LUFilter %>%  filter(luCode == 3) 
+
+print(paste0("Selected ", nrow(arableLUFilter), " arable pixels"))
+
+head(arableLUFilter)
+
+# for (p in 1:length(arableLUFilter$row)){     #loop rows (lat)
+  for (p in 1:3){     #loop rows (lat)
+ 
+  r <- arableLUFilter$row[p]
+  c <- arableLUFilter$col[p]
+    
+ #   r <- 4
+ #   c <- 130
+    
+    # Set control and storage variables  
+    skipLoop <- FALSE # flag to get out of loops if NAs or -9999 is found
+    thisLat <- NULL
+    thisLong <- NULL
+    
+    Out <- data.frame(year = year, doy = doy) # add time dimensions 
+     
+    # Console info
+    runTime <- round(Sys.time() - timeStart, digits = 2)
+    print(paste("In row:", r," col:", c,
+                " Duration in sec: ",
+                runTime, sep = " ", collapse = NULL))
+    timeStart <- Sys.time()
+    
+    # Loop factors
+    for (f in 1:length(factorName)) {            
+      if (skipLoop == TRUE) {next}  
+      out.fact <- NULL # clear outputs of factors appended
+      out.var <- NULL  # output of a variables with years appended
+      
+      #loop years 
+      for (y in 1:length(firstYear)) {              
+        if (skipLoop == TRUE) {next}  
+        var <- NULL    # vector to hold factor variables (appended through years)
+        
+        # reads each netCDF file
+        
+        fileName <- paste(factorName[f],"_",firstYear[y],"-",firstYear[y]+9,".nc", sep = "", collapse = NULL)
+                       
+        # Console info
+        print(paste("Running: ",fileName, sep = " ", collapse = NULL))
+        
+        netc <- open.ncdf(paste0(climDir,"//",fileName))
+        
+        time.dim <- length(get.var.ncdf(netc, "time")) # FIXME: this is same as base? (delete it?)
+        thisLat <- netc$dim$latitude$vals[r]
+        thisLong <-  netc$dim$longitude$vals[c] 
+        
+        # Do stuff with open netCDF file
+        myVar <- NULL
+        myVar <- get.var.ncdf(netc, start=c(c,r,1), count=c(1,1,-1))   
+        # note: column is "X" and row is "Y" and time is "T" (see R netCDF doc)
+        
+        # Handle different NAs types used by NIWA
+        if (is.na(myVar[1]) | myVar[1] == -9999) {
+          
+          # Console info
+          print(paste("Found NA at: ",fileName,"row ",
+                      r, "col: ",c," (skipping this grid-cell)",
+                      sep = " ", collapse = NULL))         
+          
+          close(netc) 
+          
+          skipLoop <- TRUE # flag to skip the loop if missing data is found
+          
+          next
+          
+        } else {                  
+          # Get data for all years in that grid-cell       
+          #        print(myVar[1:10])
+          
+          # select variable and correct units
+          switch(factorName[f],
+                 rain={myVar = round(myVar, digits = 2)},
+                 maxt={myVar = round(kToC(myVar), digits = 2)},              
+                 mint={myVar = round(kToC(myVar), digits = 2)},
+                 radn={myVar = round(WattToMJ(myVar), digits = 2)},
+                      {print(paste("Unispecified factor:",
+                      factorName[f], ", in year:", firstYear[y]))} 
+                ) # end switch
+
+  # appends variables daily in one vector         
+               for (t in 1:time.dim) {     # loops through days t     
+               var <- c(var, myVar[t])    
+               }          
+
+        } # end if not NAs
+
+out.fact <- c(out.fact, var)  # appends all years for each variable
+
+close(netc)
+
+      } # end year loop
+
+# Appends data for all factors in one dataframe for each given grid-cell
+# FIXME: Can this be in next loop?
+if(skipLoop == FALSE) Out <- data.frame(Out, out.fact)
+
+    } # end factors loop
+
+# Prepare heading variables and co2
+
+if(skipLoop == FALSE) { 
+    
+# Include the CO2 column for that scenario
+  
+# Option 1  (calculate CO2 from empirical fit)
+# Out = data.frame(Out, co2 = round(co2Year(Out$year), digits = 1))
+# Option 2: Read CO2 in txt file using year as lookup key
+  Out <- merge(Out,co2PerRCP,by="year")  
+  Out[,"co2"] <- round(Out[,"co2"], digits=2)
+  
+  # Define column names  <------ Attention here (FIXME: Should be automated)
+  colnames(Out) <- c("year","day","maxt","mint","radn","rain", "co2")
+  
+  # Apsim header variables
+  # FIXME: Should split climates by .met to avoid pooled averages?
+  tav <- (colMeans(Out["maxt"]) + colMeans(Out["mint"]))*0.5
+  jul <- subset(Out, doy > 182 & doy <212)
+  dec <- subset(Out, doy > 335 & doy <364)
+  tav.jul <- (colMeans(jul["maxt"]) + colMeans(jul["mint"]))*0.5 
+  tav.dec <- (colMeans(dec["maxt"]) + colMeans(dec["mint"]))*0.5 
+  amp <- tav.dec - tav.jul
+   
+  fileName <- paste0(r,"_",c,".met")
+    
+  # Construct heading
+  site <- paste("NZ ! row=",r,"and col=", c)
+  
+  # These come from netCDF directly (ones that are used indeed)
+  lat <- thisLat   # reading value from netCDF directly
+  long <- thisLong
+  
+  # These values are for checking purposes only (Check in console)
+  latCalc <- -34.375-0.05*(r-1) 
+  longCalc <- 166.425+0.05*(c-1)
+  print(paste0("Lat_Long in netCF (used): ", lat,"_",long,
+               " and calculated: ", latCalc,"_",longCalc))
+  
+  # Do the heading (FIXME: Can we do it in a more tidy way?)
+  writeLines(paste("[weather.met.weather]\nSite =", 
+                   site,"! Climate from: ",climDir, 
+                   "\nLatitude =", 
+                   round(lat, digits = 2),
+                   "(DECIMALDEGREES)\nLongitude = ",
+                   round(long, digits = 2),
+                   "(DECIMALDEGREES)\ntav= ", 
+                   round(tav, digits = 2),
+                   "(oC) ! annual  average  ambient  temperature\namp= ",
+                   round(amp, digits = 2), 
+                   "(oC) ! annual  amplitude in  mean  monthly  temperature\nyear  day  maxt  mint radn rain co2\n()  ()  (oC) (oC)  (MJ/m2/d) (mm) (ppm)",
+                   sep = "",
+                   collapse = NULL),
+             paste0(outFolder,fileName))      
+  
+  # Print data in asc file
+  write.table(Out, file = paste(outFolder,
+                                fileName, sep = "", 
+                                collapse = NULL),
+              append = TRUE, 
+              quote = FALSE,
+              sep = " ", col.names = FALSE, 
+              qmethod = "double", row.names = F)
+  
+    } # end if statement for missing value
+
+#  }  # ends col loop
+
+} # ends row loop 
+```
+
+
+
+```{r PrintRunDuration}
+print(round(Sys.time()-timeStart), digits=1)
+```
+
+
+
+
+
