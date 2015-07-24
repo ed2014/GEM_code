@@ -13,14 +13,20 @@ simFolder <- "Z:\\simFiles\\"                                                   
 rootSimFile <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\baseSim\\BaseSim.sim" # find base simulation
 climates <- c("Base\\")                                                                # Define climate scenarios to run as different folders
 sowDate <- c("-sep","-oct","-nov","-dec","-jan")   # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
+
+# select met files to define which .sims to produce
 #metFiles <- c("67_180.met", "189_60.met", "228_80.met")                           # Option 1: select pixels (row_column) from met files
-load("C:\\apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
+load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
+
 metFiles <- metList
+
+print(paste0("Found ", length(metFiles), " .met files"))
+
 hybrids <- c("h1","h2", "h3","h4","h5")                                               # select hybrids
 p1 <-  c(120,145,170,195,220) # parameter values for emergence to end of juvenile
 p2 <- c(850,875,900,925,950) # parameter values for flowering to maturity
 
-length(metFiles)
+
 
 # get data from the root (base) .sim file
 #doc = xmlInternalTreeParse(rootSimFile)
@@ -66,8 +72,10 @@ for(cl in 1:length(climates)){
   
   #loop through met file names to create one .sim file for each met file
 
-    for(s in seq_along(sowDate)) {
-      for(h in seq_along(hybrids)) {
+   # for(s in seq_along(sowDate)) {
+      for(s in 4:5) {
+   #   for(h in seq_along(hybrids)) {
+        for(h in 3:5) {
         for(i in seq_along(metFiles)) {
           
     # Create out folder for this scenario
