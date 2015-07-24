@@ -47,7 +47,7 @@ extent(LUsf)
 plot(LUsf$LU_filter, main = "Aggregated filter")
 extent(LUsf)
 
-#check a netCDF as basis for rasterisation
+#check a netCDF used as basis for rasterisation
 nc <- open.ncdf("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\netCDF_Example\\maxt_1971-1980.nc")
 nc
 nc$dim$lon$vals
@@ -56,7 +56,7 @@ nc$dim$time$vals
 nc$dim$time$units
 
 # get a raster to use as template
-rastBase <- raster("C:\\Apsim_dev\\Projects\\CCII\\RawData\\HadCM3run2\\A2\\maxt_1971-1980.nc") # direct from netCDF
+rastBase <- raster("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\netCDF_Example\\maxt_1971-1980.nc") # direct from netCDF
 
 # check if all is fine with your template
 summary(rastBase)
@@ -137,9 +137,12 @@ head(df_allLuFilter)
 print(paste0("Selected ", length(metList)," pixels in the arable LU category"))
 
 # Test How many suitable pixels not avaiable as met file exist
-load("C:\\apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEnv)
-count = 0
+load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)
+count <- 0
+metFolderTest <- "F:\\ERA-40_Reanalysis\\MetFiles_1971_2000\\"
 for (f in 1:length(metList)){ 
-if(!file.exists(paste("C:\\apsim_dev\\Projects\\CCII\\metFiles\\HadCM3run2\\A2\\", metList[f], sep=""))){count = count+1}
+if(!file.exists(paste0(metFolderTest, metList[f])))
+{count = count+1}
 }
-print(paste(count, " suitable pixels not found in folder, or ", round(count/length(metList), digits=2), "%", sep = ""))
+print(paste(count, " suitable pixels not found in folder, or ", 
+            round(count/length(metList), digits=2), "%", sep = ""))

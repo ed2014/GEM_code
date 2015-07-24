@@ -96,7 +96,7 @@ outFolder <- paste0(climDir,"/metFiles_",RCP,"_",runPeriod,"/")
 suppressWarnings(dir.create(outFolder))
 ```
 
-# Data conversion and other date functions
+# Data conversion and other date functions 
 
 ```{r SetFuncs}
 # Functions used for weather data conversion
@@ -197,8 +197,8 @@ print(paste0("Selected ", nrow(arableLUFilter), " arable pixels"))
 
 head(arableLUFilter)
 
-# for (p in 1:length(arableLUFilter$row)){     #loop rows (lat)
-  for (p in 1:3){     #loop rows (lat)
+ for (p in 1:length(arableLUFilter$row)){     #loop rows (lat)
+#  for (p in 1:3){     #loop rows (lat)
  
   r <- arableLUFilter$row[p]
   c <- arableLUFilter$col[p]

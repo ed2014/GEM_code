@@ -85,6 +85,13 @@ head(df_region)
 
 workDF <- merge(workDF, df_region, by = c("col", "row"))
 
+
+# Read climate zone data
+climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RES_CLuster.csv")
+head(climZones)
+write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
+               append=FALSE, quote=FALSE)
+
 summary(workDF)
 
 ```
@@ -522,11 +529,6 @@ if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
 ```{r ANOVA, echo =FALSE}
 # do an anova for each pixel 
 # This loop takes ages!
-
-#climZones <- read.csv("Z:\\sowByHybridResults_2015\\RES_CLuster.csv")
-head(climZones)
-write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
-               append=FALSE, quote=FALSE)
 
 si_df_final <- NULL
 pixels <- unique(workDF$pixel_ID)

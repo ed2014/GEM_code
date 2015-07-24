@@ -15,7 +15,7 @@ climates <- c("Base\\")                                                         
 sowDate <- c("-sep","-oct","-nov","-dec","-jan")   # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
 
 # select met files to define which .sims to produce
-#metFiles <- c("67_180.met", "189_60.met", "228_80.met") # Option 1: select pixels (row_column) from met files
+# metFiles <- c("67_180.met", "189_60.met", "228_80.met") # Option 1: select pixels (row_column) from met files
 load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
 
 metFiles <- metList

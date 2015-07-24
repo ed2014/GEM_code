@@ -1669,7 +1669,9 @@ endif
         <events name="Reporting Frequency" />
         <Graph name="Soil_CNW">
           <Legend>
-            <CheckedTitles> SowSoil_N, GridCell pixel OutReport</CheckedTitles>
+            <CheckedTitles> SowSoil_N</CheckedTitles>
+            <CheckedTitles> SowSoil_W</CheckedTitles>
+            <CheckedTitles> SowSoil_C</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
