@@ -8,17 +8,26 @@ library(XML)
 gc()
 
 # Select folders and file locations
-metFolder <- "\\\\simplace.net\\projects\\nz\\weatherHistorical\\metFiles\\"                                                  # set folder locations (comment the ones not used)
-simFolder <- "Z:\\simFiles\\"                                                   # sim folder to save new .sims
+#metFolder <- "\\\\simplace.net\\projects\\nz\\weatherHistorical\\metFiles\\"    # set folder locations (comment the ones not used)
+#metFolder <- "F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\"
+metFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\metFiles\\testPixels\\"
+simFolder <- "Z:\\simFiles\\"    # sim folder to save new .sims
+simFolder <- "F:\\SowByGenotype\\simsRun2\\"    # sim folder to save new .sims
+simFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\simFiles\\"
 rootSimFile <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_code\\baseSim\\BaseSim.sim" # find base simulation
 climates <- c("Base\\")                                                                # Define climate scenarios to run as different folders
 sowDate <- c("-sep","-oct","-nov","-dec","-jan")   # Define months (-mmm) Obs: it assumes dates later in the scripr FIXME: Quick solution to be improved
 
 # select met files to define which .sims to produce
-# metFiles <- c("67_180.met", "189_60.met", "228_80.met") # Option 1: select pixels (row_column) from met files
-load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
+# finds out met files to point to
+metFiles <- NULL
+metFiles <- list.files(metFolder,pattern='.met', full.names=FALSE) # Option 1: gets all met files in a folder
+print(paste0("Found ", length(metFiles), " met files"))
+#load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
+# 
 
 metFiles <- metList
+metFiles <- c("10_135.met" , "100_148.met")
 
 print(paste0("Found ", length(metFiles), " .met files"))
 

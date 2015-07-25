@@ -7,13 +7,13 @@
     <initdata>
       <timestep_events>prepare init_step do_management run_one_step do_pasture_water process do_pasture_growth do_stock post end_step</timestep_events>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1980</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/1975</end_date>
     </initdata>
   </component>
   <component name="met" executable="%apsim%\Model\Input.dll" class="Input.Metfile">
     <executable name="%apsim%\Model\Input.dll" version="1.0" />
     <initdata>
-      <filename name="filename" input="yes">%apsim%_dev\Projects\2014-SowByGenotype\metFiles\testPixels\189_106_Canterbury.met</filename>
+      <filename name="filename" input="yes">C:\Apsim_dev\Projects\2014-SowByGenotype\metFiles\testPixels\189_106_Canterbury.met</filename>
     </initdata>
   </component>
   <system name="pixel" executable="%apsim%/Model/ProtocolManager.dll" class="ProtocolManager">
@@ -261,16 +261,6 @@ StressByW = 0 ! kg DM / ha lost due to water stress
    Tempsum = 0 ! Summing average temperature within a growth period
    PTtemp = 0 ! average temperature during (running) growth period
 
-!------------------- Totals accumulated for fallow period
-   FTes = 0    ! Total soil evaporation (mm)
-   FTeo = 0    ! Total Potential Evapotranspiration (check if PennMann or other Method) (mm)
-   FTrain = 0
-   FTrunoff = 0
-   FTdrain = 0
-   FTmin = 0
-   FTmin_res = 0
-   FTdnit = 0 
-
 !---- Frost
 
 frostDays = 0
@@ -284,12 +274,6 @@ YieldAtFrost = 0 ! kg/ha
    MaturityDoy = 0
    MaturityTT = 0
    TTsum = 0
-
-! Leaching and drainage in one whole year (to look into system)
-LeachYear = 0
-DrainYear = 0
-LeachLastYear = 0
-DrainLastYear = 0
 
 one = 1</text>
           <event>init</event>
@@ -420,15 +404,7 @@ endif
 
 else ! Calculates fallow related variables so InFallow = 1
 
-   FTes = FTes + es    ! Total soil evaporation (mm)
-   FTeo = FTeo + eo    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
-   FTrain = FTrain + rain
-   FTrunoff = FTrunoff + runoff
-   FTdrain = FTdrain + drain
-   FTmin = FTmin + dlt_n_min()
-   FTmin_res = FTmin_res + dlt_n_min_res()
-   FTdnit = FTdnit + dnit() 
-
+! removed fallow period variables
 
 endif
 
@@ -436,8 +412,6 @@ endif
 LeachYear = LeachYear + leach_no3 + leach_nh4 ! Assumes last soil layer 
 DrainYear = DrainYear + drain
 if (today = date('1-aug')) then
-LeachLastYear = LeachYear
-DrainLastYear = DrainYear
 LeachYear = 0 
 DrainYear = 0
 endif 
@@ -491,16 +465,6 @@ ETact = 0
 Tempsum = 0 ! Summing average temperature within a growth period
 PTtemp = 0 ! average temperature during (running) growth period
 
-FTes = 0    ! Total soil evaporation (mm)
-FTeo = 0    ! Total Potential Evapotranspiration (check if PenMan or other Method) (mm)
-FTrain = 0
-FTrunoff = 0
-FTdrain = 0
-FTmin = 0
-FTmin_res = 0
-FTdnit = 0 
-
-
 StressByN = 0
 StressByW = 0
 HarvestDay = 0
@@ -536,359 +500,13 @@ EmergSoil_W = esw      !
         </script>
       </initdata>
     </component>
-    <component name="NitroRules" executable="%apsim%\Model\Manager.dll" class="Manager">
-      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
-      <initdata>
-        <ui>
-          <Category type="category" description="Enter crop species and the stage when N application should stop:" />
-          <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
-          <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
-          <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
-          <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
-          <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
-          <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
-          <CropType4 type="crop" description="Crop species 4 (e.g. wheat):">canola</CropType4>
-          <EndStage4 type="text" description="    Crop 4 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">5.0</EndStage4>
-          <CropType5 type="crop" description="Crop species 5 (e.g. wheat):">potato</CropType5>
-          <EndStage5 type="text" description="    Crop 5 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.3</EndStage5>
-          <CropType6 type="crop" description="Crop species 6 (e.g. wheat):" />
-          <EndStage6 type="text" description="    Crop 6 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
-          <CropType7 type="crop" description="Crop species 7 (e.g. wheat):" />
-          <EndStage7 type="text" description="    Crop 7 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
-          <CropType8 type="crop" description="Crop species 8 (e.g. wheat):" />
-          <EndStage8 type="text" description="    Crop 8 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
-          <category2 type="category" description="Define parameters for time of nitrogen application:" />
-          <StartNdateSpr type="ddmmmdate" description="START date of SPRING window of N application (dd-mmm):">21-jun</StartNdateSpr>
-          <EndNdateSpr type="ddmmmdate" description="END date of SPRING window of N application (dd-mmm):">31-dec</EndNdateSpr>
-          <StartNdateAut type="ddmmmdate" description="START date of AUTUMN window of N application (dd-mmm):">1-jan</StartNdateAut>
-          <EndNdateAut type="ddmmmdate" description="END date of AUTUMN window of N application (dd-mmm):">20-jun</EndNdateAut>
-          <MeanTempSpr type="text" description="Mean temperature above which N aplication is allowed in SPRING (oC):">8</MeanTempSpr>
-          <MeanTempAut type="text" description="Mean temperature above which N aplication is allowed in AUTUMN (oC):">10</MeanTempAut>
-          <RunMeanPeriod type="text" description="Number of days for the running mean temperature to be used:">14.0</RunMeanPeriod>
-          <NApplicationAmount type="text" description="Amount of nitrogen to apply in each event (kg/ha):">25</NApplicationAmount>
-          <TriggerNLevel type="text" description="Nitrogen amount in soil (top 3 layers) below which N fertilization is triggered (kg/ha):">50</TriggerNLevel>
-          <FertStop type="ddmmmdate" description="Date when to STOP autumn fertiliser application (dd-mmm):">1-jul</FertStop>
-          <FertStart type="ddmmmdate" description="Date when to START spring fertiliser application (dd-mmm):">2-jul</FertStart>
-        </ui>
-        <script>
-          <text>RunningMeanTemp = 15 
-Fertilising_window = 1
-trigger_level = 45           ! N content in the top 60 cm of soil below which a fertiliser event is triggered. 
-N_application_amount = 50.0  ! Amount of N applied each time trigger level is reached 
-N_available = 0.0
-RunMeanPeriod = 0.0          ! Number of days used for running mean temperature
-NAppliedToday = 0.0
-
-!!! Flags for N application
-FlagN_CropAlive = 0 ! Crop is alive
-FlagN_LowSoilN  = 0 ! Soil N is below trigger level
-FlagN_EndStage = 0  ! Crop is before the final phenological stage when N is not aplied
-FlagN_ApplyN   = 0  ! if equal 4 then allow N aplication
-
-FlagN_ReadyForN   = 'yes'  ! if equal 'yes' than OK to receive N if 'no' than should "not" recieve any fertilizer (management decision set in crop element)
-
-CropStageToday  = 0.0   ! Stage number (e.g. 6 is flowering)
-CropStatusToday = 'out' ! Status name (e.g. 'alive')
-StopStageN      = 6.0 ! Phenology stage name after when nitrogen should not be applied (make sure this is a real number with 0.0)
-
-CapN = 0   ! Cap of nitrogen fertilizer (kg/ha)
-
-Deep_N = 0 ! N in layers deeper than 60 cm
-
-meanT = 0 ! oC
-
-
-
-</text>
-          <event>init</event>
-        </script>
-        <script>
-          <text>!!! Control variables for N aplication window
-
-   FlagN_CropAlive = 0  ! Crop is alive (FIXME-EIT - Not working so turned off and assumed as 1 always - see bellow)
-   FlagN_LowSoilN  = 0  ! Soil N is below trigger level
-   FlagN_EndStage  = 0  ! Crop is before the final phenological stage when N is not aplied
-   FlagN_ApplyN    = 0  ! if equal 4 then allow N aplication
-   NAppliedToday   = 0
-   RunMeanPeriod = [RunMeanPeriod]
-   N_application_amount = [NApplicationAmount] 
-   trigger_level = [TriggerNLevel]
-
-!!! Variables to indicate soil N status
-   N_available = no3(1) + no3(2) + no3(3) + nh4(1) + nh4(2) + nh4(3) + urea(1) + urea(2) + urea(3)                              !!!!!This considers all mineral N sources in the top 60cm of soil, including undisolved fertiliser on the surface
-   Deep_N      = no3(4) + no3(5) + no3(6) + no3(7) + nh4(4) + nh4(5) + nh4(6) + nh4(7) + urea(4) + urea(5) + urea(6) + urea(7)  ! N in layers deeper than 60 cm
-
-!!!! calculate 14 day running mean temperature used to control when N is applied  !!!!
-!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
-   meanT = (maxt+mint) * 0.5
-   RunningMeanTemp = (RunningMeanTemp * (RunMeanPeriod - 1) + meanT) / RunMeanPeriod
-
-!!!! Set the fertilizing window
-!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
-
-! Fertiliser exclusion window in winter based on date
-   if           (date_within('[FertStop], [FertStart]') = 1)  then
-                Fertilising_window = 0 ! No application        
-   else                                          
-                Fertilising_window = 1
-   endif 
-
-! Fertiliser exclusion window in winter based on temperature (this will have priority if not turned-off)
-   if           (date_within('[StartNdateAut], [EndNdateAut]') = 1) and      
-                RunningMeanTemp &lt; [MeanTempAut] then
-                Fertilising_window = 0                                   !!!! don't apply N in the Autumn when the running mean temperature falls below 10 oC              
-   elseif  (date_within('[StartNdateSpr], [EndNdateSpr]') = 1) and 
-                RunningMeanTemp &lt; [MeanTempSpr] then
-                Fertilising_window = 0                                   !!!! don't apply N in the Spring untill the running mean temperature raises above 8 oC
-   else    
-                Fertilising_window = 1
-   endif
-
-!!!! Stop N aplication at later crop stages.  Field pea omitted because will not be fertilised  !!!!
-!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
-
-!!! CHECK end_of_day TAB !!!
-
-!!! Now set all flags for nitrogen application (1 = Apply; 0 = Do not apply)
-   if (CropStatusToday = 'alive') then
-          FlagN_CropAlive = 1                                                              ! FIXME-EIT Not using the 'alive' status to see if it's redundant (check)
-   endif
-   if ((CropStageToday &gt; 3) and (CropStageToday &lt; StopStageN)) then                        ! Phenology is ok for N application
-          FlagN_EndStage = 1
-   endif
-   if (N_available &lt; trigger_level) then                                                   ! N level in soil is low 
-          FlagN_LowSoilN  = 1 
-   endif
-    
-   FlagN_ApplyN = Fertilising_window * FlagN_CropAlive * FlagN_EndStage * FlagN_LowSoilN * (1-IsCatchCrop) ! If this is 1 then all requirements for N application were met
-
-!!! Decision on fertilize with N or not   
-        
-   if  (FlagN_ApplyN = 1 and PTfert &lt; CapN) then
-         fertiliser apply amount = N_application_amount (kg/ha), depth = 50 (mm), type = urea_n ()
-         NAppliedToday = N_application_amount
-   endif
-</text>
-          <event>start_of_day</event>
-        </script>
-        <script>
-          <text>!!! Sort out crop species, state and stage to stop N application based on phenology (always start at sowing)
-   if (CurrentSpecies = '[CropType1]') then 
-       StopStageN = [EndStage1]
-       CropStageToday = [CropType1].stage
-       CropStatusToday = [CropType1].plant_status
-   elseif (CurrentSpecies = '[CropType2]') then 
-       StopStageN = [EndStage2]
-       CropStageToday = [CropType2].stage
-       CropStatusToday = [CropType2].plant_status
-   elseif (CurrentSpecies = '[CropType3]') then 
-       StopStageN = [EndStage3]
-       CropStageToday = [CropType3].stage
-       CropStatusToday = [CropType3].plant_status
-   elseif (CurrentSpecies = '[CropType4]') then 
-       StopStageN = [EndStage4]
-       CropStageToday = [CropType4].stage
-       CropStatusToday = [CropType4].plant_status
-   elseif (CurrentSpecies = '[CropType5]') then 
-       StopStageN = [EndStage5]
-       CropStageToday = [CropType5].stage
-       CropStatusToday = [CropType5].plant_status
-   elseif (CurrentSpecies = '[CropType6]') then 
-       StopStageN = [EndStage6]
-       CropStageToday = [CropType6].stage
-       CropStatusToday = [CropType6].plant_status
-   elseif (CurrentSpecies = '[CropType7]') then 
-       StopStageN = [EndStage7]
-       CropStageToday = [CropType7].stage
-       CropStatusToday = [CropType7].plant_status
-   elseif (CurrentSpecies = '[CropType8]') then 
-       StopStageN = [EndStage8]
-       CropStageToday = [CropType8].stage
-       CropStatusToday = [CropType8].plant_status
-   else
-       StopStageN = 6.0                 ! 6 is usally flowering so a good default
-       CropStatusToday = 'out'
-       CropStageToday = 3.0
-   endif
-   
-
-</text>
-          <event>end_of_day</event>
-        </script>
-      </initdata>
-    </component>
-    <component name="IrrigRules" executable="%apsim%\Model\Manager.dll" class="Manager">
-      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
-      <initdata>
-        <ui>
-          <NoPaddock type="text" description="Number of days for irrigator to retun to paddock">2</NoPaddock>
-          <IrrigStopRain type="text" description="Rainfall amount  (mm) to trigger irrigation pause (mm):">30</IrrigStopRain>
-          <IrrigStopDay type="text" description="Number of days to pause after trigger rainfall event:">2</IrrigStopDay>
-          <IrrigApply type="text" description="Maximum amount (mm) of water irrigator applies per event:">50</IrrigApply>
-          <IrrigTrig type="text" description="Fraction of available water in the top soil layer below which irrigation is allowed (0-1):">0.6</IrrigTrig>
-          <StartDry type="ddmmmdate" description="Start date when irrigation is NOT allowed (dd-mmm):">1-jun</StartDry>
-          <EndDry type="ddmmmdate" description="End date when irrigation is NOT allowed (dd-mmm):">1-aug</EndDry>
-          <CapIrrig type="text" description="Enter limit of applied irrigation in a given crop rotation (mm/crop cycle):">1000</CapIrrig>
-        </ui>
-        <script>
-          <text>irrigation_period = 1                   ! period when we forbid irrigation (0 is no irrigation allowed; 1 is allowed to irrigate)
-number_of_paddocks = [NoPaddock]        ! number of paddocks in irrigation rotation counter (FIXME-EIT For the new rotation manager tis has to be revised)
-paddock = 0                             ! start in paddock 0
-days_since_rain_event = 0               ! counter to pause irrigation after rainfall event
-rain_event_trigger = [IrrigStopRain]    ! rainfall amount  (mm) to trigger irrigation pause
-rain_event_pause_time = [IrrigStopDay]  ! number of days to pause after trigger rainfall event
-Irrigation_amount = [IrrigApply]        ! amount (mm) of water irrigator applies
-trigger_deficit = 0.5                   ! Fraction of available water in the top 15 cm below which irrigation is allowed
-</text>
-          <event>init</event>
-        </script>
-        <script>
-          <text>
-      trigger_deficit = [IrrigTrig]
-   
-   !!! Specify irrigation season start time
-   
-   if        (date_within('[StartDry],[EndDry]') = 1) then      ! This rule prevents irrigation in winter
-               irrigation_period=0
-               paddock=0                                        ! Brings back irrigation to our paddock
-   endif
-   
-   if       (SWD_top&lt;trigger_deficit) then                      ! If the fraction of soil water in top layer is bellow the trigger limit - irrigation is allowed
-                irrigation_period=1
-   endif  
-   
-   !!! Count days since last rainfall event
-   
-   if        (rain&gt;=rain_event_trigger) then                    ! This rule pauses the irrigators rotation for a given number of days following a defined size of rainfall event
-             days_since_rain_event = 0
-   else     
-             days_since_rain_event = days_since_rain_event + 1
-   endif             
-   
-   !!! Rotate irrigator around paddocks and apply irrigation when it gets back to this paddock!!!!!!!!!!!!!
-   
-   if           (irrigation_period = 1) and (paddock = 0) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule applies irrigation when the irrigator returns to this paddock if the SWD is below a given trigger
-                  paddock = paddock + 2                                                                               !!!I This is +2 because it is skipping this paddock so the irrigator will return sooner than if it spend a day here irrigating
-                     
-                      if  (SWD_top&lt;trigger_deficit) and (InFallow = 0) and (PTirrig &lt; [CapIrrig]) then
-                            irrigation apply amount = irrigation_amount
-                            paddock = paddock - 1                                                                       !!!If an irrigation event is triggered in this paddock subtract 1 so that this paddock is considered in the irrigation rotation counter
-                     endif
-   
-   elseif  (irrigation_period = 1) and (paddock = number_of_paddocks) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule finishes the irrigators rotation and sends it back to the start (to water this paddock)
-                  paddock = 0 
-   elseif  (irrigation_period = 1) and (paddock &gt; 0) and (days_since_rain_event &gt; rain_event_pause_time) then                     !!!This rule moves the irrigator around one paddock in the rotation each day 
-                  paddock = paddock + 1
-   endif
-
-</text>
-          <event>start_of_day</event>
-        </script>
-      </initdata>
-    </component>
-    <component name="TillageRules" executable="%apsim%\Model\Manager.dll" class="Manager">
-      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
-      <initdata>
-        <ui>
-          <category type="category" description="When should tillage be done" />
-          <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">01-sep</tillage_date>
-          <category type="category" description="Tillage application details" />
-          <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
-          <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
-          <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">250</tillage_depth>
-          <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.95</tillage_f_incorp>
-          <XXX type="category" description="Fraction of residue removed" />
-          <catch_res type="text" description="Main crop residue &quot;removed&quot; after harvest (0-1):">0.90</catch_res>
-          <main_res type="text" description="Green-crop residue &quot;removed&quot; after harvest (0-1):">0.90</main_res>
-          <XX type="category" description="Nitrogen from residue returned to field" />
-          <n_return_eff type="text" description="Fraction return of nitrogen from removed crop residues (0-1):">0.80</n_return_eff>
-        </ui>
-        <script>
-          <text>! Tillage
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if FallowDays = 1 then  ! Do a tillage operation on the first day after harvesting
-
-
-! Sort out crop and the amount of residue to be removed by silage or grazing
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if (CurrentCropType = 'MainCrop') then
-       removed_residue = [main_res] 
-elseif CurrentCropType = 'CatchCrop') then
-       removed_residue = [catch_res]        
-endif
-
-! Do tillage            
-'[surfaceommodule]' tillage type = [tillage_type], f_incorp = removed_residue (), tillage_depth = 0.0 ! Biomass removed from field	    
-'[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth] ! Do actual tillage            
-
-endif
-
-
-</text>
-          <event>start_of_day</event>
-        </script>
-        <script>
-          <text>removed_residue = 0  ! Fraction of total residue that was removed (e.g. grazing or baling) (0-1)
-returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
-          <event>init</event>
-        </script>
-      </initdata>
-    </component>
-    <component name="ResetSoil_sowing" executable="%apsim%\Model\Manager.dll" class="Manager">
-      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
-      <initdata>
-        <ui>
-          <soilmodule type="modulename" description="Name of your soil module : ">H</soilmodule>
-          <surfaceommodule type="modulename" description="Name of your surface organic matter module : ">SurfaceOrganicMatter</surfaceommodule>
-          <resetWater type="yesno" description="Reset soil water?">yes</resetWater>
-          <resetNitrogen type="yesno" description="Reset soil nitrogen?">yes</resetNitrogen>
-          <resetSurfaceOM type="yesno" description="Reset surface organic matter?">yes</resetSurfaceOM>
-        </ui>
-        <script>
-          <text>! Retrieve values pre-reset
-
-resetValue_N = nitMinTot   ! Total soil nitrogen (kg/ha) reseting date
-resetValue_C = carbon_tot() ! Total soil carbon (kg/ha) reseting date
-resetValue_W = esw ! Total soil water (kg/ha) reseting date 
-
-! reset all at sowing
-
-            resetWater = '[resetWater]'
-            resetNitrogen  = '[resetNitrogen]'
-            resetSurfaceOM = '[resetSurfaceOM]'
-            
-            if (resetWater = 'yes') then
-                '[soilmodule] Water' reset
-            endif
-            if (resetNitrogen = 'yes') then
-                '[soilmodule] Nitrogen' reset
-            endif
-            if (resetSurfaceOM = 'yes') then
-                '[surfaceommodule]' reset
-            endif
-            
-            act_mods reseting
-            
-            FlagReset = 1
-
-</text>
-          <event>sowing</event>
-        </script>
-        <script>
-          <text>resetValue_N = 0 ! Total soil nitrogen (kg/ha) reseting date
-resetValue_C = 0 ! Total soil carbon (kg/ha) reseting date
-resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
-          <event>init</event>
-        </script>
-      </initdata>
-    </component>
     <component name="RotationManager" executable="%apsim%\Model\Manager.dll" class="Manager">
       <executable name="%apsim%\Model\Manager.dll" version="1.0" />
       <initdata>
         <ui>
           <FirstRotation type="text" description="Enter the crop number you want the rotation to start:">1</FirstRotation>
           <Crop1 type="text" description="Enter 1st crop:">MaizeSpr</Crop1>
-          <Crop2 type="text" description="Enter 2nd crop:">nil</Crop2>
+          <Crop2 type="text" description="Enter 2nd crop:">CatchCrop</Crop2>
           <Crop3 type="text" description="Enter 3rd crop:">nil</Crop3>
           <Crop4 type="text" description="Enter 4th crop:">nil</Crop4>
           <Crop5 type="text" description="Enter 5th crop:">nil</Crop5>
@@ -1207,7 +825,7 @@ endif
           <Harvesting type="category" description="Harvesting Rules" />
           <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">flowering</StageName>
           <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
-          <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-jul</CriticalDate>
+          <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-aug</CriticalDate>
           <SilageCut type="yesno" description="Harvested for silage? (yes/no):">no</SilageCut>
           <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
           <Fertilizer type="category" description="Fertilizer Rules" />
@@ -1289,13 +907,13 @@ IsCatchCrop = 1
          
    ! Test Silage harvest
             if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
-               TtPosFlow = TtPosFlow + [CropName].tt    
- 
-              if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 80% of tt to maturity (empirical assumption)
-                 EndbySilage = 1
-              endif     
-                                         
+               TtPosFlow = TtPosFlow + [CropName].tt                                               
+            
+            if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 850oCd after flowering as for maize in Wilson et al XXX
+               EndbySilage = 1
             endif         
+         endif
+
 
    ! Set flags for the possible events that trigger a harvest
 
@@ -1342,6 +960,352 @@ endif
 
 </text>
           <event>end_of_day</event>
+        </script>
+      </initdata>
+    </component>
+    <component name="NitroRules" executable="%apsim%\Model\Manager.dll" class="Manager">
+      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
+      <initdata>
+        <ui>
+          <Category type="category" description="Enter crop species and the stage when N application should stop:" />
+          <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
+          <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
+          <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
+          <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
+          <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
+          <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
+          <CropType4 type="crop" description="Crop species 4 (e.g. wheat):">canola</CropType4>
+          <EndStage4 type="text" description="    Crop 4 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">5.0</EndStage4>
+          <CropType5 type="crop" description="Crop species 5 (e.g. wheat):">potato</CropType5>
+          <EndStage5 type="text" description="    Crop 5 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.3</EndStage5>
+          <CropType6 type="crop" description="Crop species 6 (e.g. wheat):" />
+          <EndStage6 type="text" description="    Crop 6 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+          <CropType7 type="crop" description="Crop species 7 (e.g. wheat):" />
+          <EndStage7 type="text" description="    Crop 7 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+          <CropType8 type="crop" description="Crop species 8 (e.g. wheat):" />
+          <EndStage8 type="text" description="    Crop 8 stage &quot;number&quot; (e.g. 6 is flowering in wheat):" />
+          <category2 type="category" description="Define parameters for time of nitrogen application:" />
+          <StartNdateSpr type="ddmmmdate" description="START date of SPRING window of N application (dd-mmm):">21-jun</StartNdateSpr>
+          <EndNdateSpr type="ddmmmdate" description="END date of SPRING window of N application (dd-mmm):">31-dec</EndNdateSpr>
+          <StartNdateAut type="ddmmmdate" description="START date of AUTUMN window of N application (dd-mmm):">1-jan</StartNdateAut>
+          <EndNdateAut type="ddmmmdate" description="END date of AUTUMN window of N application (dd-mmm):">20-jun</EndNdateAut>
+          <MeanTempSpr type="text" description="Mean temperature above which N aplication is allowed in SPRING (oC):">8</MeanTempSpr>
+          <MeanTempAut type="text" description="Mean temperature above which N aplication is allowed in AUTUMN (oC):">10</MeanTempAut>
+          <RunMeanPeriod type="text" description="Number of days for the running mean temperature to be used:">14.0</RunMeanPeriod>
+          <NApplicationAmount type="text" description="Amount of nitrogen to apply in each event (kg/ha):">25</NApplicationAmount>
+          <TriggerNLevel type="text" description="Nitrogen amount in soil (top 3 layers) below which N fertilization is triggered (kg/ha):">50</TriggerNLevel>
+          <FertStop type="ddmmmdate" description="Date when to STOP autumn fertiliser application (dd-mmm):">1-jul</FertStop>
+          <FertStart type="ddmmmdate" description="Date when to START spring fertiliser application (dd-mmm):">2-jul</FertStart>
+        </ui>
+        <script>
+          <text>RunningMeanTemp = 15 
+Fertilising_window = 1
+trigger_level = 45           ! N content in the top 60 cm of soil below which a fertiliser event is triggered. 
+N_application_amount = 50.0  ! Amount of N applied each time trigger level is reached 
+N_available = 0.0
+RunMeanPeriod = 0.0          ! Number of days used for running mean temperature
+NAppliedToday = 0.0
+
+!!! Flags for N application
+FlagN_CropAlive = 0 ! Crop is alive
+FlagN_LowSoilN  = 0 ! Soil N is below trigger level
+FlagN_EndStage = 0  ! Crop is before the final phenological stage when N is not aplied
+FlagN_ApplyN   = 0  ! if equal 4 then allow N aplication
+
+FlagN_ReadyForN   = 'yes'  ! if equal 'yes' than OK to receive N if 'no' than should "not" recieve any fertilizer (management decision set in crop element)
+
+CropStageToday  = 0.0   ! Stage number (e.g. 6 is flowering)
+CropStatusToday = 'out' ! Status name (e.g. 'alive')
+StopStageN      = 6.0 ! Phenology stage name after when nitrogen should not be applied (make sure this is a real number with 0.0)
+
+CapN = 0   ! Cap of nitrogen fertilizer (kg/ha)
+
+Deep_N = 0 ! N in layers deeper than 60 cm
+
+meanT = 0 ! oC
+
+
+
+</text>
+          <event>init</event>
+        </script>
+        <script>
+          <text>!!! Control variables for N aplication window
+
+   FlagN_CropAlive = 0  ! Crop is alive (FIXME-EIT - Not working so turned off and assumed as 1 always - see bellow)
+   FlagN_LowSoilN  = 0  ! Soil N is below trigger level
+   FlagN_EndStage  = 0  ! Crop is before the final phenological stage when N is not aplied
+   FlagN_ApplyN    = 0  ! if equal 4 then allow N aplication
+   NAppliedToday   = 0
+   RunMeanPeriod = [RunMeanPeriod]
+   N_application_amount = [NApplicationAmount] 
+   trigger_level = [TriggerNLevel]
+
+!!! Variables to indicate soil N status
+   N_available = no3(1) + no3(2) + no3(3) + nh4(1) + nh4(2) + nh4(3) + urea(1) + urea(2) + urea(3)                              !!!!!This considers all mineral N sources in the top 60cm of soil, including undisolved fertiliser on the surface
+   Deep_N      = no3(4) + no3(5) + no3(6) + no3(7) + nh4(4) + nh4(5) + nh4(6) + nh4(7) + urea(4) + urea(5) + urea(6) + urea(7)  ! N in layers deeper than 60 cm
+
+!!!! calculate 14 day running mean temperature used to control when N is applied  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+   meanT = (maxt+mint) * 0.5
+   RunningMeanTemp = (RunningMeanTemp * (RunMeanPeriod - 1) + meanT) / RunMeanPeriod
+
+!!!! Set the fertilizing window
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+! Fertiliser exclusion window in winter based on date
+   if           (date_within('[FertStop], [FertStart]') = 1)  then
+                Fertilising_window = 0 ! No application        
+   else                                          
+                Fertilising_window = 1
+   endif 
+
+! Fertiliser exclusion window in winter based on temperature (this will have priority if not turned-off)
+   if           (date_within('[StartNdateAut], [EndNdateAut]') = 1) and      
+                RunningMeanTemp &lt; [MeanTempAut] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Autumn when the running mean temperature falls below 10 oC              
+   elseif  (date_within('[StartNdateSpr], [EndNdateSpr]') = 1) and 
+                RunningMeanTemp &lt; [MeanTempSpr] then
+                Fertilising_window = 0                                   !!!! don't apply N in the Spring untill the running mean temperature raises above 8 oC
+   else    
+                Fertilising_window = 1
+   endif
+
+!!!! Stop N aplication at later crop stages.  Field pea omitted because will not be fertilised  !!!!
+!!!!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!!!!
+
+!!! CHECK end_of_day TAB !!!
+
+!!! Now set all flags for nitrogen application (1 = Apply; 0 = Do not apply)
+   if (CropStatusToday = 'alive') then
+          FlagN_CropAlive = 1                                                              ! FIXME-EIT Not using the 'alive' status to see if it's redundant (check)
+   endif
+   if ((CropStageToday &gt; 3) and (CropStageToday &lt; StopStageN)) then                        ! Phenology is ok for N application
+          FlagN_EndStage = 1
+   endif
+   if (N_available &lt; trigger_level) then                                                   ! N level in soil is low 
+          FlagN_LowSoilN  = 1 
+   endif
+    
+   FlagN_ApplyN = Fertilising_window * FlagN_CropAlive * FlagN_EndStage * FlagN_LowSoilN * (1-IsCatchCrop) ! If this is 1 then all requirements for N application were met
+
+!!! Decision on fertilize with N or not   
+        
+   if  (FlagN_ApplyN = 1 and PTfert &lt; CapN) then
+         fertiliser apply amount = N_application_amount (kg/ha), depth = 50 (mm), type = urea_n ()
+         NAppliedToday = N_application_amount
+   endif
+</text>
+          <event>start_of_day</event>
+        </script>
+        <script>
+          <text>!!! Sort out crop species, state and stage to stop N application based on phenology (always start at sowing)
+   if (CurrentSpecies = '[CropType1]') then 
+       StopStageN = [EndStage1]
+       CropStageToday = [CropType1].stage
+       CropStatusToday = [CropType1].plant_status
+   elseif (CurrentSpecies = '[CropType2]') then 
+       StopStageN = [EndStage2]
+       CropStageToday = [CropType2].stage
+       CropStatusToday = [CropType2].plant_status
+   elseif (CurrentSpecies = '[CropType3]') then 
+       StopStageN = [EndStage3]
+       CropStageToday = [CropType3].stage
+       CropStatusToday = [CropType3].plant_status
+   elseif (CurrentSpecies = '[CropType4]') then 
+       StopStageN = [EndStage4]
+       CropStageToday = [CropType4].stage
+       CropStatusToday = [CropType4].plant_status
+   elseif (CurrentSpecies = '[CropType5]') then 
+       StopStageN = [EndStage5]
+       CropStageToday = [CropType5].stage
+       CropStatusToday = [CropType5].plant_status
+   elseif (CurrentSpecies = '[CropType6]') then 
+       StopStageN = [EndStage6]
+       CropStageToday = [CropType6].stage
+       CropStatusToday = [CropType6].plant_status
+   elseif (CurrentSpecies = '[CropType7]') then 
+       StopStageN = [EndStage7]
+       CropStageToday = [CropType7].stage
+       CropStatusToday = [CropType7].plant_status
+   elseif (CurrentSpecies = '[CropType8]') then 
+       StopStageN = [EndStage8]
+       CropStageToday = [CropType8].stage
+       CropStatusToday = [CropType8].plant_status
+   else
+       StopStageN = 6.0                 ! 6 is usally flowering so a good default
+       CropStatusToday = 'out'
+       CropStageToday = 3.0
+   endif
+   
+
+</text>
+          <event>end_of_day</event>
+        </script>
+      </initdata>
+    </component>
+    <component name="IrrigRules" executable="%apsim%\Model\Manager.dll" class="Manager">
+      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
+      <initdata>
+        <ui>
+          <NoPaddock type="text" description="Number of days for irrigator to retun to paddock">2</NoPaddock>
+          <IrrigStopRain type="text" description="Rainfall amount  (mm) to trigger irrigation pause (mm):">30</IrrigStopRain>
+          <IrrigStopDay type="text" description="Number of days to pause after trigger rainfall event:">2</IrrigStopDay>
+          <IrrigApply type="text" description="Maximum amount (mm) of water irrigator applies per event:">50</IrrigApply>
+          <IrrigTrig type="text" description="Fraction of available water in the top soil layer below which irrigation is allowed (0-1):">0.6</IrrigTrig>
+          <StartDry type="ddmmmdate" description="Start date when irrigation is NOT allowed (dd-mmm):">1-jun</StartDry>
+          <EndDry type="ddmmmdate" description="End date when irrigation is NOT allowed (dd-mmm):">1-aug</EndDry>
+          <CapIrrig type="text" description="Enter limit of applied irrigation in a given crop rotation (mm/crop cycle):">1000</CapIrrig>
+        </ui>
+        <script>
+          <text>irrigation_period = 1                   ! period when we forbid irrigation (0 is no irrigation allowed; 1 is allowed to irrigate)
+number_of_paddocks = [NoPaddock]        ! number of paddocks in irrigation rotation counter (FIXME-EIT For the new rotation manager tis has to be revised)
+paddock = 0                             ! start in paddock 0
+days_since_rain_event = 0               ! counter to pause irrigation after rainfall event
+rain_event_trigger = [IrrigStopRain]    ! rainfall amount  (mm) to trigger irrigation pause
+rain_event_pause_time = [IrrigStopDay]  ! number of days to pause after trigger rainfall event
+Irrigation_amount = [IrrigApply]        ! amount (mm) of water irrigator applies
+trigger_deficit = 0.5                   ! Fraction of available water in the top 15 cm below which irrigation is allowed
+</text>
+          <event>init</event>
+        </script>
+        <script>
+          <text>
+      trigger_deficit = [IrrigTrig]
+   
+   !!! Specify irrigation season start time
+   
+   if        (date_within('[StartDry],[EndDry]') = 1) then      ! This rule prevents irrigation in winter
+               irrigation_period=0
+               paddock=0                                        ! Brings back irrigation to our paddock
+   endif
+   
+   if       (SWD_top&lt;trigger_deficit) then                      ! If the fraction of soil water in top layer is bellow the trigger limit - irrigation is allowed
+                irrigation_period=1
+   endif  
+   
+   !!! Count days since last rainfall event
+   
+   if        (rain&gt;=rain_event_trigger) then                    ! This rule pauses the irrigators rotation for a given number of days following a defined size of rainfall event
+             days_since_rain_event = 0
+   else     
+             days_since_rain_event = days_since_rain_event + 1
+   endif             
+   
+   !!! Rotate irrigator around paddocks and apply irrigation when it gets back to this paddock!!!!!!!!!!!!!
+   
+   if           (irrigation_period = 1) and (paddock = 0) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule applies irrigation when the irrigator returns to this paddock if the SWD is below a given trigger
+                  paddock = paddock + 2                                                                               !!!I This is +2 because it is skipping this paddock so the irrigator will return sooner than if it spend a day here irrigating
+                     
+                      if  (SWD_top&lt;trigger_deficit) and (InFallow = 0) and (PTirrig &lt; [CapIrrig]) then
+                            irrigation apply amount = irrigation_amount
+                            paddock = paddock - 1                                                                       !!!If an irrigation event is triggered in this paddock subtract 1 so that this paddock is considered in the irrigation rotation counter
+                     endif
+   
+   elseif  (irrigation_period = 1) and (paddock = number_of_paddocks) and (days_since_rain_event &gt; rain_event_pause_time) then    !!!This rule finishes the irrigators rotation and sends it back to the start (to water this paddock)
+                  paddock = 0 
+   elseif  (irrigation_period = 1) and (paddock &gt; 0) and (days_since_rain_event &gt; rain_event_pause_time) then                     !!!This rule moves the irrigator around one paddock in the rotation each day 
+                  paddock = paddock + 1
+   endif
+
+</text>
+          <event>start_of_day</event>
+        </script>
+      </initdata>
+    </component>
+    <component name="TillageRules" executable="%apsim%\Model\Manager.dll" class="Manager">
+      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
+      <initdata>
+        <ui>
+          <category type="category" description="When should tillage be done" />
+          <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">01-sep</tillage_date>
+          <category type="category" description="Tillage application details" />
+          <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
+          <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
+          <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">250</tillage_depth>
+          <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.95</tillage_f_incorp>
+          <XXX type="category" description="Fraction of residue removed" />
+          <catch_res type="text" description="Main crop residue &quot;removed&quot; after harvest (0-1):">0.90</catch_res>
+          <main_res type="text" description="Green-crop residue &quot;removed&quot; after harvest (0-1):">0.90</main_res>
+          <XX type="category" description="Nitrogen from residue returned to field" />
+          <n_return_eff type="text" description="Fraction return of nitrogen from removed crop residues (0-1):">0.80</n_return_eff>
+        </ui>
+        <script>
+          <text>! Tillage
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if FallowDays = 1 then  ! Do a tillage operation on the first day after harvesting
+
+
+! Sort out crop and the amount of residue to be removed by silage or grazing
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if (CurrentCropType = 'MainCrop') then
+       removed_residue = [main_res] 
+elseif CurrentCropType = 'CatchCrop') then
+       removed_residue = [catch_res]        
+endif
+
+! Do tillage            
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = removed_residue (), tillage_depth = 0.0 ! Biomass removed from field	    
+'[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth] ! Do actual tillage            
+
+endif
+
+
+</text>
+          <event>start_of_day</event>
+        </script>
+        <script>
+          <text>removed_residue = 0  ! Fraction of total residue that was removed (e.g. grazing or baling) (0-1)
+returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
+          <event>init</event>
+        </script>
+      </initdata>
+    </component>
+    <component name="ResetSoil_sowing" executable="%apsim%\Model\Manager.dll" class="Manager">
+      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
+      <initdata>
+        <ui>
+          <soilmodule type="modulename" description="Name of your soil module : ">H</soilmodule>
+          <surfaceommodule type="modulename" description="Name of your surface organic matter module : ">SurfaceOrganicMatter</surfaceommodule>
+          <resetWater type="yesno" description="Reset soil water?">no</resetWater>
+          <resetNitrogen type="yesno" description="Reset soil nitrogen?">no</resetNitrogen>
+          <resetSurfaceOM type="yesno" description="Reset surface organic matter?">no</resetSurfaceOM>
+        </ui>
+        <script>
+          <text>! Retrieve values pre-reset
+
+resetValue_N = nitMinTot   ! Total soil nitrogen (kg/ha) reseting date
+resetValue_C = carbon_tot() ! Total soil carbon (kg/ha) reseting date
+resetValue_W = esw ! Total soil water (kg/ha) reseting date 
+
+! reset all at sowing
+
+            resetWater = '[resetWater]'
+            resetNitrogen  = '[resetNitrogen]'
+            resetSurfaceOM = '[resetSurfaceOM]'
+            
+            if (resetWater = 'yes') then
+                '[soilmodule] Water' reset
+            endif
+            if (resetNitrogen = 'yes') then
+                '[soilmodule] Nitrogen' reset
+            endif
+            if (resetSurfaceOM = 'yes') then
+                '[surfaceommodule]' reset
+            endif
+            
+            act_mods reseting
+            
+            FlagReset = 1
+
+</text>
+          <event>sowing</event>
+        </script>
+        <script>
+          <text>resetValue_N = 0 ! Total soil nitrogen (kg/ha) reseting date
+resetValue_C = 0 ! Total soil carbon (kg/ha) reseting date
+resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
+          <event>init</event>
         </script>
       </initdata>
     </component>
@@ -1452,10 +1416,13 @@ endif
          (0-100)        (mm)
          ________________________________________
          -->
-          <chisel description="will have no effect - SOILWAT the same as old ver.">0.0           0.   </chisel>
+          <chisel>0.0           0.   </chisel>
           <disc>0.0           0.</disc>
+          <tine>0.0           0.</tine>
+          <blade>0.0           0.</blade>
           <planter>0.0           0.</planter>
           <burn>0.0           0.</burn>
+          <spray>0.0           0.</spray>
         </tillage>
         <diffus_const>40.000</diffus_const>
         <diffus_slope>16.000</diffus_slope>
@@ -1510,6 +1477,7 @@ endif
       -->
         <default_standing_fraction description="fraction of the residues 'standing' ie isolated from the soil">0.0              </default_standing_fraction>
         <standing_extinct_coeff description="assume all standing stuff is flat (!!??)">0.5</standing_extinct_coeff>
+        <fraction_faeces_added>0.70</fraction_faeces_added>
         <!--  ______________________________________________________________-
       Residue type information
       ______________________________________________________________-
@@ -1549,6 +1517,209 @@ endif
           <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
           <cf_contrib>1</cf_contrib>
         </manure>
+        <!-- manure types from Iowa, USA. Added by SVA on Nov 24, 2014. 
+	       sources: Archontoulis et al., 2014 Agronomy J 106: 1025-1040
+				    Loecke et al., 2004 Crop Science 44: 177-184
+				    Loecke et al., 2004 Agronomy J 96: 214-223 -->
+        <!-- List of manure types (swine fresh and compost manure)
+	       average application rates are 22 Mg/ha for the compost and 14 Mg/ha for the fresh manure
+	  
+	    compost_manure_ia  (note: this is the average of the following 6 compost manure types)
+		compost2000_ia
+		compost2001_ia
+		compost_fall00_ia
+	    compost_fall01_ia
+		compost_spring00_ia
+		compost_spring01_ia
+	    fresh_manure_ia  (note: this is the average of the following 6 fresh manure types)
+		fresh2000_ia
+		fresh2001_ia
+		fresh_fall00_ia
+	    fresh_fall01_ia
+		fresh_spring00_ia
+		fresh_spring01_ia -->
+        <compost_manure_ia>
+          <fom_type>compost_manure_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.176  </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">906     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">2261     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost_manure_ia>
+        <fresh_manure_ia>
+          <fom_type>fresh_manure_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.305    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">3362     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">248     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh_manure_ia>
+        <compost2000_ia>
+          <fom_type>compost2000_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.129    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">1429     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">2431     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost2000_ia>
+        <compost2001_ia>
+          <fom_type>compost2001</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.201    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">773     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">265     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost2001_ia>
+        <fresh2000_ia>
+          <fom_type>fresh2000_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.254    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">6413     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">354     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh2000_ia>
+        <fresh2001_ia>
+          <fom_type>fresh2001_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.243    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">2576     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">221     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh2001_ia>
+        <fresh_fall00_ia>
+          <fom_type>fresh_fall00_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.324    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">4480     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">66     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh_fall00_ia>
+        <fresh_fall01_ia>
+          <fom_type>fresh_fall01_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.322    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">1165     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">80     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh_fall01_ia>
+        <compost_fall00_ia>
+          <fom_type>compost_fall00_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.181    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">640     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">3624     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost_fall00_ia>
+        <compost_fall01_ia>
+          <fom_type>compost_fall01_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.199    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">461     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">3315     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost_fall01_ia>
+        <fresh_spring00_ia>
+          <fom_type>fresh_spring00_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.344    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">3545     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">345     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh_spring00_ia>
+        <fresh_spring01_ia>
+          <fom_type>fresh_spring01_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.316    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.01 0.3 0.69</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">1997     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">424     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </fresh_spring01_ia>
+        <compost_spring00_ia>
+          <fom_type>compost_spring00_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.144    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">934     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">3315     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost_spring00_ia>
+        <compost_spring01_ia>
+          <fom_type>compost_spring01_ia</fom_type>
+          <fraction_C description="fraction of Carbon in FOM (0-1)">0.206    </fraction_C>
+          <pot_decomp_rate>0.1</pot_decomp_rate>
+          <fr_c>0.25 0.6 0.15</fr_c>
+          <fr_n>0.02 0.48 0.5</fr_n>
+          <fr_p>0.3 0.3 0.4</fr_p>
+          <po4ppm description="labile P concentration(ppm)">5.0     </po4ppm>
+          <nh4ppm description="ammonium N concentration (ppm)">1203     </nh4ppm>
+          <no3ppm description="nitrate N concentration (ppm)">619     </no3ppm>
+          <specific_area description="specific area of residue (ha/kg)">0.0001  </specific_area>
+          <cf_contrib>1</cf_contrib>
+        </compost_spring01_ia>
         <RuminantDung_PastureFed>
           <fom_type>RuminantDung_PastureFed</fom_type>
           <fraction_C description="fraction of Carbon in FOM (0-1)">0.4     </fraction_C>
@@ -1902,6 +2073,11 @@ endif
           <fom_type>sweetsorghum</fom_type>
           <specific_area description="specific area of residue (ha/kg">0.0004  </specific_area>
         </sweetsorghum>
+        <taro>
+          <derived_from>base_type</derived_from>
+          <fom_type>taro</fom_type>
+          <specific_area description="specific area of residue (ha/kg">0.0002  </specific_area>
+        </taro>
         <vetch>
           <derived_from>fieldpea</derived_from>
         </vetch>
@@ -1939,7 +2115,8 @@ endif
           <pits>0.5           100.</pits>
           <rip>0.3           300.</rip>
           <blade>0.30          100.</blade>
-          <sweep description="Pdev">0.30          100.   </sweep>
+          <sweep>0.30          100.   </sweep>
+          <spray>0.0           0.0    </spray>
           <Cool_burn>0.7             0.</Cool_burn>
           <burn_90>  0.9             0.</burn_90>
           <tine>     1.0           100.</tine>
@@ -2266,6 +2443,9 @@ endif
         <enr_a_coeff>7.400</enr_a_coeff>
         <enr_b_coeff>0.200</enr_b_coeff>
         <profile_reduction>off</profile_reduction>
+        <fraction_urine_added>0.75</fraction_urine_added>
+        <!--<wfps_lim>0.9</wfps_lim> -->
+        <!--change the water content function of denitrification-->
         <oc>1.800 0.970 0.420 0.230 0.230 0.230 0.230 </oc>
         <ph>7.000 7.000 7.000 7.000 7.000 7.000 7.000 </ph>
         <fbiom>0.030 0.020 0.010 0.010 0.010 0.010 0.010 </fbiom>
