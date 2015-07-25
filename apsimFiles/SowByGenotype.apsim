@@ -39,7 +39,6 @@ Revised version July 2015 in Bonn Uni</memo>
         <NaturalVegetation>Brigalow, belah, wilga</NaturalVegetation>
         <Latitude>0</Latitude>
         <Longitude>0</Longitude>
-        <YearOfSampling>0</YearOfSampling>
         <InitialWater name="Initial water">
           <FractionFull>1</FractionFull>
           <DepthWetSoil>NaN</DepthWetSoil>
@@ -1189,7 +1188,7 @@ endif
               <Harvesting type="category" description="Harvesting Rules" />
               <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">flowering</StageName>
               <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
-              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-jul</CriticalDate>
+              <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-aug</CriticalDate>
               <SilageCut type="yesno" description="Harvested for silage? (yes/no):">no</SilageCut>
               <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
               <Fertilizer type="category" description="Fertilizer Rules" />
@@ -1272,10 +1271,12 @@ IsCatchCrop = 1
    ! Test Silage harvest
             if (SilageCut = 'yes' and [CropName].stage &gt; 6) then    !FIXME this does not need to be hardcoded here       
                TtPosFlow = TtPosFlow + [CropName].tt                                               
-            endif
+            
             if (TtPosFlow &gt; 0.8*phase_tt(8)) then ! Reaches silage maturity at 850oCd after flowering as for maize in Wilson et al XXX
                EndbySilage = 1
             endif         
+         endif
+
 
    ! Set flags for the possible events that trigger a harvest
 
@@ -1328,9 +1329,9 @@ endif
         <manager name="NitroRules">
           <ui>
             <Category type="category" description="Enter crop species and the stage when N application should stop:" />
-            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">maize</CropType1>
+            <CropType1 type="crop" description="Crop species 1 (e.g. wheat):">wheat</CropType1>
             <EndStage1 type="text" description="    Crop 1 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage1>
-            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">wheat</CropType2>
+            <CropType2 type="crop" description="Crop species 2 (e.g. wheat):">barley</CropType2>
             <EndStage2 type="text" description="    Crop 2 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">6.0</EndStage2>
             <CropType3 type="crop" description="Crop species 3 (e.g. wheat):">maize</CropType3>
             <EndStage3 type="text" description="    Crop 3 stage &quot;number&quot; (e.g. 6 is flowering in wheat):">7.0</EndStage3>
@@ -1845,10 +1846,8 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
         </events>
         <Graph name="Soil_CNW">
           <Legend>
-            <CheckedTitles> no3(), GridCell pixel daily</CheckedTitles>
-            <CheckedTitles> no3(), {Checkpoint} GridCell pixel daily</CheckedTitles>
-            <CheckedTitles> sw(), GridCell pixel daily</CheckedTitles>
-            <CheckedTitles> sw(), {Checkpoint} GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> no3()</CheckedTitles>
+            <CheckedTitles> sw()</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -1863,8 +1862,9 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
         </Graph>
         <Graph name="Bio">
           <Legend>
-            <CheckedTitles> pixel.maize.biomass, GridCell pixel daily</CheckedTitles>
-            <CheckedTitles> pixel.maize.biomass, {Checkpoint} GridCell pixel daily</CheckedTitles>
+            <CheckedTitles> TotalBiomass</CheckedTitles>
+            <CheckedTitles> pixel.wheat.biomass</CheckedTitles>
+            <CheckedTitles> pixel.maize.biomass</CheckedTitles>
           </Legend>
           <Plot>
             <SeriesType>Solid line</SeriesType>
@@ -1976,7 +1976,7 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
         </Graph>
         <Graph name="sowRules">
           <Legend>
-            <CheckedTitles> SowByWindow</CheckedTitles>
+            <CheckedTitles> ReadyToSow</CheckedTitles>
             <CheckedTitles> TotalBiomass</CheckedTitles>
           </Legend>
           <Plot>
