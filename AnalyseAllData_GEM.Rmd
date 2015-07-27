@@ -75,6 +75,9 @@ workDF$thisHyb <- factor(workDF$thisHyb, levels = c('h1', 'h2', 'h3', 'h4', 'h5'
 
 #creates ID for each pixel
 workDF$pixel_ID <- paste0(workDF$row,"_",workDF$col)
+print(paste0("Found ", length(unique(workDF$pixel_ID)), " pixels"))
+inPix <- length(unique(workDF$pixel_ID))
+
 
 # Creates a year field as factor
 workDF$yearAsFact <- as.factor(paste0(workDF$year,"_Y"))
@@ -85,11 +88,13 @@ workDF <- workDF %>%  mutate(TTav = TTsum/GrowthLength)
 summary(workDF)
 
 # Read region data
-df_region <- as.data.frame(read.csv(file = 
-                                        paste0("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\",
-                                   "RegionPerPixel.csv") ))
-
-df_region <- df_region %>% select (-X)
+#df_region <- as.data.frame(read.csv(file = 
+#                                        paste0("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\",
+#                                   "RegionPerPixel.csv") ))
+nrow(df_region)
+head(df_region)
+#df_region <- df_region %>% group_by(row,col,regNames) %>% select (-X, -record)
+#df_region <- data.frame(df_region)
 head(df_region)
 
 #workDF <- merge(workDF, df_region, by = c("row", "col")) # FIXME: this is deleting some pixels
@@ -98,14 +103,33 @@ head(df_region)
 head(workDF)
 
 # Read climate zone data
+climZones <- NULL
 climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\CLuster.csv")
 head(climZones)
+nrow(climZones)
+
+# Corercting coordinates FIXME: Check that
 climZones$rowNew <- climZones$row - 1 # climZones[,rowNew] - 1
 climZones$colNew <- climZones$col - 1 # climZones[,colNew] - 1
-workDF <- merge(workDF, climZones, by = c("row", "col")) # FIXME: this is deleting some pixels
-workDF$Combine <- factor(workDF$Combine, levels = c('LTLR', 'LTMR', 'LTHR', 
-                                                    'MTLR','MTMR', 'MTHR', 
-                                                    'HTLR', 'HTMR', 'HTHR'))
+climZones$pixel_ID <- paste0(climZones$rowNew,"_",climZones$colNew)
+head(climZones)
+nrow(climZones)
+
+# pixels in each DF
+length(unique(climZones$pixel_ID)) # FIXME: where are thse coming from?
+length(unique(workDF$pixel_ID)) # FIXME: where are thse coming from?
+
+# merge DFs FIXME: merge is deleting many pixels
+#workDF_m <- merge(workDF,climZones, by = c("row", "col")) # FIXME: this is deleting some pixels
+workDF <- merge(workDF,climZones, by = "pixel_ID") # FIXME: this is deleting some pixels
+length(unique(workDF_m$pixel_ID)) # FIXME: where are thse coming from?
+
+
+length(unique(climZones$pixel_ID)) # FIXME: where are thse coming from?
+length(unique(workDF$pixel_ID)) # FIXME: where are thse coming from?
+
+workDF$Combine <- factor(workDF$Combine, levels = c('LTLR', 'LTMR', 'LTHR','MTLR','MTMR', 'MTHR','HTLR', 'HTMR', 'HTHR'))
+head(climZones)
 
 #write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
 #               append=FALSE, quote=FALSE)
@@ -125,7 +149,9 @@ workDF$thisHyb_n[workDF$thisHyb == "h5"] <- 5
 
 summary(workDF)
 head(workDF)
-print(paste0("Found ", length(unique(workDF$pixel_ID)), " pixels"))
+enPix <- length(unique(workDF$pixel_ID))
+print(paste0("Found ", length(unique(workDF$pixel_ID)), 
+             " pixels and change in pixel # (if any) was ",inPix - enPix))
 save(workDF,file="workDF_GEM.Rda")
 
 ```

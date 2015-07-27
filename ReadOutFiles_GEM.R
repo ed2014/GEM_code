@@ -1,8 +1,8 @@
 gc()
 # set wd
-#setwd("F:\\SowByGenotype")#
+setwd("F:\\SowByGenotype(raw)\\allOutFiles")#
 #setwd("C:\\Dropbox\\2014-GEM_paper\\rawData")
-setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
+#setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
 # Get all files including from sub-folders (recursive)
 files <- NULL
 files <- list.files(getwd(),
