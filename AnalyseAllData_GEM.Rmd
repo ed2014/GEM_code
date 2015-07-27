@@ -369,8 +369,7 @@ si_df_final_m <- si_df_final # place holder while we decide what to do with regi
 
 head(si_df_final_m)
 # save this DF 
-write.table(si_df_final_m, file="Si_by_Pixel.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
-               append=FALSE, quote=FALSE)
+write.table(si_df_final_m, file="Si_by_Pixel.txt", row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
 # All plotted together by region
 fontSize <- 25
