@@ -109,9 +109,9 @@ head(climZones)
 nrow(climZones)
 
 # Corercting coordinates FIXME: Check that
-climZones$rowNew <- climZones$row - 1 # climZones[,rowNew] - 1
-climZones$colNew <- climZones$col - 1 # climZones[,colNew] - 1
-climZones$pixel_ID <- paste0(climZones$rowNew,"_",climZones$colNew)
+climZones$row <- climZones$row - 1 # climZones[,rowNew] - 1
+climZones$col <- climZones$col - 1 # climZones[,colNew] - 1
+climZones$pixel_ID2 <- paste0(climZones$row,"_",climZones$col)
 head(climZones)
 nrow(climZones)
 
@@ -120,9 +120,9 @@ length(unique(climZones$pixel_ID)) # FIXME: where are thse coming from?
 length(unique(workDF$pixel_ID)) # FIXME: where are thse coming from?
 
 # merge DFs FIXME: merge is deleting many pixels
-#workDF_m <- merge(workDF,climZones, by = c("row", "col")) # FIXME: this is deleting some pixels
-workDF <- merge(workDF,climZones, by = "pixel_ID") # FIXME: this is deleting some pixels
-length(unique(workDF_m$pixel_ID)) # FIXME: where are thse coming from?
+workDF <- merge(workDF,climZones, by = c("row", "col")) # FIXME: this is deleting some pixels
+#workDF <- merge(workDF,climZones, by = "pixel_ID") # FIXME: this is deleting some pixels
+length(unique(workDF$pixel_ID)) # FIXME: where are thse coming from?
 
 
 length(unique(climZones$pixel_ID)) # FIXME: where are thse coming from?
@@ -315,7 +315,8 @@ head(workDF)
   df_si <- NULL
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1],
-                   thisRegion = thisPixDF$region[1],
+                #   thisRegion = thisPixDF$region[1],
+                   thisClimZone = thisPixDF$Combine[1],
                    row = thisPixDF$row[1],
                    col = thisPixDF$col[1],
                    df_ss$SS_p[1], 
@@ -352,8 +353,10 @@ nrow(si_df_final)
 #gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 #gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
+si_df_final_m <- si_df_final # place holder while we decide what to do with region
+
 # Give same names to the regions in df
-df_reg_names <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RegionPerPixel.csv")
+#df_reg_names <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RegionPerPixel.csv")
 #FIXME: Add region names from csv file or env names
 #df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18, 99),  
               #             regNames = c("Northland", "Auckland", "Waikato", 
