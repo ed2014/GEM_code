@@ -112,6 +112,41 @@ summary(workDF)
 
 ```
 
+
+```{r TableResClimZone}
+
+workDF %>%
+  group_by(Combine) %>%
+  select(TotalBiomass, HarvestIndex) %>%
+  mutate(TotalBiomass_Mg = TotalBiomass/1000) %>%
+  summarise_each(funs(mean, sd)) %>%
+  mutate(Bio_CV = ((TotalBiomass_Mg_sd/TotalBiomass_Mg_mean)*100), 
+                   HI_CV = ((HarvestIndex_sd/HarvestIndex_mean)*100))  %>%
+  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV)
+
+workDF %>%
+  select(TotalBiomass, HarvestIndex) %>%
+  summarise_each(funs(mean))
+
+# Area in Kha 
+workDF %>%
+  group_by(Combine) %>%
+  select(pixel_ID) %>%
+  summarise(Unique_Pixels = n_distinct(pixel_ID)) %>%
+  mutate(apr_area_kha = Unique_Pixels * 2500/1000)
+
+
+```
+
+
+```{r 3DGraphsValues}
+
+
+
+```
+
+
+
 ## Graph some results
 
 > Total silage biomass by sowing date (kg/ha)
