@@ -396,6 +396,8 @@ si_df_final_m %>%
 
 # Bar graph version (pooled by climate zones) --------------
 library(tidyr)
+df_av <- si_df_final_m %>% group_by(thisClimZone) %>% summarise_each(funs(mean)) %>% gather(factName, siVal, 6:9)
+
 si_df_final_m %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%
@@ -407,10 +409,10 @@ si_df_final_m %>%
   scale_fill_discrete(name="Ti component",
                          labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
   theme(text = element_text(size=20)) +
-  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
-  geom_text(aes(label = paste0("(",round(ti_df.m$percInt, digits=1),"%)"), y=100), size = 7)
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
+  geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7)
  # ggsave(file="Fig_Ti.tiff", dpi = 300)
-  ggsave(file=paste0("Fig_Ti_",methodCalc[met], ".tiff"), dpi = 300)
+  ggsave(file=paste0("Si_bar.tiff"), dpi = 300)
 
   
 
