@@ -87,14 +87,23 @@ df_region <- as.data.frame(read.csv(file =
 df_region <- df_region %>% select (-X)
 head(df_region)
 
-# workDF <- merge(workDF, df_region, by = c("row", "col")) # FIXME: this is deleting some pixels
+#workDF <- merge(workDF, df_region, by = c("row", "col")) # FIXME: this is deleting some pixels
+# FIXME: region merge is deleting Canterbury latitude
+ 
 head(workDF)
 
 # Read climate zone data
-climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RES_CLuster.csv")
+climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\CLuster.csv")
 head(climZones)
-climZones$rowNew <- climZones$row -1 # climZones[,rowNew] - 1
-climZones$colNew <- climZones$col - 1 # climZones[,colNew] - 1
+#climZones$rowNew <- climZones$row -1 # climZones[,rowNew] - 1
+#climZones$colNew <- climZones$col - 1 # climZones[,colNew] - 1
+workDF <- merge(workDF, climZones, by = c("row", "col")) # FIXME: this is deleting some pixels
+workDF$Combine <- factor(workDF$Combine, levels = c('LTLR', 'LTMR', 'LTHR', 
+                                                    'MTLR','MTMR', 'MTHR', 
+                                                    'HTLR', 'HTMR', 'HTHR'))
+head(workDF)
+save(workDF,file="workDF_GEM.Rda")
+
 
 #write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
 #               append=FALSE, quote=FALSE)
@@ -173,10 +182,12 @@ This form of display seems more interesting.
 # Total biomass
 workDF %>%
 #subset(region == 4 |region == 11 | region == 13) %>%
+#subset(thisSow == "s5") %>%
 ggplot(aes(x= thisHyb , y=TotalBiomass)) +  
 geom_boxplot() +
 #facet_grid( region~ thisSow)
-facet_grid(row~ thisSow)
+facet_grid(. ~ thisSow)# +
+#facet_wrap(~Combine, ncol = 3)
 
 # Total Yield
 workDF %>%
@@ -229,9 +240,9 @@ workDF %>%
   summarise_each(funs(sd, mean)) %>%
   select(thisSow, thisHyb,thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
-  ggplot(aes(x= thisSow , y=TotalBiomass_mean)) + 
+  ggplot(aes(x= thisLat , y=TotalBiomass_mean)) + 
   geom_point() +
-  facet_grid( thisLat~ thisHyb)
+  facet_grid(.~ thisHyb)
 
 workDF %>%
   group_by(row, col, thisLat, thisLong) %>%
