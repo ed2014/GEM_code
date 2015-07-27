@@ -16,8 +16,8 @@ file.copy(flistToCopy, outDir , overwrite = TRUE)
 # Delete all .out and .sum from .sim folder
 flistToDelete = 
   paste(c(
-    list.files(simDir, ".out", full.names = TRUE),
-    list.files(simDir,".sum", full.names = TRUE)
+    list.files(simDir, ".out", full.names = TRUE, recursive = TRUE),
+    list.files(simDir,".sum", full.names = TRUE, recursive = TRUE)
     ))
 flistToDelete
 file.remove(flistToDelete)

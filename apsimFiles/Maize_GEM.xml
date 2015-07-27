@@ -142,7 +142,6 @@
     <grno_grate description="average growth rate per plant (g/day) during grain-number sensitive phase">0.5   3    6             </grno_grate>
     <grno_fract description="multiplier on potential grain number per plant">0  0.6   1               </grno_fract>
     <temp_grain_crit_stress units="oC" description="Tmax above which grain no. is reduced">38.0</temp_grain_crit_stress> <!-- PLP? Carberry et al. 1989 38.0 -->
-	<grains_per_gram_stem> 25 </grains_per_gram_stem> <!-- APSIM is asking for this parameter  EIT -->
     <htstress_coeff description="coeff for conversion of heat stress during flowering to heat stress factor on grain number development.">0.05</htstress_coeff>
     <grain_n_conc_min description="minimum nitrogen concentration of grain">0.0007</grain_n_conc_min>
     <seed_wt_min units="g/seed" description="minimum grain weight (g/seed)">0.02</seed_wt_min>
@@ -227,7 +226,7 @@
     <svp_fract description="(0-1)">0.75  </svp_fract>
     <eo_crop_factor_default description="default crop factor for limiting soil">100.0  </eo_crop_factor_default>
     <co2level>350.0</co2level>
-	<!-- EIT: TE response copied from wheat: Not considering it for the GEM study historical climate -->
+	<!-- EIT: TE response copied from wheat as met file has CO2. Considering it OFF for GEM study as it is historical climate only -->
     <co2_level_te>   0  350   700   1000   </co2_level_te>
     <te_co2_modifier>0  1.0   1.0  1.0</te_co2_modifier>
 	<x_co2_nconc_modifier units="ppm co2">350  700   1000</x_co2_nconc_modifier>
@@ -2036,10 +2035,10 @@
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
 	</B_130>	
 	<medium cultivar="yes">
-	<!-- Test for CCII RA2 -->
+	<!-- Test for CCII RA2 and GEM2015 work-->
 	<!-- Grain growth -->
 		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
-		<grain_gth_rate description="(mg/grain/day)">8.0</grain_gth_rate>
+		<grain_gth_rate description="(mg/grain/day)">8.5</grain_gth_rate>
 	<!-- Phenology -->
       <tt_emerg_to_endjuv units="oC">150</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
@@ -2048,7 +2047,7 @@
       <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
       <photoperiod_slope>0.0</photoperiod_slope>
       <tt_flower_to_maturity>900</tt_flower_to_maturity>
-      <tt_flag_to_flower>50</tt_flag_to_flower>
+      <tt_flag_to_flower>10</tt_flag_to_flower>
       <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
       <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
 	<!-- Structure -->  
@@ -2056,5 +2055,4 @@
       <y_height units="mm" description="plant canopy height">0  2000</y_height>	
 	</medium>		
   </Model>
-  
 </Type>

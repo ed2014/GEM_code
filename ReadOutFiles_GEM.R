@@ -1,10 +1,11 @@
 gc()
 # set wd
-setwd("F:\\SowByGenotype")
+#setwd("F:\\SowByGenotype")#
 #setwd("C:\\Dropbox\\2014-GEM_paper\\rawData")
-
+setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
 # Get all files including from sub-folders (recursive)
-files = list.files(getwd(),
+files <- NULL
+files <- list.files(getwd(),
                    pattern='.out', 
                    full.names=FALSE,
                    include.dirs = FALSE,
@@ -13,7 +14,7 @@ files = list.files(getwd(),
 files[1]
 
 # Show me the money!
-print(paste0("Found ",length(files)," .out files in folder"))
+print(paste0("Found ",length(files)," .out files in folder:", getwd()))
 
 
 # # Set up df to hold variables
@@ -42,38 +43,38 @@ for (i in 1:length(files)) {
   
   # ## Sort data stamps from file name
   splitName = unlist(strsplit(files[i],"[/,_,.]"))
-  r = as.numeric(splitName[3]) # FIXME: see if first number is indeed row
-  c = as.numeric(splitName[4])
-  hyb = splitName[5]  # scenario
-  sow = splitName[6] # soil type
+  r <- as.numeric(splitName[1]) # FIXME: see if first number is indeed row
+  c <- as.numeric(splitName[2])
+  hyb <- splitName[3]  # scenario
+  sow <- splitName[4] # soil type
   
   # read data for that .out file
-  thisOutFile = read.table(files[i], skip = 4, header = FALSE, blank.lines.skip = TRUE) # reads and skips the unit line
+  thisOutFile <- read.table(files[i], skip = 4, header = FALSE, blank.lines.skip = TRUE) # reads and skips the unit line
   
-  colnames(thisOutFile) =  colnames(thisHeader)
+  colnames(thisOutFile) <-  colnames(thisHeader)
   
   # From the netCDF metadata (FIXME: should get this from printed field in .out file to minimise risks)
   # !!!!Atention!!!!! Lat/Long "cannot" be rounded otherwise it creates a mismatch of pixels during rasterisation
-  thisLat = -34.375-0.050*(r-1)
-  thisLong = 166.425+0.050*(c-1)
+  thisLat <- -34.375-0.050*(r-1)
+  thisLong <- 166.425+0.050*(c-1)
   # FIXME: this is still not ideal as V3 and V4 depend on the arrangment in output, need to address the name and the rounding is not perfect
   #  if (lat!= min(thisOutFile$V3) | long != min(thisOutFile$V4)) {print(paste(c("Error: Latitude and/or longitude do not match in row/col: ", r, c)))}
   
   #colnames(thisOutFile)
   #  l = length(thisOutFile$Date)
-  l = length(thisOutFile[,1]) # fills the variable vector with a no of lines needed
-  fileNo = rep(i, l)
-  row =  rep(r, l)
-  col =  rep(c, l)
-  thisHyb = rep(hyb, l) 
-  thisSow = rep(sow, l)
+  l <- length(thisOutFile[,1]) # fills the variable vector with a no of lines needed
+  fileNo <- rep(i, l)
+  row <-  rep(r, l)
+  col <-  rep(c, l)
+  thisHyb <- rep(hyb, l) 
+  thisSow <- rep(sow, l)
 
   
-  thisOutFile = data.frame(fileNo, row, col, 
+  thisOutFile <- data.frame(fileNo, row, col, 
                            thisLat, thisLong,
                            thisHyb, thisSow, thisOutFile)
   
-  allData = rbind(allData, thisOutFile)
+  allData <- rbind(allData, thisOutFile)
   
   if(i == 1 | i %% 500 == 0 | i == length(files)) {
     print(paste(fileNo[1], " " , Sys.time()))
@@ -95,7 +96,7 @@ summary(allData)
 # idea: more efficient appending with dplyr???
 
 # # Read csvs
-csv.files = list.files(getwd(),pattern='.csv', full.names=FALSE) # if true gets path
+csv.files <- list.files(getwd(),pattern='.csv', full.names=FALSE) # if true gets path
 all.the.data <- lapply(csv.files, read.csv, header=TRUE)
 length(csv.files)
 DATA_GEM <- do.call("rbind", all.the.data)

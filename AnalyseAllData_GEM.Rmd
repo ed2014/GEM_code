@@ -43,7 +43,8 @@ library(dplyr)
 ```{r GetData, include=FALSE}
 # load data from HD
 #setwd("E:\\SowByGenotype")
-setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
+#setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
+setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
@@ -57,7 +58,7 @@ summary(DATA_GEM)
 
 ```{r TidyUp, echo = FALSE, include=FALSE}
 # Remove wheat (catch crop rotation) and keep only maize data
-
+workDF <- NULL
 workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
 
 # order sow dates
@@ -83,8 +84,8 @@ df_region <- as.data.frame(read.csv(file =
 df_region <- df_region %>% select (-X)
 head(df_region)
 
-workDF <- merge(workDF, df_region, by = c("col", "row"))
-
+# workDF <- merge(workDF, df_region, by = c("row", "col")) # FIXME: this is deleting some pixels
+head(workDF)
 
 # Read climate zone data
 climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RES_CLuster.csv")
@@ -110,7 +111,7 @@ workDF %>%
 ggplot(aes(x= thisSow , y=TotalBiomass)) +  
 geom_boxplot() +
 #facet_grid(region ~ thisHyb)
-facet_grid(.~ thisHyb)
+facet_grid(. ~ thisHyb)
 
 # Total Yield
 workDF %>%
@@ -118,7 +119,7 @@ workDF %>%
 ggplot(aes(x= thisSow , y=TotalYield)) +  
 geom_boxplot() +
 #facet_grid(region ~ thisHyb)
-facet_grid(.~ thisHyb)
+facet_grid(row~ thisHyb)
 
 # Harvest Index
 workDF %>%
@@ -138,11 +139,19 @@ ggplot(aes(x= thisSow , y=WUE)) +
 geom_boxplot() +
 facet_grid( .~ thisHyb)
 
-# Water Use Efficiency
+# Radiation use Efficiency
 workDF %>%
-ggplot(aes(x= thisSow , y=WUE)) +  
+ggplot(aes(x= thisSow , y=RUEtop)) +  
 geom_boxplot() +
-facet_grid( .~ thisHyb)
+facet_grid( row~ thisHyb)
+
+
+# Light Interception
+workDF %>%
+ggplot(aes(x= thisSow , y=IntRadSum)) +  
+geom_boxplot() +
+facet_grid( row~ thisHyb)
+
 
 ```
 
@@ -161,13 +170,13 @@ workDF %>%
 ggplot(aes(x= thisHyb , y=TotalBiomass)) +  
 geom_boxplot() +
 #facet_grid( region~ thisSow)
-facet_grid(.~ thisSow)
+facet_grid(row~ thisSow)
 
 # Total Yield
 workDF %>%
 ggplot(aes(x= thisHyb , y=TotalYield)) +  
 geom_boxplot() +
-facet_grid( .~ thisSow)
+facet_grid( row~ thisSow)
 
 # Harvest Index
 workDF %>%
@@ -208,7 +217,15 @@ facet_grid( .~ thisSow)
 
 ```{r GraphCVs, echo =FALSE}
 # polled CV across hybrids and sowing dates
-# Not working
+
+workDF %>%
+  group_by(thisLat,thisLong,thisSow, thisHyb) %>%
+  summarise_each(funs(sd, mean)) %>%
+  select(thisSow, thisHyb,thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
+  mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
+  ggplot(aes(x= thisSow , y=TotalBiomass_mean)) + 
+  geom_point() +
+  facet_grid( thisLat~ thisHyb)
 
 workDF %>%
   group_by(row, col, thisLat, thisLong) %>%
