@@ -371,18 +371,18 @@ head(si_df_final_m)
 # save this DF 
 write.table(si_df_final_m, file="Si_by_Pixel.txt", row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
-# All plotted together by region
+# All plotted together by clim zone
 fontSize <- 25
 si_df_final_m %>%
-  subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
+ # subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
   group_by(thisLat, thisLong) %>%
-  gather(factName, siVal, 4:7) %>% # FIXME: this might change - can you automate?
+  gather(factName, siVal, 6:9) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x= siVal, colour=factName, fill=factName)) + 
   geom_histogram(aes(y=..density..), binwidth=.8, alpha=0) +
  # geom_histogram(binwidth=1, alpha=0) +
   geom_density(alpha=0.2,size=1.5) +
  # facet_grid(thisRegion~. , scales="free") +
-  facet_wrap(~regNames, scales="free") +
+  facet_wrap(~thisClimZone, scales="free") +
   xlab("Percent of total variability (%)") +
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
@@ -393,6 +393,59 @@ si_df_final_m %>%
 # Plot distributions of Si
 #grid.arrange(gH, gS, gW,gI, nrow=4)
 #si_df_final_m_bkp <- si_df_final_m
+
+# Bar graph version (pooled by climate zones) --------------
+library(tidyr)
+si_df_final_m %>%
+  group_by(thisClimZone) %>%
+  summarise_each(funs(mean)) %>%
+  gather(factName, siVal, 6:9) %>%
+  ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=rev(factName))) + 
+  geom_bar(stat='identity')  +
+  xlab("Climatic zones ") + ylab("Share of total variability (%)") + 
+ # scale_x_discrete(labels= ) + 
+  scale_fill_discrete(name="Ti component",
+                         labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
+  theme(text = element_text(size=20)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  geom_text(aes(label = paste0("(",round(ti_df.m$percInt, digits=1),"%)"), y=100), size = 7)
+ # ggsave(file="Fig_Ti.tiff", dpi = 300)
+  ggsave(file=paste0("Fig_Ti_",methodCalc[met], ".tiff"), dpi = 300)
+
+  
+
+
+# Perc of interaction of each factor
+ti_df %>%
+ggplot(aes(x=newFactName, y=intPerc)) + 
+ geom_bar(width=.5,stat="identity", fill="darkgreen") +
+ # coord_flip() + 
+ xlab("Factors") + 
+ ylab("Share of interaction in factor (%)") +
+# scale_x_discrete(labels= newFactName) +
+ geom_text(aes(label = paste0(round(ti_df$intPerc, digits=1),"%"), y = mx+3), size = 5)
+
+# reorder factors ascending
+ti_df.m$newFactName <- factor(ti_df.m$newFactName, 
+  levels = ti_df.m$newFactName[order(ti_df.m$value[ti_df.m$variable == "siMain"])])
+
+mx <- max(ti_df$percTi_norm)
+
+graphTi[met] <- Ti_graph <- ti_df.m %>%
+ggplot(aes(x=newFactName, y=normValue, fill=variable, order=rev(variable))) + 
+  geom_bar(stat='identity') +
+  #coord_flip() +  
+  xlab("Main Factors") + ylab("Normalised sums of squares (%)") + 
+ # scale_x_discrete(labels= ) + 
+  scale_fill_discrete(name="Ti component",
+                         labels=c("Interactions", "Main Effects"))+
+  theme(text = element_text(size=20)) +
+  geom_text(aes(label = paste0("(",round(ti_df.m$percInt, digits=1),"%)"), y = mx+5), size = 7)
+ # ggsave(file="Fig_Ti.tiff", dpi = 300)
+  ggsave(file=paste0("Fig_Ti_",methodCalc[met], ".tiff"), dpi = 300)
+
+print(Ti_graph) 
+
 ```
 
 
