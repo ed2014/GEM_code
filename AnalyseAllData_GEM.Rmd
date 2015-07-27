@@ -108,6 +108,19 @@ save(workDF,file="workDF_GEM.Rda")
 #write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
 #               append=FALSE, quote=FALSE)
 
+# Give numeric labels to factor levels
+workDF$thisSow_n[workDF$thisSow == "s1"] <- 1
+workDF$thisSow_n[workDF$thisSow == "s2"] <- 2
+workDF$thisSow_n[workDF$thisSow == "s3"] <- 3
+workDF$thisSow_n[workDF$thisSow == "s4"] <- 4
+workDF$thisSow_n[workDF$thisSow == "s5"] <- 5
+
+workDF$thisHyb_n[workDF$thisHyb == "h1"] <- 1
+workDF$thisHyb_n[workDF$thisHyb == "h2"] <- 2
+workDF$thisHyb_n[workDF$thisHyb == "h3"] <- 3
+workDF$thisHyb_n[workDF$thisHyb == "h4"] <- 4
+workDF$thisHyb_n[workDF$thisHyb == "h5"] <- 5
+
 summary(workDF)
 
 ```
@@ -138,13 +151,68 @@ workDF %>%
 
 ```
 
+Select some pixels across the range of results
 
-```{r 3DGraphsValues}
+```{r 3DGraphsByPixel, echo = FALSE}
 
+df_sel <- workDF %>%
+  group_by(Combine, row,col, pixel_ID, thisSow_n, thisHyb_n) %>%
+  summarise(bio = mean(TotalBiomass), hi = mean(HarvestIndex))  %>%
+  filter(pixel_ID == "24_157" | pixel_ID == "189_106" | pixel_ID == "240_45")
+ # count(Combine,bio,hi) %>%
+ # filter(bio == max(bio)) %>%
+ # filter(Combine == "LTLR" | Combine == "MTMR"| Combine == "HTHR" ) %>%
+
+pixels <- unique(df_sel$pixel_ID)
+
+for (p in 1:length(pixels)) {
+  df_sel %>%
+  filter(pixel_ID == pixels[p])  %>%
+  write.table(file=paste0(pixels[p],"_3D_graph.txt"), row.names=FALSE, col.names=TRUE, sep=" ", append=FALSE, quote=FALSE)
+  print(pixels[p])
+  
+  # graph it FIXME: do it later
+par(mfrow = c(1, 2))
+
+# Plot 3 D graph
+z <- matrix(df_pix[["bio"]],                       # the data elements 
+nrow=length(unique(df_pix$thisHyb_n)),              # number of rows 
+ncol=length(unique(df_pix$thisSow_n)),              # number of columns 
+byrow = TRUE)                                     # fill matrix by rows 
+colnames(z) = unique(df_pix$thisHyb_n)
+rownames(z) = unique(df_pix$thisSow_n)
+
+x = as.numeric(colnames(z))
+y = as.numeric(rownames(z))
+  
+persp3D(x, y, z, theta=60, phi=10, expand=0.75,
+        main= paste0("Bio_mean: ",pixels[p]),
+        ticktype="detailed", lighting = TRUE, 
+        xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+
+
+# variaility
+# PLot 3 D graph
+z = matrix(df_pix[["hi"]], # the data elements 
+nrow=length(unique(df_pix$thisHyb_n)),              # number of rows 
+ncol=length(unique(df_pix$thisSow_n)),              # number of columns 
+byrow = TRUE)        # fill matrix by rows 
+colnames(z) = unique(df_pix$thisHyb_n)
+rownames(z) = unique(df_pix$thisSow_n)
+
+x = as.numeric(colnames(z))
+y = as.numeric(rownames(z))
+  
+persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
+        main= paste0("HI: ",pixels[p]),
+        ticktype="detailed", lighting = TRUE, xlab="Sow date", 
+        ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+
+  
+  }
 
 
 ```
-
 
 
 ## Graph some results
@@ -399,73 +467,6 @@ tail(workDF_med)
 
 ```
 
-Select some pixels across the range of results
-
-```{r 3DGraphsByPixel, echo = FALSE}
-
-# Give me the 25th percentile of Biomass
-df_p <- workDF_med %>% 
-  group_by(row, col) %>%
-  mutate(perc = rank(Bio_med)/length(Bio_med))
-
-head(df_p)
-summary(df_p$perc)
-
-# select 3 "sample" pixels to graph
-
-df_sel <- data.frame(rowsSel = c(67, 184, 239), colsSel = c(180, 113, 38) )
-
-# loop each selected pixel and graph
-for (p in 1:nrow(df_sel)) {
-  
-df_pix <- df_p %>% group_by(row, col) %>%
-  filter(row==df_sel$rowsSel[p] & col==df_sel$colsSel[p])
-
-#head(df_pix, 25)
-# save pixel data
-write.table(df_pix, file=paste0(df_sel$rowsSel[p],"_",df_sel$colsSel[p],"_","3D_graph.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
-               append=FALSE, quote=FALSE)
-
-# graph it
-par(mfrow = c(1, 2))
-
-# Plot 3 D graph
-z <- matrix(df_pix$Bio_med,                       # the data elements 
-nrow=length(unique(df_pix$thisHyb)),              # number of rows 
-ncol=length(unique(df_pix$thisSow)),              # number of columns 
-byrow = TRUE)                                     # fill matrix by rows 
-colnames(z) = unique(df_pix$thisHyb_n)
-rownames(z) = unique(df_pix$thisSow_n)
-
-x = as.numeric(colnames(z))
-y = as.numeric(rownames(z))
-  
-persp3D(x, y, z, theta=60, phi=10, expand=0.75,
-        main= paste0("Bio_mean: ",df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
-        ticktype="detailed", lighting = TRUE, 
-        xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
-
-
-# variaility
-# PLot 3 D graph
-z = matrix(df_pix$Bio_sd, # the data elements 
-nrow=length(unique(df_pix$thisHyb)),              # number of rows 
-ncol=length(unique(df_pix$thisSow)),              # number of columns 
-byrow = TRUE)        # fill matrix by rows 
-colnames(z) = unique(df_pix$thisHyb_n)
-rownames(z) = unique(df_pix$thisSow_n)
-
-x = as.numeric(colnames(z))
-y = as.numeric(rownames(z))
-  
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
-        main= paste0("Bio_CV: ",df_sel$rowsSel[p],"_",df_sel$colsSel[p]),
-        ticktype="detailed", lighting = TRUE, xlab="Sow date", 
-        ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
-
-}
-
-```
 
 ## Find hybrid x sow date with **highest yield** in each pixel
 
