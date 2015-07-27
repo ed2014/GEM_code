@@ -8,8 +8,8 @@ library(XML)
 gc()
 
 # Select folders and file locations
-#metFolder <- "\\\\simplace.net\\projects\\nz\\weatherHistorical\\metFiles\\"    # set folder locations (comment the ones not used)
-metFolder <- "F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\"
+metFolder <- "\\\\simplace.net\\projects\\nz\\weatherHistorical\\metFiles\\"    # set folder locations (comment the ones not used)
+metFolder2 <- "F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\"
 #metFolder <- "C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\metFiles\\testPixels\\"
 #simFolder <- "Z:\\simFiles\\"    # sim folder to save new .sims
 simFolder <- "F:\\SowByGenotype\\simsRun2\\"    # sim folder to save new .sims
@@ -22,7 +22,7 @@ sowDate <- c("-sep","-oct","-nov","-dec")
 # select met files to define which .sims to produce
 # finds out met files to point to
 metFiles <- NULL
-metFiles <- list.files(metFolder,pattern='.met', full.names=FALSE) # Option 1: gets all met files in a folder
+metFiles <- list.files(metFolder2,pattern='.met', full.names=FALSE) # Option 1: gets all met files in a folder
 #load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)    # Option 2: gets a list of grid-cell/files selected (LU layer in this case)
 # metFiles <- metList
 #metFiles <- c("10_135.met" , "100_148.met")

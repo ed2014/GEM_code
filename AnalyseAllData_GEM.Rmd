@@ -43,8 +43,8 @@ library(dplyr)
 ```{r GetData, include=FALSE}
 # load data from HD
 #setwd("E:\\SowByGenotype")
-#setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
-setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
+setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
+#setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
@@ -64,6 +64,9 @@ workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
 # order sow dates
 workDF$thisSow <- factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
 workDF$thisHyb <- factor(workDF$thisHyb, levels = c('h1', 'h2', 'h3', 'h4', 'h5'))
+#workDF$thisSow <- factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4'))
+#workDF$thisHyb <- factor(workDF$thisHyb, levels = c('h1', 'h2', 'h3', 'h4'))
+
 
 #creates ID for each pixel
 workDF$pixel_ID <- paste0(workDF$row,"_",workDF$col)
@@ -90,8 +93,11 @@ head(workDF)
 # Read climate zone data
 climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RES_CLuster.csv")
 head(climZones)
-write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
-               append=FALSE, quote=FALSE)
+climZones$rowNew <- climZones$row -1 # climZones[,rowNew] - 1
+climZones$colNew <- climZones$col - 1 # climZones[,colNew] - 1
+
+#write.table(climZones, file="climZones.txt"), row.names=FALSE, col.names=TRUE, sep=" ",
+#               append=FALSE, quote=FALSE)
 
 summary(workDF)
 
@@ -182,7 +188,7 @@ facet_grid( row~ thisSow)
 workDF %>%
 ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
 geom_boxplot() +
-facet_grid( .~ thisSow)
+facet_grid( row~ thisSow)
 
 # Water Use
 workDF %>%
