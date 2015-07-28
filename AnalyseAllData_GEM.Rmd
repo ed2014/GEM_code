@@ -277,71 +277,96 @@ head(workDF)
 
 vars <- c("TotalBiomass", "HarvestIndex")
 
- #for (p in 1:10) { # for script test
+# FIXME: Loop is too slow - do this later with dplyr or something better
+
 for (v in 1:length(vars)) {
-  
+# for (p in 1:length(pixels)) {
+  for (p in 1:10) { # test
 
- for (p in 1:length(pixels)) {
+  thisPixDF <- workDF %>%
+    filter(pixel_ID == pixels[[p]]) %>%
+    group_by(thisHyb, thisSow, yearAsFact, row, col, thisLat, thisLong, Combine) %>% # to avoid crops that are harvested in same year (for anova)
+    select(TotalBiomass, HarvestIndex) %>%
+    summarise_each(funs(mean))
 
-  thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
-  
+  write.table(thisPixDF, file = "test.txt")
   head(thisPixDF)
   summary(thisPixDF)
-         
-  # do anova 
-  # FIXME: Do a more elegant if statment for vars later)
+
+  # do anova (FIXME: do more elegant)
   if (vars[v] == "TotalBiomass") {
   anova <- aov(TotalBiomass ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
   } else if (vars[v] == "HarvestIndex") {
-    anova <- aov(HarvestIndex ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
+  anova <- aov(HarvestIndex ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
   }
 
   anovaTable <- summary(anova)
+  anovaTable
   
   #Retrive SS and MS values
   anova_SS <- anovaTable[[1]]$'Sum Sq'
-  anova_MS <- anovaTable[[1]]$'Mean Sq' 
+ # anova_MS <- anovaTable[[1]]$'Mean Sq' 
 
   # Binds all SS for each variable together into a new df
-  df_ss <- data.frame(SS = anova_SS, MS = anova_MS)
+ # df_ss <- data.frame(SS = anova_SS, MS = anova_MS)
+  df_ss <- NULL
+  df_ss <- data.frame(SS = anova_SS)
 
   #retrieves row names and load into result df
   namesAnTab <- rownames(anovaTable[[1]])
   rownames (df_ss) <- gsub(" ","",namesAnTab) # remove spaces
  
  # get names and count of main factors
- mainFact <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main factors from
-
-  # Creates a column with "normalised" percent of total variation (SS) 
+ mainFactNames <- rownames (df_ss)[-grep(':',rownames (df_ss))] # isolate the main factors from
+ noFactors <- length(mainFactNames)  # counts row names that do not have ":" i.e. from interaction
+ 
+ # Creates a column with "normalised" percent of total variation (SS) 
   # in relation to total SS for each factor in that pixel
   df_ss$SS_p <- round((df_ss$SS/sum(df_ss$SS))*100,3)
-  df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
+  # df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
   # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
-  df_si <- NULL
+ 
+# Add SS of interections as a new vector element that adds to 100%
+sumInt <- sum(df_ss$SS_p[(noFactors+1):length(namesAnTab)]) # Calculate sums total SS due to interactions (i.e. sums every SS that is not main factor)
+si_Out1 <- c(df_ss$SS_p[1:noFactors], sumInt) # vector with si values in %
+
+# test anova
+if (sum(si_Out1) < 99.9 | sum(df_ss$SS_p) > 100.1) {
+  print("Check your ANOVA")
+  print(paste0("Sum of all % of Si: ", sum(df_ss$SS_p))) # check it
+  }
+
+# Create the Si dataframe and graph it
+df_si <- data.frame(si_Out1)
+rownames(df_si) <- gsub(" ","",c(mainFactNames[1:noFactors], "Interactions"))
+
+df_si$FactorName <- rownames(df_si)
+colnames(df_si) <- c("PercTotal_SS", "FactorName") 
+
+  # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1],
                 #   thisRegion = thisPixDF$region[1],
                    thisClimZone = thisPixDF$Combine[1],
+                   thisVar = vars[v],
                    row = thisPixDF$row[1],
                    col = thisPixDF$col[1],
-                   df_ss$SS_p[1], 
-                   df_ss$SS_p[2], 
-                   df_ss$SS_p[3],
-                   df_ss$SS_p[4]
+                   si_Out1[1], 
+                   si_Out1[2], 
+                   si_Out1[3],
+                   si_Out1[4]
                    )
-  
- # isolate factor labels from data
- factNames <- colnames (df_si)[-grep('ss',colnames (df_si))] # isolate the main factors from anova
- noFactors <- length(factNames)  # counts row names that do not have ":" i.e. from interaction
  
+ noLabels <- 6 # FIXME: do it prittier later
+
   # label Si df FIXME: Automate this
-  colnames(df_si)[noFactors+1] <- gsub(" ","",paste0("Si_",mainFact[1]))
-  colnames(df_si)[noFactors+2] <- gsub(" ","",paste0("Si_",mainFact[2]))
-  colnames(df_si)[noFactors+3] <- gsub(" ","",paste0("Si_",mainFact[3]))
-  colnames(df_si)[noFactors+4] <- "Si_Interac"
+  colnames(df_si)[noLabels+1] <- gsub(" ","",paste0("Si_",mainFactNames[1]))
+  colnames(df_si)[noLabels+2] <- gsub(" ","",paste0("Si_",mainFactNames[2]))
+  colnames(df_si)[noLabels+3] <- gsub(" ","",paste0("Si_",mainFactNames[3]))
+  colnames(df_si)[noLabels+4] <- "Si_Interac"
   
   # Appends to final Si df
-  if(p==1){ 
+  if(p==1 & vars[v] == 1){ 
     si_df_final <- data.frame(df_si)  
     } else {
     si_df_final <- rbind(si_df_final, df_si)
@@ -362,8 +387,14 @@ si_df_final_m <- si_df_final # place holder while we decide what to do with regi
 
 head(si_df_final_m)
 
+} # end loop in variables
+
+
+# Plot results ---------------
+
+
 # save this DF 
-write.table(si_df_final_m, file="Si_by_Pixel.txt", row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
+write.table(si_df_final_m, file=paste0("Si_by_Pixel.txt"), row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
 # ---- All plotted together by clim zone -------------------------
 
@@ -417,10 +448,6 @@ si_df_final_m %>%
  # ggsave(file="Fig_Ti.tiff", dpi = 300)
   ggsave(file=paste0(vars[v],"_Si_barGraph.tiff"), dpi = 300)
 
-} # end loop in variables
-
-
-
 ```
 
 
@@ -429,77 +456,34 @@ si_df_final_m %>%
 
 ```{r SiAnalysis}
 
-weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\MetFiles_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+weatherPixel <- 
+  read.csv("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+
 weatherPixel <- data.frame(weatherPixel)
 head(weatherPixel)
 summary(weatherPixel)
+weatherPixel <- weatherPixel %>% select(-thisLat, -thisLong) # unnecessary cols and dulicates at merge
 
 si_weather_merged <- NULL
-si_weather_merged <- merge(si_df_final, weatherPixel, by = c("thisLat","thisLong")) # FIXME: do row/col as its safer
-
-si_weather_merged <- si_weather_merged %>%
-  mutate(meant = (maxt+mint)*0.5)
-  
-
+si_weather_merged <- merge(si_df_final_m, weatherPixel, by = c("row","col"))
+si_weather_merged <- si_weather_merged %>% mutate(meant = (maxt+mint)*0.5)
 head(si_weather_merged)
+
 # "year  day  maxt	mint	radn	rain	co2"
 
+# Graph now
 si_weather_merged %>%
-  ggplot(aes(x=meant, y=Si_thisHyb)) +
-  geom_point() +
-  geom_smooth(method=lm) +
+  gather(factName, siVal, 6:9) %>% # FIXME: this might change - can you automate?
+  mutate(cyl = factor(siVal, levels = c("Hybrid maturity", "Sowing date", "Weather", "Interactions"))) %>%
+  ggplot(aes(x=meant, y=siVal)) +
+  geom_point(aes(colour = thisClimZone)) +
+ # geom_smooth(method=lm) +
   theme(text = element_text(size=20)) +
-  xlab("Average temperature (oC)") +
-  ylab("Sensitivity to hybrid\n(% of total variability)")
-
-si_weather_merged %>%
-  ggplot(aes(x=meant, y=Si_thisSow)) +
-  geom_point() +
-  geom_smooth()  +
-  theme(text = element_text(size=20)) +
-  xlab("Average temperature (oC)") +
-  ylab("Sensitivity to sowing date\n(% of total variability)")
-
-
-si_weather_merged %>%
-  ggplot(aes(x=meant, y=Si_yearAsFact)) +
-  geom_point() +
-  geom_smooth()  +
-   theme(text = element_text(size=20)) +
-  xlab("Average temperature (oC)") +
-  ylab("Sensitivity to weather\n(% of total variability)")
-
-
-si_weather_merged %>%
-  ggplot(aes(x=meant, y=Si_Interac)) +
-  geom_point() +
-  geom_smooth()  +
-  theme(text = element_text(size=20)) +
-  xlab("Average temperature (oC)") +
-  ylab("Sensitivity to interactions\n(% of total variability)")
-
-
-
-# radiation
-si_weather_merged %>%
-  ggplot(aes(x=radn, y=Si_thisHyb)) +
-  geom_point() +
-  geom_smooth() 
-
-si_weather_merged %>%
-  ggplot(aes(x=radn, y=Si_thisSow)) +
-  geom_point() +
-  geom_smooth() 
-
-si_weather_merged %>%
-  ggplot(aes(x=radn, y=Si_yearAsFact)) +
-  geom_point() +
-  geom_smooth() 
-
-si_weather_merged %>%
-  ggplot(aes(x=radn, y=Si_Interac)) +
-  geom_point() +
-  geom_smooth() 
+  xlab("Average annual temperature (^oC)") +
+  ylab("Sensitivity index (Si, % total variability)") +
+  facet_wrap(~factName, scales = "free") + 
+  scale_fill_discrete(name="Climatic zones")
+  ggsave(file=paste0(vars[v],"_Si_barGraph.tiff"), dpi = 300)
 
 ```
 
@@ -528,7 +512,7 @@ s <- list()
 factNames <- c("Region", "Latitude","Longitude", "Si Hybrid","Si Sow date", "Si Weather", "Si Interactions", "Regions")
 
 # TODO: add a region code and then plot it for each region in the loop
-for(o in length(mainFact):length(outNames)){
+for(o in length(mainFactNames):length(outNames)){
 
   # For aggregate
   spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
