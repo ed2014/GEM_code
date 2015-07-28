@@ -173,7 +173,8 @@ workDF %>%
 
 workDF %>%
   select(TotalBiomass, HarvestIndex) %>%
-  summarise_each(funs(mean))
+  summarise_each(funs(mean))%>%
+  kable( format = "markdown")
 
 # Area in Kha 
 workDF %>%
@@ -274,8 +275,12 @@ pixels <- unique(workDF$pixel_ID)
 summary(workDF) # Should I use workDF?
 head(workDF)
 
+vars <- c("TotalBiomass", "HarvestIndex")
 
  #for (p in 1:10) { # for script test
+for (v in 1:length(vars)) {
+  
+
  for (p in 1:length(pixels)) {
 
   thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
@@ -283,8 +288,13 @@ head(workDF)
   head(thisPixDF)
   summary(thisPixDF)
          
-  # do anova
+  # do anova 
+  # FIXME: Do a more elegant if statment for vars later)
+  if (vars[v] == "TotalBiomass") {
   anova <- aov(TotalBiomass ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
+  } else if (vars[v] == "HarvestIndex") {
+    anova <- aov(HarvestIndex ~ thisHyb*thisSow*yearAsFact, data = thisPixDF)
+  }
 
   anovaTable <- summary(anova)
   
@@ -372,7 +382,7 @@ si_df_final_m %>%
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
   theme(legend.position = "none")
-  ggsave(file=paste0("Si_ClimZone_hist.tiff"), dpi = 300)
+  ggsave(file=paste0(vars[v],"_Si_ClimZone_hist.tiff"), dpi = 300)
   #theme(legend.position = c(0, 1), 
   #     legend.justification = c(-1, 1)) 
  # scale_fill_discrete(name="Factors", labels=c("Hybrids","Sowing date","Weather", "Interactions")) +
@@ -403,9 +413,12 @@ si_df_final_m %>%
                          labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
   theme(text = element_text(size=20)) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
-  geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7) 
+ # geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7) +
  # ggsave(file="Fig_Ti.tiff", dpi = 300)
-  ggsave(file=paste0("Si_bar.tiff"), dpi = 300)
+  ggsave(file=paste0(vars[v],"_Si_barGraph.tiff"), dpi = 300)
+
+} # end loop in variables
+
 
 
 ```
