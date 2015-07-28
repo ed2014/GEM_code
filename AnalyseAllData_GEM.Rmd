@@ -37,6 +37,7 @@ library(tidyr)
 library(raster)
 library(mapproj)
 library(dplyr)
+library(knitr)
 ```
 
 ## Retrieve data and check
@@ -167,7 +168,8 @@ workDF %>%
   summarise_each(funs(mean, sd)) %>%
   mutate(Bio_CV = ((TotalBiomass_Mg_sd/TotalBiomass_Mg_mean)*100), 
                    HI_CV = ((HarvestIndex_sd/HarvestIndex_mean)*100))  %>%
-  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV)
+  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
+  kable( format = "markdown")
 
 workDF %>%
   select(TotalBiomass, HarvestIndex) %>%
@@ -178,7 +180,8 @@ workDF %>%
   group_by(Combine) %>%
   select(pixel_ID) %>%
   summarise(Unique_Pixels = n_distinct(pixel_ID)) %>%
-  mutate(apr_area_kha = Unique_Pixels * 2500/1000)
+  mutate(apr_area_kha = Unique_Pixels * 2500/1000) %>%
+  kable( format = "markdown")
 
 
 ```
@@ -199,52 +202,54 @@ df_sel <- workDF %>%
 
 pixels <- unique(df_sel$pixel_ID)
 
-for (p in 1:length(pixels)) {
-  df_sel %>%
-  filter(pixel_ID == pixels[p])  %>%
-  write.table(file=paste0(pixels[p],"_3D_graph.txt"), row.names=FALSE, col.names=TRUE, sep=" ", append=FALSE, quote=FALSE)
-  print(pixels[p])
-  
-  # graph it FIXME: do it later
-par(mfrow = c(1, 2))
+```
 
-# Plot 3 D graph
-z <- matrix(df_pix[["bio"]],                       # the data elements 
-nrow=length(unique(df_pix$thisHyb_n)),              # number of rows 
-ncol=length(unique(df_pix$thisSow_n)),              # number of columns 
-byrow = TRUE)                                     # fill matrix by rows 
-colnames(z) = unique(df_pix$thisHyb_n)
-rownames(z) = unique(df_pix$thisSow_n)
+Box plots for selected climate zones
 
-x = as.numeric(colnames(z))
-y = as.numeric(rownames(z))
-  
-persp3D(x, y, z, theta=60, phi=10, expand=0.75,
-        main= paste0("Bio_mean: ",pixels[p]),
-        ticktype="detailed", lighting = TRUE, 
-        xlab="Sow date", ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+```{r BoxPlotsClimZone}
 
+# Pooled response to Hybrid (Bio)
+# Total biomass
+workDF %>%
+filter(Combine == "LTLR"  | Combine == "HTHR")  %>%
+ggplot(aes(x= thisHyb , y=TotalBiomass)) +  
+geom_violin() +
+geom_boxplot(aes(alpha = 0.5)) +
+facet_grid(Combine ~ thisSow) +
+xlab("Hybrid maturity") +
+ylab("Total biomass (kg/ha)") +
+theme(text = element_text(size=25)) + 
+theme(legend.position = "none") 
 
-# variaility
-# PLot 3 D graph
-z = matrix(df_pix[["hi"]], # the data elements 
-nrow=length(unique(df_pix$thisHyb_n)),              # number of rows 
-ncol=length(unique(df_pix$thisSow_n)),              # number of columns 
-byrow = TRUE)        # fill matrix by rows 
-colnames(z) = unique(df_pix$thisHyb_n)
-rownames(z) = unique(df_pix$thisSow_n)
+ggsave(file=paste0("TotBio_boxplot.tiff"), dpi = 300)
 
-x = as.numeric(colnames(z))
-y = as.numeric(rownames(z))
-  
-persp3D(x, y, z, theta=60, phi=10, expand=0.75, 
-        main= paste0("HI: ",pixels[p]),
-        ticktype="detailed", lighting = TRUE, xlab="Sow date", 
-        ylab="Hybrid", zlab="Biomass (t/ha)",axes=TRUE)
+# Total Yield
+# Total biomass
+workDF %>%
+filter(Combine == "LTLR" | Combine == "MTMR" | Combine == "HTHR")  %>%
+ggplot(aes(x= thisHyb , y=TotalYield)) +  
+geom_violin() +
+geom_boxplot(aes(alpha = 0.5)) +
+facet_grid(Combine ~ thisSow) +
+xlab("Grain yield (kg/ha)") +
+ylab("Total biomass (kg/ha)") +
+theme(text = element_text(size=25)) + 
+theme(legend.position = "none") 
+ggsave(file=paste0("Grain_boxplot.tiff"), dpi = 300)
 
-  
-  }
-
+# Harvest Index
+# Total biomass
+workDF %>%
+filter(Combine == "LTLR" | Combine == "HTHR")  %>%
+ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
+geom_violin() +
+geom_boxplot(aes(alpha = 0.5)) +
+facet_grid(Combine ~ thisSow) +
+xlab("Hybrid maturity") +
+ylab("Harvest index (fractional)") +
+theme(text = element_text(size=25)) + 
+theme(legend.position = "none") 
+ggsave(file=paste0("HI_boxplot.tiff"), dpi = 300)
 
 ```
 
@@ -274,16 +279,7 @@ head(workDF)
  #for (p in 1:10) { # for script test
  for (p in 1:length(pixels)) {
 
-  
-  # thisPixDF <- filter(workDF_med, pixel_ID == pixels[[p]])
- # thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
   thisPixDF <- filter(workDF, pixel_ID == pixels[[p]])
-  
- # Remove slected sowing dates and hybrids from the analysis (not working)
- # thisPixDF <- subset(thisPixDF, thisHyb != "h2" | 
-                     #   thisHyb != "h4" |
-                     #   thisSow != "s1" |
-                     #   thisSow != "s5" )
   
   head(thisPixDF)
   summary(thisPixDF)
@@ -355,24 +351,13 @@ nrow(si_df_final)
 
 si_df_final_m <- si_df_final # place holder while we decide what to do with region
 
-# Give same names to the regions in df
-#df_reg_names <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\RegionPerPixel.csv")
-#FIXME: Add region names from csv file or env names
-#df_reg_names <- data.frame(thisRegion = c(1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18, 99),  
-              #             regNames = c("Northland", "Auckland", "Waikato", 
-               #                        "BOP", "Gisborne", "HawkesBay", "Taranaki",
-                #                       "Manuatu", "Wellington", "WestCoast", 
-                 #                      "Canterbury", "Otago", "Southland", 
-                  #                     "Tasman", "Nelson", "Malborough", 
-                   #                    "Others"))
-#si_df_final_m <- merge(si_df_final,df_reg_names, by = c("thisRegion"))
-
 head(si_df_final_m)
+
 # save this DF 
 write.table(si_df_final_m, file="Si_by_Pixel.txt", row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
 # All plotted together by clim zone
-fontSize <- 25
+fontSize <- 20
 si_df_final_m %>%
  # subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
   group_by(thisLat, thisLong) %>%
@@ -386,8 +371,10 @@ si_df_final_m %>%
   xlab("Percent of total variability (%)") +
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
-  theme(legend.position = c(0, 1), 
-       legend.justification = c(-3.5, 1)) 
+  theme(legend.position = "none")
+  ggsave(file=paste0("Si_ClimZone_hist.tiff"), dpi = 300)
+  #theme(legend.position = c(0, 1), 
+  #     legend.justification = c(-1, 1)) 
  # scale_fill_discrete(name="Factors", labels=c("Hybrids","Sowing date","Weather", "Interactions")) +
 
 # Plot distributions of Si
@@ -401,12 +388,17 @@ df_av <- si_df_final_m %>% group_by(thisClimZone) %>% summarise_each(funs(mean))
 si_df_final_m %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%
+  mutate (Si_tot = Si_thisHyb + Si_thisSow + Si_yearAsFact + Si_Interac) %>%
+  mutate (Si_thisHyb = Si_thisHyb/Si_tot*100, 
+          Si_thisSow = Si_thisSow/Si_tot*100, 
+          Si_yearAsFact = Si_yearAsFact/Si_tot*100, 
+          Si_Interac = Si_Interac/Si_tot*100) %>%
   gather(factName, siVal, 6:9) %>%
   ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=rev(factName))) + 
   geom_bar(stat='identity')  +
   xlab("Climatic zones ") + ylab("Share of total variability (%)") + 
  # scale_x_discrete(labels= ) + 
-  scale_fill_discrete(name="Ti component",
+  scale_fill_discrete(name="Factor",
                          labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
   theme(text = element_text(size=20)) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
