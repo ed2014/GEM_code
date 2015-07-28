@@ -110,8 +110,8 @@ head(climZones)
 nrow(climZones)
 
 # Corercting coordinates FIXME: Check that
-climZones$row <- climZones$row - 1 # climZones[,rowNew] - 1
-climZones$col <- climZones$col - 1 # climZones[,colNew] - 1
+climZones$row <- climZones$row + 1 # climZones[,rowNew] - 1
+climZones$col <- climZones$col + 1 # climZones[,colNew] - 1
 climZones$pixel_ID2 <- paste0(climZones$row,"_",climZones$col)
 head(climZones)
 nrow(climZones)
@@ -355,7 +355,8 @@ head(si_df_final_m)
 # save this DF 
 write.table(si_df_final_m, file="Si_by_Pixel.txt", row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
-# All plotted together by clim zone
+# ---- All plotted together by clim zone -------------------------
+
 fontSize <- 20
 si_df_final_m %>%
  # subset(thisRegion == 3 | thisRegion == 6 | thisRegion == 13 | thisRegion == 14) %>%
@@ -380,7 +381,7 @@ si_df_final_m %>%
 #grid.arrange(gH, gS, gW,gI, nrow=4)
 #si_df_final_m_bkp <- si_df_final_m
 
-# ------------
+
 # Bar graph version (pooled by climate zones) --------------
 
 df_av <- si_df_final_m %>% group_by(thisClimZone) %>% summarise_each(funs(mean)) %>% gather(factName, siVal, 6:9)
@@ -406,39 +407,6 @@ si_df_final_m %>%
  # ggsave(file="Fig_Ti.tiff", dpi = 300)
   ggsave(file=paste0("Si_bar.tiff"), dpi = 300)
 
-  
-
-
-# Perc of interaction of each factor
-ti_df %>%
-ggplot(aes(x=newFactName, y=intPerc)) + 
- geom_bar(width=.5,stat="identity", fill="darkgreen") +
- # coord_flip() + 
- xlab("Factors") + 
- ylab("Share of interaction in factor (%)") +
-# scale_x_discrete(labels= newFactName) +
- geom_text(aes(label = paste0(round(ti_df$intPerc, digits=1),"%"), y = mx+3), size = 5)
-
-# reorder factors ascending
-ti_df.m$newFactName <- factor(ti_df.m$newFactName, 
-  levels = ti_df.m$newFactName[order(ti_df.m$value[ti_df.m$variable == "siMain"])])
-
-mx <- max(ti_df$percTi_norm)
-
-graphTi[met] <- Ti_graph <- ti_df.m %>%
-ggplot(aes(x=newFactName, y=normValue, fill=variable, order=rev(variable))) + 
-  geom_bar(stat='identity') +
-  #coord_flip() +  
-  xlab("Main Factors") + ylab("Normalised sums of squares (%)") + 
- # scale_x_discrete(labels= ) + 
-  scale_fill_discrete(name="Ti component",
-                         labels=c("Interactions", "Main Effects"))+
-  theme(text = element_text(size=20)) +
-  geom_text(aes(label = paste0("(",round(ti_df.m$percInt, digits=1),"%)"), y = mx+5), size = 7)
- # ggsave(file="Fig_Ti.tiff", dpi = 300)
-  ggsave(file=paste0("Fig_Ti_",methodCalc[met], ".tiff"), dpi = 300)
-
-print(Ti_graph) 
 
 ```
 
@@ -452,6 +420,7 @@ weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\MetFiles_1971_2000\\SummaryResu
 weatherPixel <- data.frame(weatherPixel)
 head(weatherPixel)
 summary(weatherPixel)
+
 si_weather_merged <- NULL
 si_weather_merged <- merge(si_df_final, weatherPixel, by = c("thisLat","thisLong")) # FIXME: do row/col as its safer
 
