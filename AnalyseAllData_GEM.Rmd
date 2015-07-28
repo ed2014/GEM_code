@@ -220,8 +220,7 @@ xlab("Hybrid maturity") +
 ylab("Total biomass (kg/ha)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
-
-ggsave(file=paste0("TotBio_boxplot.tiff"), dpi = 300)
+ggsave(file="TotBio_boxplot.tiff", dpi = 300)
 
 # Total Yield
 # Total biomass
@@ -249,7 +248,7 @@ xlab("Hybrid maturity") +
 ylab("Harvest index (fractional)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
-ggsave(file=paste0("HI_boxplot.tiff"), dpi = 300)
+ggsave(file="HI_boxplot.tiff", dpi = 300)
 
 ```
 
@@ -381,8 +380,9 @@ si_df_final_m %>%
 #grid.arrange(gH, gS, gW,gI, nrow=4)
 #si_df_final_m_bkp <- si_df_final_m
 
+# ------------
 # Bar graph version (pooled by climate zones) --------------
-library(tidyr)
+
 df_av <- si_df_final_m %>% group_by(thisClimZone) %>% summarise_each(funs(mean)) %>% gather(factName, siVal, 6:9)
 
 si_df_final_m %>%
@@ -402,7 +402,7 @@ si_df_final_m %>%
                          labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
   theme(text = element_text(size=20)) +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
-  geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7)
+  geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7) 
  # ggsave(file="Fig_Ti.tiff", dpi = 300)
   ggsave(file=paste0("Si_bar.tiff"), dpi = 300)
 
