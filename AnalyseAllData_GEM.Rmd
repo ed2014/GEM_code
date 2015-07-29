@@ -526,6 +526,10 @@ si_weather_merged %>%
   scale_fill_discrete(name="Climatic zones")
   ggsave(file=paste0("Si_ResponseToTemp.tiff"), dpi = 300)
 
+
+
+
+
 ```
 
 ## Map Si index
@@ -538,7 +542,7 @@ si_weather_merged %>%
 # TODO: do it for each variable
 
 # Check data
-head(si_df_final)
+head(si_df_final_m)
 
 # Identify variables
 vars <- unique(si_df_final$thisVar)
@@ -555,7 +559,7 @@ s <- list()
 
 
 # FIXME: This is by hand now
-factNames <- c("thisLat", "thisLong", "thisClimZone", "thisVar", "row", "col" ,"Si Hybrid","Si Sow date", "Si Weather", "Si Interactions")
+factNames <- c("thisLat", "thisLong", "thisClimZone", "thisVar", "row", "col" ,"Hybrid","Sowing date", "Weather", "Interactions")
 
 
 
@@ -565,7 +569,8 @@ for (v in 1:length(vars)) {
   
  for(o in stCol:length(outNames)){
    
-  df_temp <- si_df_final %>% filter (thisVar == vars[v])
+  df_temp <- si_df_final_m %>% subset (thisVar == vars[v])
+  head(df_temp)
 
   # For aggregate
   spg[[o]] = data.frame(df_temp$thisLong,df_temp$thisLat, df_temp[[o]])
@@ -746,6 +751,27 @@ workDF %>%
   ggplot(aes(x= thisHyb , y=CV)) +  
   geom_bar(stat='identity') +
   facet_grid( .~ thisSow)
+
+# Plot variabity against average temperature
+work <- merge(si_df_final_m, weatherPixel, by = c("row","col"))
+si_weather_merged <- si_weather_merged %>% mutate(meant = (maxt+mint)*0.5)
+head(si_weather_merged)
+
+co.var <- function(x) (100*sd(x)/mean(x) )
+
+workDF %>%
+group_by(pixel_ID, Combine) %>%
+  select(TMean, TotalBiomass, HarvestIndex, Combine) %>%
+  summarise(TMean = mean(TMean), cv.bio = co.var(TotalBiomass), cv.hi = co.var(HarvestIndex)) %>%
+  ggplot(aes(x= TMean , y=cv.bio)) +  
+  geom_point(aes(colour = Combine))  +
+  scale_fill_discrete(name ="Climatic zones") +
+#  stat_smooth() +
+  theme(text = element_text(size=fontSize)) +
+  xlab("Average annual temperature (oC)") +
+  ylab("Coefficient of variation (%)") 
+  ggsave(file=paste0("cvPixelByTemp.tiff"), dpi = 300)
+
 
 # map CVs
 
