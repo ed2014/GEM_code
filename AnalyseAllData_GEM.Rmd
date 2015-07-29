@@ -280,8 +280,8 @@ vars <- c("TotalBiomass", "HarvestIndex")
 # FIXME: Loop is too slow - do this later with dplyr or something better
 
 for (v in 1:length(vars)) {
-# for (p in 1:length(pixels)) {
-  for (p in 1:10) { # test
+ for (p in 1:length(pixels)) {
+#  for (p in 1:10) { # test
 
   thisPixDF <- workDF %>%
     filter(pixel_ID == pixels[[p]]) %>%
@@ -407,7 +407,7 @@ si_df_final_m %>%
   geom_histogram(aes(y=..density..), binwidth=.8, alpha=0) +
  # geom_histogram(binwidth=1, alpha=0) +
   geom_density(alpha=0.2,size=1.5) +
- # facet_grid(thisRegion~. , scales="free") +
+  facet_grid(thisVar~.) +
   facet_wrap(~thisClimZone, scales="free") +
   xlab("Percent of total variability (%)") +
   ylab("Frequency distribution") +
@@ -428,6 +428,8 @@ si_df_final_m %>%
 df_av <- si_df_final_m %>% group_by(thisClimZone) %>% summarise_each(funs(mean)) %>% gather(factName, siVal, 6:9)
 
 si_df_final_m %>%
+ # filter(thisVar == "TotalBiomass")  %>%
+  filter(thisVar == "HarvestIndex")  %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%
   mutate (Si_tot = Si_thisHyb + Si_thisSow + Si_yearAsFact + Si_Interac) %>%
@@ -435,9 +437,10 @@ si_df_final_m %>%
           Si_thisSow = Si_thisSow/Si_tot*100, 
           Si_yearAsFact = Si_yearAsFact/Si_tot*100, 
           Si_Interac = Si_Interac/Si_tot*100) %>%
-  gather(factName, siVal, 6:9) %>%
+  gather(factName, siVal, 7:10) %>%
   ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=rev(factName))) + 
   geom_bar(stat='identity')  +
+  #facet_wrap(~thisVar) +
   xlab("Climatic zones ") + ylab("Share of total variability (%)") + 
  # scale_x_discrete(labels= ) + 
   scale_fill_discrete(name="Factor",
