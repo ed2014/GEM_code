@@ -511,25 +511,22 @@ si_weather_merged <- si_weather_merged %>% mutate(meant = (maxt+mint)*0.5)
 head(si_weather_merged)
 
 # "year  day  maxt	mint	radn	rain	co2"
-
+fontSize <- 23
 # Graph now
 si_weather_merged %>%
-  gather(factName, siVal, 6:9) %>% # FIXME: this might change - can you automate?
-  mutate(cyl = factor(siVal, levels = c("Hybrid maturity", "Sowing date", "Weather", "Interactions"))) %>%
+  gather(factName, siVal, 7:10) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x=meant, y=siVal)) +
   geom_point(aes(colour = thisClimZone)) +
- # geom_smooth(method=lm) +
-  theme(text = element_text(size=20)) +
-  xlab("Average annual temperature (^oC)") +
+  #geom_smooth(method=lm) +
+  stat_smooth(method=lm) +
+  theme(text = element_text(size=fontSize)) +
+  xlab("Average annual temperature (oC)") +
   ylab("Sensitivity index (Si, % total variability)") +
-  facet_wrap(~factName, scales = "free") + 
+  facet_grid(thisVar~factName, scales = "free") + 
   scale_fill_discrete(name="Climatic zones")
-  ggsave(file=paste0(vars[v],"_Si_barGraph.tiff"), dpi = 300)
+  ggsave(file=paste0("Si_ResponseToTemp.tiff"), dpi = 300)
 
 ```
-
-
-
 
 ## Map Si index
 
@@ -537,11 +534,19 @@ si_weather_merged %>%
 
 > Let's plot it: 
 
-```{r MapSi, echo = FALSE, warning=FALSE}
+```{r MapSiBio, echo = FALSE, warning=FALSE}
+# TODO: do it for each variable
+
+# Check data
+head(si_df_final)
+
+# Identify variables
+vars <- unique(si_df_final$thisVar)
+
 outNames <- colnames(si_df_final)
 outNames <- gsub(" ","",outNames )
 #par(mfrow=c(1,(length(mainFact)+1)))
-par(mfrow=c(2,2))
+par(mfrow=c(2,4))
 
 # ignore first 6 factors
 spg <- list() # dataframe list to be coerced as spatial object
@@ -550,14 +555,21 @@ s <- list()
 
 
 # FIXME: This is by hand now
-factNames <- c("Region", "Latitude","Longitude", "Si Hybrid","Si Sow date", "Si Weather", "Si Interactions", "Regions")
+factNames <- c("thisLat", "thisLong", "thisClimZone", "thisVar", "row", "col" ,"Si Hybrid","Si Sow date", "Si Weather", "Si Interactions")
 
-# TODO: add a region code and then plot it for each region in the loop
-for(o in length(mainFactNames):length(outNames)){
+
+
+stCol <- 7 # FIXME: Find a way to select the initial column autimatically
+
+for (v in 1:length(vars)) {
+  
+ for(o in stCol:length(outNames)){
+   
+  df_temp <- si_df_final %>% filter (thisVar == vars[v])
 
   # For aggregate
-  spg[[o]] = data.frame(si_df_final$thisLong, si_df_final$thisLat, si_df_final[[o]])
-  coordinates(spg[[o]]) = ~ si_df_final.thisLong + si_df_final.thisLat # Attention to variable names
+  spg[[o]] = data.frame(df_temp$thisLong,df_temp$thisLat, df_temp[[o]])
+  coordinates(spg[[o]]) = ~ df_temp.thisLong + df_temp.thisLat # Attention to variable names
  
   # Common to both methods (grid, raterise and project)
   gridded(spg[[o]]) <- TRUE
@@ -572,23 +584,19 @@ for(o in length(mainFactNames):length(outNames)){
     s[[o]] <- rast[[o]]
   }
   
+  thisOutName <- paste0(factNames[o],"_",vars[v])
   
-  # plot them
-  if (o %in% 4:7) {
-    plot(rast[[o]], main = paste0(factNames[o]))
+    plot(rast[[o]], main = thisOutName)
     
     # save raster as
-    writeRaster(rast[[o]], file=paste0("Si_", outNames[o],".tiff"), overwrite=TRUE) 
+    writeRaster(rast[[o]], file=paste0("Si_",thisOutName,".tiff"), overwrite=TRUE) 
 
   }
-   
-  # map('nz')
-}
-#map(database= "usa", col="#FFFFFF", fill=FALSE,add=TRUE, lwd=1.5)
+
+} # end loop vars
+
 
 ```
-
-
 
 ## Graph some results
 
