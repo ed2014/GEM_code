@@ -177,6 +177,29 @@ workDF %>%
  # summarise_each(funs(mean, co.var)) %>%
   kable( format = "markdown")
 
+# ... Using ranges
+workDF %>%
+  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
+  select(TotalBiomass, HarvestIndex) %>%
+  mutate(TotalBiomass_Mg = mean(TotalBiomass)/1000, HI_mean = mean(HarvestIndex)) %>%
+  mutate(Bio_CV = ((TotalBiomass_Mg/TotalBiomass_Mg)*100), 
+                   HI_CV = ((HI_mean/HI_mean)*100))  %>%
+  group_by(Combine,pixel_ID) %>%
+  summarise_each(funs(mean)) %>%
+  gather(resultVar, value, 5:10) %>% # FIXME: this might change - can you automate?
+  filter(resultVar != "TotalBiomass" | resultVar != "HarvestIndex" ) %>%
+  ggplot(aes(x=Combine, y=value)) +
+  geom_violin() +
+  geom_jitter() +
+  geom_boxplot(aes(alpha=0.2)) +
+  facet_wrap(~resultVar, scales = "free")
+  
+  
+  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
+ # summarise_each(funs(mean, co.var)) %>%
+  kable( format = "markdown")
+
+
 workDF %>%
   select(TotalBiomass, HarvestIndex) %>%
   summarise_each(funs(mean))%>%
