@@ -155,6 +155,10 @@ print(paste0("Found ", length(unique(workDF$pixel_ID)),
              " pixels and change in pixel # (if any) was ",inPix - enPix))
 save(workDF,file="workDF_GEM.Rda")
 
+# create needed functions
+
+co.var <- function(x) (100*sd(x)/mean(x) )
+
 ```
 
 Get pooled values per climatic zones
@@ -162,13 +166,15 @@ Get pooled values per climatic zones
 ```{r TableResClimZone}
 
 workDF %>%
-  group_by(Combine) %>%
+  group_by(Combine, thisHyb, thisSow) %>%
   select(TotalBiomass, HarvestIndex) %>%
-  mutate(TotalBiomass_Mg = TotalBiomass/1000) %>%
+  mutate(TotalBiomass_Mg = mean(TotalBiomass)/1000, HI_mean = mean(HarvestIndex)) %>%
+  group_by(Combine) %>%
   summarise_each(funs(mean, sd)) %>%
   mutate(Bio_CV = ((TotalBiomass_Mg_sd/TotalBiomass_Mg_mean)*100), 
-                   HI_CV = ((HarvestIndex_sd/HarvestIndex_mean)*100))  %>%
+                   HI_CV = ((HI_mean_sd/HI_mean_mean)*100))  %>%
   select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
+ # summarise_each(funs(mean, co.var)) %>%
   kable( format = "markdown")
 
 workDF %>%
@@ -757,7 +763,6 @@ work <- merge(si_df_final_m, weatherPixel, by = c("row","col"))
 si_weather_merged <- si_weather_merged %>% mutate(meant = (maxt+mint)*0.5)
 head(si_weather_merged)
 
-co.var <- function(x) (100*sd(x)/mean(x) )
 
 workDF %>%
 group_by(pixel_ID, Combine) %>%
