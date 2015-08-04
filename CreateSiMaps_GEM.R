@@ -32,7 +32,7 @@ outNames <- gsub(" ","",colnames(data_df))
 # -------------------- Read shape file with NZ regions and borders -------------
 
 # ATTENTION: ensure the shapefile was converted to WGS84in projection with QGIS
-pathShapeFile <- '//simplace.net/projects/nz/Gunther_map_example/nz_regions_GIS' 
+pathShapeFile <- 'C:\\Apsim_dev\\Projects\\CCII\\GIS_layers\\NZ_Regions_GIS' 
 
 # Reads shapefile and creates a SpatialPolygonsDataFrame class (sp)
 sf2 <- readShapeSpatial(paste(pathShapeFile,'REGC2013_HD_Clipped(WGS84)',sep="/"),proj4string = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
@@ -41,11 +41,10 @@ sf2 <- readShapeSpatial(paste(pathShapeFile,'REGC2013_HD_Clipped(WGS84)',sep="/"
 sf2 <- gSimplify(sf2,tol=.01,topologyPreserve = TRUE)
 
 
-
-
 # ---------------------- Rasterise DF of results ------------
 
 par(mfrow=c(2,4))
+par(mar=c(0,0,0,0)
 spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
@@ -81,16 +80,25 @@ for (v in 1:length(vars)) {
       s[[o]] <- rast[[o]]
     }
     
-    thisOutName <- paste0(factNames[o],"_",vars[v])
+   # thisOutName <- paste0(factNames[o],"_",vars[v])
+    thisOutName <- factNames[o]
+    thisFact <- c("Total biomass","Harvest Index") # better names
     
     # TODO: Add the country and region borders from a NZ shape file
     # Gunther's help needed here
 
 #   plotting borders first has the disadvantage that lines are 
 #   hidden by raster points.
-    plot(sf2, bg="transparent", xlim=c(167.2,178.55),main = thisOutName)
+
+    if (o == 7 | o == 11) {
+      plot(sf2, bg="transparent", xlim=c(166.2,178.71), ylim=c(-47.37,-34.35), main = thisOutName, 
+           ylab= thisFact[v], cex=1.5) 
+    } else {
+      plot(sf2, bg="transparent", xlim=c(166.2,178.71), ylim=c(-47.37,-34.35),
+           main = thisOutName, cex=1.5) 
+    }
     plot(rast[[o]], add=TRUE)
-    
+   # legend(box.lwd = 2)
 #   plotting raster first leads to a shift of the borders 
     
 #    plot(rast[[o]], main = thisOutName, axes=FALSE,asp=1, ext = c(160,180,37,43))
