@@ -549,12 +549,10 @@ grid.arrange(bg1, bg2, nrow=2) # save it via rstudio
 ```
 
 
-
-
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
 
 
-```{r SiAnalysis}
+```{r Si_by_Temp}
 
 weatherPixel <- 
   read.csv("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
@@ -570,24 +568,25 @@ si_weather_merged <- si_weather_merged %>% mutate(meant = (maxt+mint)*0.5)
 head(si_weather_merged)
 
 # "year  day  maxt	mint	radn	rain	co2"
-fontSize <- 23
+fontSize <- 20
 # Graph now
+
+colnames(si_weather_merged)[7:10] <- c("Hybrid", "Sowing", "Weather", "Interactions")
+
 si_weather_merged %>%
   gather(factName, siVal, 7:10) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x=meant, y=siVal)) +
   geom_point(aes(colour = thisClimZone)) +
-  #geom_smooth(method=lm) +
-  stat_smooth(method=lm) +
-  theme(text = element_text(size=fontSize)) +
+  geom_smooth(method=lm) +
+  #legend.title(name="Climate zones") +
+  #stat_smooth(method=lm) +
+  scale_colour_brewer(name = "Climate zone") +
   xlab("Average annual temperature (oC)") +
   ylab("Sensitivity index (Si, % total variability)") +
-  facet_grid(thisVar~factName, scales = "free") + 
-  scale_fill_discrete(name="Climatic zones")
+  facet_grid(thisVar~factName, scales = "free") +
+  theme(text = element_text(size=fontSize)) +
+  scale_x_continuous(breaks=c(7,10,14,18),limits=c(5, 18))
   ggsave(file=paste0("Si_ResponseToTemp.tiff"), dpi = 300)
-
-
-
-
 
 ```
 
