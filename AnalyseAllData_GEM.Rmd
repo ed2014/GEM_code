@@ -165,6 +165,53 @@ Get pooled values per climatic zones
 
 ```{r TableResClimZone}
 
+# grand means
+workDF %>%
+  select(TotalBiomass, HarvestIndex) %>%
+  summarise_each(funs(mean))%>%
+  kable( format = "markdown")
+
+# Pixels and Area in Kha (FIXME: area is flawed as pixel size changes with latitude)
+workDF %>%
+  group_by(Combine) %>%
+  select(pixel_ID) %>%
+  summarise(Unique_Pixels = n_distinct(pixel_ID)) %>%
+  mutate(apr_area_kha = Unique_Pixels * 2500/1000) %>%
+  kable(format = "markdown")
+
+# Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
+  workDF %>%
+  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
+  select(TotalBiomass) %>%
+  summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
+  group_by(Combine, pixel_ID) %>%
+    summarise(n=n(),
+              avg=round(mean(TotalBiomass)/1000, 1),
+              P25=round(quantile(TotalBiomass, probs=0.25)/1000,1),
+              P75= round(quantile(TotalBiomass, probs=0.75)/1000, 1),
+              rng = round((P75-P25)/avg*100,1)) %>%
+  group_by(Combine) %>%
+      summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
+  select(-contains("pixel_ID")) 
+
+
+# Harvest index
+# Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
+  workDF %>%
+  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
+  select(HarvestIndex) %>%
+  summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
+  group_by(Combine, pixel_ID) %>%
+    summarise(n=n(),
+              avg=round(mean(HarvestIndex), 2),
+              P25=round(quantile(HarvestIndex, probs=0.25),2),
+              P75= round(quantile(HarvestIndex, probs=0.75), 2),
+              rng = round((P75-P25)/avg*100,2)) %>%
+  group_by(Combine) %>%
+      summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
+  select(-contains("pixel_ID")) 
+  
+# Not Used: Average of all pixels in a region and CV among pixel means (spatial variability)
 workDF %>%
   group_by(Combine, thisHyb, thisSow) %>%
   select(TotalBiomass, HarvestIndex) %>%
@@ -175,43 +222,9 @@ workDF %>%
                    HI_CV = ((HI_mean_sd/HI_mean_mean)*100))  %>%
   select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
  # summarise_each(funs(mean, co.var)) %>%
-  kable( format = "markdown")
-
-# ... Using ranges
-workDF %>%
-  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
-  select(TotalBiomass, HarvestIndex) %>%
-  mutate(TotalBiomass_Mg = mean(TotalBiomass)/1000, HI_mean = mean(HarvestIndex)) %>%
-  mutate(Bio_CV = ((TotalBiomass_Mg/TotalBiomass_Mg)*100), 
-                   HI_CV = ((HI_mean/HI_mean)*100))  %>%
-  group_by(Combine,pixel_ID) %>%
-  summarise_each(funs(mean)) %>%
-  gather(resultVar, value, 5:10) %>% # FIXME: this might change - can you automate?
-  filter(resultVar != "TotalBiomass" | resultVar != "HarvestIndex" ) %>%
-  ggplot(aes(x=Combine, y=value)) +
-  geom_violin() +
-  geom_jitter() +
-  geom_boxplot(aes(alpha=0.2)) +
-  facet_wrap(~resultVar, scales = "free")
-  
-  
-  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
- # summarise_each(funs(mean, co.var)) %>%
-  kable( format = "markdown")
-
-
-workDF %>%
-  select(TotalBiomass, HarvestIndex) %>%
-  summarise_each(funs(mean))%>%
-  kable( format = "markdown")
-
-# Area in Kha 
-workDF %>%
-  group_by(Combine) %>%
-  select(pixel_ID) %>%
-  summarise(Unique_Pixels = n_distinct(pixel_ID)) %>%
-  mutate(apr_area_kha = Unique_Pixels * 2500/1000) %>%
-  kable( format = "markdown")
+  kable( format = "markdown") 
+#%>%
+ # write.csv(.,file = "Table_Mean_CV.csv") 
 
 
 ```
