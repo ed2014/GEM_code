@@ -245,6 +245,8 @@ df_sel <- workDF %>%
 
 pixels <- unique(df_sel$pixel_ID)
 
+# missing script here for graphs?
+
 ```
 
 Box plots for selected climate zones
@@ -331,7 +333,7 @@ for (v in 1:length(vars)) {
     select(TotalBiomass, HarvestIndex) %>%
     summarise_each(funs(mean))
 
-  write.table(thisPixDF, file = "test.txt")
+ # write.table(thisPixDF, file = "test.txt")
   head(thisPixDF)
   summary(thisPixDF)
 
@@ -385,7 +387,7 @@ rownames(df_si) <- gsub(" ","",c(mainFactNames[1:noFactors], "Interactions"))
 df_si$FactorName <- rownames(df_si)
 colnames(df_si) <- c("PercTotal_SS", "FactorName") 
 
-  # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
+  # Using SS instead of MS as suggested by Esther Menkeen
   df_si <- data.frame(thisLat = thisPixDF$thisLat[1],
                    thisLong = thisPixDF$thisLong[1],
                 #   thisRegion = thisPixDF$region[1],
@@ -438,6 +440,16 @@ head(si_df_final_m)
 # save this DF 
 write.table(si_df_final_m, file=paste0("Si_by_Pixel.txt"), row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
+
+```
+
+
+```{r Graph_Si}
+
+si_df_final_m <- read.table("Si_by_Pixel.txt", header = TRUE) 
+
+si_df_final_m$thisClimZone <- factor(si_df_final_m$thisClimZone, levels = c('LTLR', 'LTMR', 'LTHR','MTLR','MTMR', 'MTHR','HTLR', 'HTMR', 'HTHR'))
+
 # ---- All plotted together by clim zone -------------------------
 
 fontSize <- 16
@@ -478,12 +490,14 @@ hg2 <- si_df_final_m %>%
 grid.arrange(hg1, hg2, nrow=2) # save it via rstudio
 
 #-----------------------------------------------------
-# Bar graph version (pooled by climate zones) --------------
+# Bar graph version (pooled by climate zones) --------
 
 # Biomass - bar
 
+fontSize <- 18
+
 bg1 <- si_df_final_m %>%
-  filter(thisVar == "TotalBiomass")  %>%
+ # filter(thisVar == "TotalBiomass")  %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%
   mutate (Si_tot = Si_thisHyb + Si_thisSow + Si_yearAsFact + Si_Interac) %>%
@@ -523,7 +537,7 @@ bg2 <- si_df_final_m %>%
   xlab("Climatic zones ") + ylab("Share of total variability (%)") + 
   scale_fill_discrete(name="Factor",
                          labels=c("Hybrid", "Sowing dates", "Weather" , "Interactions"))+
-  theme(text = element_text(size=20)) +
+  theme(text = element_text(size=fontSize)) +
 #  theme(legend.position="none") +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
  # geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7) +
@@ -531,7 +545,10 @@ bg2 <- si_df_final_m %>%
 
 grid.arrange(bg1, bg2, nrow=2) # save it via rstudio
 
+
 ```
+
+
 
 
 > Histograms show frequency of pixels in each range of Si for each factor and interactions
