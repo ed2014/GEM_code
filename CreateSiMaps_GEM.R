@@ -84,9 +84,7 @@ for (v in 1:length(vars)) {
     thisOutName <- factNames[o]
     thisFact <- c("Total biomass","Harvest Index") # better names
     
-    # TODO: Add the country and region borders from a NZ shape file
-    # Gunther's help needed here
-
+    # Add the country and region borders from a NZ shape file
 #   plotting borders first has the disadvantage that lines are 
 #   hidden by raster points.
 
