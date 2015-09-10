@@ -179,8 +179,9 @@ workDF %>%
   mutate(apr_area_kha = Unique_Pixels * 2500/1000) %>%
   kable(format = "markdown")
 
-# Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
-  workDF %>%
+# Average of hybrid by sowing date within each pixel (pooled for inter-annual variability)
+
+  av_Bio <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   select(TotalBiomass) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
@@ -193,11 +194,12 @@ workDF %>%
   group_by(Combine) %>%
       summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
   select(-contains("pixel_ID")) 
-
+av_Bio <- data.frame(scn = "av_Bio",av_Bio)
+av_Bio
 
 # Harvest index
 # Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
-  workDF %>%
+  av_HI <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   select(HarvestIndex) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
@@ -210,13 +212,14 @@ workDF %>%
   group_by(Combine) %>%
       summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
   select(-contains("pixel_ID")) 
-
+av_HI <- data.frame(scn = "av_HI",av_HI)
+av_HI
 
 # Statistics on G by M effect (CV% among scenarions in eachpixel using 30 year averages)
 
 # Total biomass
 
-  workDF %>%
+  cv_Bio <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   select(TotalBiomass) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
@@ -229,10 +232,11 @@ workDF %>%
               P25=round(quantile(TotalBiomass, probs=0.25),0),
               P75= round(quantile(TotalBiomass, probs=0.75), 0),
               rng = round((P75-P25)/avg*100,0))
-
+cv_Bio <- data.frame(scn = "cv_Bio",cv_Bio)
+cv_Bio
 
 # HI
-  workDF %>%
+ cv_HI <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   select(HarvestIndex) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
@@ -245,10 +249,14 @@ workDF %>%
               P25=round(quantile(HarvestIndex, probs=0.25),0),
               P75= round(quantile(HarvestIndex, probs=0.75), 0),
               rng = round((P75-P25)/avg*100,0))
+cv_HI <- data.frame(scn = "cv_HI",cv_HI)
+cv_HI
+
+table_all_data <- rbind(av_Bio,av_HI, cv_Bio,cv_HI)
+table_all_data
+write.table(table_all_data, file = "Table_ClimeZone.txt") # laetr copied in excel and formated for paper
 
 
-
-  
 # Not Used: Average of all pixels in a region and CV among pixel means (spatial variability)
 workDF %>%
   group_by(Combine, thisHyb, thisSow) %>%
