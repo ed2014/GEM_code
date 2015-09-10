@@ -214,6 +214,8 @@ workDF %>%
 
 # Statistics on G by M effect (CV% among scenarions in eachpixel using 30 year averages)
 
+# Total biomass
+
   workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   select(TotalBiomass) %>%
@@ -226,21 +228,23 @@ workDF %>%
               avg=round(mean(TotalBiomass), 0),
               P25=round(quantile(TotalBiomass, probs=0.25),0),
               P75= round(quantile(TotalBiomass, probs=0.75), 0),
-              rng = round((P75-P25)/avg*100,0)) %>%
+              rng = round((P75-P25)/avg*100,0))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+# HI
+  workDF %>%
+  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
+  select(HarvestIndex) %>%
+  summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
+  group_by(Combine, pixel_ID) %>%
+  summarise_each (funs(co.var)) %>%
+  select(-contains("thisSow")) %>%
+  select(-contains("thisHyb")) %>%
+  summarise(n=n(),
+              avg=round(mean(HarvestIndex), 0),
+              P25=round(quantile(HarvestIndex, probs=0.25),0),
+              P75= round(quantile(HarvestIndex, probs=0.75), 0),
+              rng = round((P75-P25)/avg*100,0))
 
 
 
