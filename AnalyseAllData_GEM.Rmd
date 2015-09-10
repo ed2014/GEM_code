@@ -92,11 +92,11 @@ summary(workDF)
 #df_region <- as.data.frame(read.csv(file = 
 #                                        paste0("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\",
 #                                   "RegionPerPixel.csv") ))
-nrow(df_region)
-head(df_region)
+#nrow(df_region)
+#head(df_region)
 #df_region <- df_region %>% group_by(row,col,regNames) %>% select (-X, -record)
 #df_region <- data.frame(df_region)
-head(df_region)
+#head(df_region)
 
 #workDF <- merge(workDF, df_region, by = c("row", "col")) # FIXME: this is deleting some pixels
 # FIXME: region merge is deleting Canterbury latitude
@@ -152,7 +152,7 @@ summary(workDF)
 head(workDF)
 enPix <- length(unique(workDF$pixel_ID))
 print(paste0("Found ", length(unique(workDF$pixel_ID)), 
-             " pixels and change in pixel # (if any) was ",inPix - enPix))
+             " pixels and difference in pixel count (if any) was ",inPix - enPix))
 save(workDF,file="workDF_GEM.Rda")
 
 # create needed functions
@@ -210,6 +210,40 @@ workDF %>%
   group_by(Combine) %>%
       summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
   select(-contains("pixel_ID")) 
+
+
+# Statistics on G by M effect (CV% among scenarions in eachpixel using 30 year averages)
+
+  workDF %>%
+  group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
+  select(TotalBiomass) %>%
+  summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
+  group_by(Combine, pixel_ID) %>%
+  summarise_each (funs(co.var)) %>%
+  select(-contains("thisSow")) %>%
+  select(-contains("thisHyb")) %>%
+  summarise(n=n(),
+              avg=round(mean(TotalBiomass), 0),
+              P25=round(quantile(TotalBiomass, probs=0.25),0),
+              P75= round(quantile(TotalBiomass, probs=0.75), 0),
+              rng = round((P75-P25)/avg*100,0)) %>%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 # Not Used: Average of all pixels in a region and CV among pixel means (spatial variability)
 workDF %>%
