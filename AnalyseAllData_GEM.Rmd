@@ -1123,3 +1123,83 @@ for(s in 1:length(sow)) {
     }
   }
 ```
+
+```{r MapAverGrid}
+
+# map averages of Total Biomass
+
+mapDf <- workDF %>% 
+  select(pixel_ID, thisLat, thisLong, TotalBiomass, HarvestIndex) %>%
+  group_by(pixel_ID)  %>% 
+  summarise_each(funs(mean))
+
+par(mfrow = c(1,1))
+outNames <- colnames(mapDf) # Using maximum grain yield
+
+outNames <- gsub(" ","",outNames )
+
+# ignore first 6 factors
+spg <- list() # dataframe list to be coerced as spatial object
+rast <- list() # raster
+s <- list()
+
+for(o in 4:length(outNames)){
+  # For each variable aggregation
+  spg[[o]] <- data.frame(mapDf$thisLong, mapDf$thisLat, mapDf[[o]])
+  coordinates(spg[[o]]) <- ~ mapDf.thisLong + mapDf.thisLat # Attention to variable names
+ 
+  # Common to both methods (grid, raterise and project)
+  gridded(spg[[o]]) <- TRUE
+  rast[[o]] <- raster(spg[[o]])
+  proj4string(rast[[o]]) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+ plot(rast[[o]], main = paste0("Var: ", outNames[o]))
+
+  # stack them
+  if(o == 1) {
+    s <- stack(rast[[o]])} # create stack
+  else {
+    s[[o]] <- rast[[o]]
+  }
+  
+  # save raster as
+  writeRaster(rast[[o]], file=paste0(outNames[o],"_av",".tiff"), overwrite=TRUE) 
+}
+
+```
+
+```{r}
+
+workDF %>% 
+ # filter(thisLat < -45) %>%
+  filter(Combine == "LTLR" | Combine == "HTHR") %>%
+  group_by(Combine, thisSow, thisHyb) %>%
+  select(TotalBiomass) %>%
+  ggplot(aes(x= thisHyb , y=TotalBiomass))+
+  geom_boxplot() +
+  geom_violin(aes(alpha = 0.5))+
+  facet_grid(Combine ~ thisSow)
+
+
+  workDF %>% 
+  filter(thisLat > -40 & thisLat < -38) %>%
+  #filter(thisLat > -37) %>%
+  #filter(thisLat < -45) %>%
+  group_by(thisSow, thisHyb) %>%
+  select(TotalBiomass) %>%
+  ggplot(aes(x= thisHyb , y=TotalBiomass))+
+  geom_boxplot() +
+  facet_grid(. ~ thisSow)
+
+
+  workDF %>% 
+  filter(Combine == "LTLR") %>%
+  group_by(thisSow, thisHyb) %>%
+  select(AnthesisTT) %>%
+  ggplot(aes(x= thisHyb , y=AnthesisTT))+
+  geom_boxplot() +
+  facet_grid(. ~ thisSow)
+  
+
+```
+
