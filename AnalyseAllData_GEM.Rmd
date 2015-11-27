@@ -619,6 +619,10 @@ fontSize <- 20
 
 colnames(si_weather_merged)[7:10] <- c("Hybrid", "Sowing", "Weather", "Interactions")
 
+si_weather_merged$thisVar <- factor(si_weather_merged$thisVar, 
+                                    levels=c("TotalBiomass", "HarvestIndex"), 
+                                    labels=c("Above-ground biomass","Harvest index")) 
+
 si_weather_merged %>%
   gather(factName, siVal, 7:10) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x=meant, y=siVal)) +
