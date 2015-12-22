@@ -483,10 +483,7 @@ head(si_df_final_m)
 } # end loop in variables
 
 
-# Plot results ---------------
-
-
-# save this DF 
+# save this DF (each Si by Pixel here) 
 write.table(si_df_final_m, file=paste0("Si_by_Pixel.txt"), row.names=FALSE, col.names=TRUE, sep=" ",append=FALSE, quote=FALSE)
 
 
@@ -705,7 +702,7 @@ facet_grid( row~ thisHyb)
 
 This form of display seems more interesting.
 
-- Advantege of long hybrids is reduced at late sowing dates
+- Advantage of long hybrids is reduced at late sowing dates
 
 ```{r GraphByHyb, echo = FALSE}
 
@@ -763,13 +760,13 @@ facet_grid( .~ thisSow)
 > Pooled among hybrids and sowing dates
 
 
-```{r GraphCVs, echo =FALSE}
+```{r GraphCVs, echo =FALSE, eval=FALSE}
 # polled CV across hybrids and sowing dates
 
 workDF %>%
   group_by(thisLat,thisLong,thisSow, thisHyb) %>%
   summarise_each(funs(sd, mean)) %>%
-  select(thisSow, thisHyb,thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
+  dplyr::select(thisSow, thisHyb,thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
   ggplot(aes(x= thisLat , y=TotalBiomass_mean)) + 
   geom_point() +
@@ -778,7 +775,7 @@ workDF %>%
 workDF %>%
   group_by(row, col, thisLat, thisLong) %>%
   summarise_each(funs(sd, mean)) %>%
-  select(thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
+  dplyr::select(thisLat,thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
   ggplot(aes(x= thisLat , y=CV)) +  
   geom_point()
@@ -786,7 +783,7 @@ workDF %>%
 workDF %>%
   group_by(thisSow, thisHyb) %>%
   summarise_each(funs(sd, mean)) %>%
-  select(thisSow, thisHyb,TotalBiomass_sd, TotalBiomass_mean) %>%
+  dplyr::select(thisSow, thisHyb,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100) %>%
   ggplot(aes(x= thisHyb , y=CV)) +  
   geom_bar(stat='identity') +
@@ -800,7 +797,7 @@ head(si_weather_merged)
 
 workDF %>%
 group_by(pixel_ID, Combine) %>%
-  select(TMean, TotalBiomass, HarvestIndex, Combine) %>%
+  dplyr::select(TMean, TotalBiomass, HarvestIndex, Combine) %>%
   summarise(TMean = mean(TMean), cv.bio = co.var(TotalBiomass), cv.hi = co.var(HarvestIndex)) %>%
   ggplot(aes(x= TMean , y=cv.bio)) +  
   geom_point(aes(colour = Combine))  +
@@ -815,10 +812,10 @@ group_by(pixel_ID, Combine) %>%
 # map CVs
 
 mapDf <- workDF %>%
-#  select(thisLat, thisLong, thisSow, thisHyb, TotalBiomass) %>%
+#  dplyr::select(thisLat, thisLong, thisSow, thisHyb, TotalBiomass) %>%
   group_by(row, col, thisLat, thisLong) %>%
   summarise_each(funs(sd, mean)) %>%
-  select(thisLat, thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
+  dplyr::select(thisLat, thisLong,TotalBiomass_sd, TotalBiomass_mean) %>%
   mutate(CV= (TotalBiomass_sd/TotalBiomass_mean) *100)
 head(mapDf)
 par(mfrow = c(1,1))
@@ -856,12 +853,13 @@ for(o in 3:length(outNames)){
 
 ```
 
+##Do RUE pooled
 
 ```{r DrivingFactors}
 # Factors explaining variability
 workDF %>%
 group_by(thisSow, thisHyb) %>%
-select(thisSow, thisHyb,IntRadSum, TotalBiomass ) %>%
+dplyr::select(thisSow, thisHyb,IntRadSum, TotalBiomass ) %>%
 summarise_each(funs(mean)) %>%
 ggplot(aes(x= IntRadSum , y=TotalBiomass, colour = factor(thisSow))) +
 geom_smooth(method=lm) +  
@@ -876,6 +874,8 @@ geom_point(aes(shape = thisHyb, size = 1)) +
 
 > Also creates a ID for each pixel-h-s combination (FIXME: maybe redundant now)
 
+> Not using region at the moment
+
 ```{r CreateMedCV_df, echo = FALSE}
 # Create a median and stdev for each pixel-h-s, polled across YEARS (i.e. year is not included in grouping)
 
@@ -883,7 +883,7 @@ workDF_med <- workDF %>%
   group_by(row,col,pixel_ID, thisHyb,thisSow) %>%
   summarise( thisLat = mean(thisLat, na.rm = TRUE),
              thisLong = mean(thisLong, na.rm = TRUE),
-             thisRegion = mean(region),
+          #   thisRegion = mean(region),
              Bio_mean = mean(TotalBiomass, na.rm = TRUE),
              Bio_med = median(TotalBiomass, na.rm = TRUE),
              Bio_sdv = sd(TotalBiomass, na.rm = TRUE),
@@ -969,7 +969,7 @@ workDF_med$Bio_meanTons <- workDF_med$Bio_mean / 1000 # convert kg/ha to t/ha
 #different panels by hybrid
 workDF_med %>%
 ggplot(aes(x= Bio_meanTons , y=Bio_cv)) +  
-geom_point(aes(colour = factor(thisRegion )) ) +
+geom_point(aes(colour = factor(thisSow )) ) +
 facet_grid(thisSow ~thisHyb, scales="free")
 
 ```
@@ -989,10 +989,10 @@ facet_grid(thisSow ~thisHyb, scales="free")
 df_maxY <- df_maxY %>% filter(thisHyb != "h2"| thisHyb != "h4"| thisSow != "s1"| thisSow != "s5")
 
 mapDf <- workDF %>% 
-  select(pixel_ID, thisLat, thisLong, TotalBiomass) %>%
+  dplyr::select(pixel_ID, thisLat, thisLong, TotalBiomass) %>%
   group_by(pixel_ID)  %>% 
   summarise(Bio_mean = mean(TotalBiomass, na.rm = TRUE), Bio_sd = sd(TotalBiomass, na.rm = TRUE))  %>% 
-  mutate(Bio_cv = (Bio_sd/Bio_mean*100)) - # FIXME: not finished
+  mutate(Bio_cv = (Bio_sd/Bio_mean*100)) # FIXME: not finished
 
 par(mfrow = c(1,1))
 outNames <- colnames(mapDf) # Using maximum grain yield
@@ -1005,7 +1005,7 @@ rast <- list() # raster
 s <- list()
 
 for(o in 2:length(outNames)){
-if (o == 12) {next} # other label to ignore (FIXME: Still selected by hand)
+if (o == 12) {next} # other label to ignore (FIXME: Still dplyr::selected by hand)
 
   # For each variable aggregation
   spg[[o]] <- data.frame(mapDf$thisLong, mapDf$thisLat, mapDf[[o]])

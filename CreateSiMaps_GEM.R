@@ -1,25 +1,14 @@
-# not sure which libs I tried as well
-library(ggplot2)
-library(plot3D)
-library(gridExtra)
-library(tidyr)
-library(mapproj)
-library(knitr)
-library(plyr)
-
 # libs used
 library(dplyr)
-library(raster)
 library(rgdal) 
 library(sp)
-
-library(rgdal)
 library(maptools)
 library(rgeos)
-
+library(raster)
 
 # read df
-data_df <- read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
+#data_df <- read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
+data_df <- read.table("C:\\GitHubRepos\\GEM_files\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
 head(data_df)
 
 # Identify variables
@@ -44,16 +33,16 @@ sf2 <- gSimplify(sf2,tol=.01,topologyPreserve = TRUE)
 # ---------------------- Rasterise DF of results ------------
 
 par(mfrow=c(2,4))
-par(mar=c(0,0,0,0)
+#par(mar=c(0,0,0,0)
 spg <- list() # dataframe list to be coerced as spatial object
 rast <- list() # raster
 s <- list()
 
 
 # Embelish factor names. FIXME: Automate this later
-factNames <- c("thisLat", "thisLong", "thisClimZone", "thisVar", "row", "col" ,"Hybrid","Sowing date", "Weather", "Interactions")
+ factNames <- c("thisLat", "thisLong", "thisClimZone", "thisVar", "row", "col" ,"Hybrid","Sowing date", "Weather", "Interactions")
 
-stCol <- 7 # FIXME: Find a way to select the result columns autimatically
+ stCol <- 7 # FIXME: Find a way to select the result columns autimatically
 
 # Rasteriseloop 2 impact variables and four result variables
 
