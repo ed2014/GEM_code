@@ -15,5 +15,7 @@ Filtered for arable lands (~2100 pixels)
 5 hybrids
 
 
+23 December 2015: Moving to new machine. Many supporting data at C:\GitHubRepos\GEM_files
+
 
 
