@@ -44,8 +44,9 @@ library(knitr)
 ```{r GetData, include=FALSE}
 # load data from HD
 #setwd("E:\\SowByGenotype")
-setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
+#setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
 #setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
+setwd("C:\\GitHubRepos\\GEM_files\\GEM_data")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
@@ -105,7 +106,7 @@ head(workDF)
 
 # Read climate zone data
 climZones <- NULL
-climZones <- read.csv("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\CLuster.csv")
+climZones <- read.csv("C:\\GitHubRepos\\GEM_files\\GEM_data\\CLuster.csv")
 head(climZones)
 nrow(climZones)
 
@@ -167,14 +168,14 @@ Get pooled values per climatic zones
 
 # grand means
 workDF %>%
-  select(TotalBiomass, HarvestIndex) %>%
+  dplyr::select(TotalBiomass, HarvestIndex) %>%
   summarise_each(funs(mean))%>%
   kable( format = "markdown")
 
 # Pixels and Area in Kha (FIXME: area is flawed as pixel size changes with latitude)
 workDF %>%
   group_by(Combine) %>%
-  select(pixel_ID) %>%
+  dplyr::select(pixel_ID) %>%
   summarise(Unique_Pixels = n_distinct(pixel_ID)) %>%
   mutate(apr_area_kha = Unique_Pixels * 2500/1000) %>%
   kable(format = "markdown")
@@ -183,7 +184,7 @@ workDF %>%
 
   av_Bio <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
-  select(TotalBiomass) %>%
+  dplyr::select(TotalBiomass) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
   group_by(Combine, pixel_ID) %>%
     summarise(n=n(),
@@ -193,7 +194,7 @@ workDF %>%
               rng = round((P75-P25)/avg*100,1)) %>%
   group_by(Combine) %>%
       summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
-  select(-contains("pixel_ID")) 
+  dplyr::select(-contains("pixel_ID")) 
 av_Bio <- data.frame(scn = "av_Bio",av_Bio)
 av_Bio
 
@@ -201,7 +202,7 @@ av_Bio
 # Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
   av_HI <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
-  select(HarvestIndex) %>%
+  dplyr::select(HarvestIndex) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
   group_by(Combine, pixel_ID) %>%
     summarise(n=n(),
@@ -211,7 +212,7 @@ av_Bio
               rng = round((P75-P25)/avg*100,2)) %>%
   group_by(Combine) %>%
       summarise_each(funs(mean))%>%  # mean of all pixels (removes inter-pixel variability)
-  select(-contains("pixel_ID")) 
+  dplyr::select(-contains("pixel_ID")) 
 av_HI <- data.frame(scn = "av_HI",av_HI)
 av_HI
 
@@ -221,12 +222,12 @@ av_HI
 
   cv_Bio <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
-  select(TotalBiomass) %>%
+  dplyr::select(TotalBiomass) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
   group_by(Combine, pixel_ID) %>%
   summarise_each (funs(co.var)) %>%
-  select(-contains("thisSow")) %>%
-  select(-contains("thisHyb")) %>%
+  dplyr::select(-contains("thisSow")) %>%
+  dplyr::select(-contains("thisHyb")) %>%
   summarise(n=n(),
               avg=round(mean(TotalBiomass), 0),
               P25=round(quantile(TotalBiomass, probs=0.25),0),
@@ -238,12 +239,12 @@ cv_Bio
 # HI
  cv_HI <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
-  select(HarvestIndex) %>%
+  dplyr::select(HarvestIndex) %>%
   summarise_each(funs(mean)) %>% # mean of 30 years (removes inter-annual variability)
   group_by(Combine, pixel_ID) %>%
   summarise_each (funs(co.var)) %>%
-  select(-contains("thisSow")) %>%
-  select(-contains("thisHyb")) %>%
+  dplyr::select(-contains("thisSow")) %>%
+  dplyr::select(-contains("thisHyb")) %>%
   summarise(n=n(),
               avg=round(mean(HarvestIndex), 0),
               P25=round(quantile(HarvestIndex, probs=0.25),0),
@@ -260,13 +261,13 @@ write.table(table_all_data, file = "Table_ClimeZone.txt") # laetr copied in exce
 # Not Used: Average of all pixels in a region and CV among pixel means (spatial variability)
 workDF %>%
   group_by(Combine, thisHyb, thisSow) %>%
-  select(TotalBiomass, HarvestIndex) %>%
+  dplyr::select(TotalBiomass, HarvestIndex) %>%
   mutate(TotalBiomass_Mg = mean(TotalBiomass)/1000, HI_mean = mean(HarvestIndex)) %>%
   group_by(Combine) %>%
   summarise_each(funs(mean, sd)) %>%
   mutate(Bio_CV = ((TotalBiomass_Mg_sd/TotalBiomass_Mg_mean)*100), 
                    HI_CV = ((HI_mean_sd/HI_mean_mean)*100))  %>%
-  select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
+  dplyr::select(Combine,TotalBiomass_Mg_mean, Bio_CV, HarvestIndex_mean,HI_CV) %>%
  # summarise_each(funs(mean, co.var)) %>%
   kable( format = "markdown") 
 #%>%
@@ -311,7 +312,7 @@ xlab("Hybrid maturity") +
 ylab("Total biomass (kg/ha)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
-ggsave(file="TotBio_boxplot.tiff", dpi = 300)
+#ggsave(file="TotBio_boxplot.tiff", dpi = 300)
 
 # Total Yield
 # Total biomass
@@ -325,7 +326,7 @@ xlab("Grain yield (kg/ha)") +
 ylab("Total biomass (kg/ha)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
-ggsave(file=paste0("Grain_boxplot.tiff"), dpi = 300)
+#ggsave(file=paste0("Grain_boxplot.tiff"), dpi = 300)
 
 # Harvest Index
 # Total biomass
@@ -339,7 +340,7 @@ xlab("Hybrid maturity") +
 ylab("Harvest index (fractional)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
-ggsave(file="HI_boxplot.tiff", dpi = 300)
+#ggsave(file="HI_boxplot.tiff", dpi = 300)
 
 ```
 
@@ -355,7 +356,7 @@ ggsave(file="HI_boxplot.tiff", dpi = 300)
 
 > This is the **Si index** summary:
 
-```{r ANOVA, echo =FALSE}
+```{r ANOVA, echo =FALSE, eval=FALSE}
 # do an anova for each pixel 
 # This loop takes ages!
 
@@ -376,7 +377,7 @@ for (v in 1:length(vars)) {
   thisPixDF <- workDF %>%
     filter(pixel_ID == pixels[[p]]) %>%
     group_by(thisHyb, thisSow, yearAsFact, row, col, thisLat, thisLong, Combine) %>% # to avoid crops that are harvested in same year (for anova)
-    select(TotalBiomass, HarvestIndex) %>%
+    dplyr::select(TotalBiomass, HarvestIndex) %>%
     summarise_each(funs(mean))
 
  # write.table(thisPixDF, file = "test.txt")
@@ -456,12 +457,14 @@ colnames(df_si) <- c("PercTotal_SS", "FactorName")
   colnames(df_si)[noLabels+4] <- "Si_Interac"
   
   # Appends to final Si df
-  if(p==1 & vars[v] == 1){ 
+ # if(p==1 & vars[v] == 1){ # FIXME: This seems not right v==1 ?
+  if(p==1){ # FIXME: Untested
+
     si_df_final <- data.frame(df_si)  
     } else {
     si_df_final <- rbind(si_df_final, df_si)
     }
- print(paste0("In pixel ",p))
+ print(paste0("Variable: ", vars[v], "and pixel: ",p))
 }
 
 head(si_df_final)
@@ -489,7 +492,7 @@ write.table(si_df_final_m, file=paste0("Si_by_Pixel.txt"), row.names=FALSE, col.
 
 ```
 
-
+Graph Si index
 ```{r Graph_Si}
 
 si_df_final_m <- read.table("Si_by_Pixel.txt", header = TRUE) 
@@ -513,7 +516,7 @@ hg1 <- si_df_final_m %>%
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
   theme(legend.position = "none")
-  ggsave(file=paste0("Bio_Si_hist.tiff"), dpi = 300)
+#  ggsave(file=paste0("Bio_Si_hist.tiff"), dpi = 300)
 
 # Harvest index
 
@@ -531,7 +534,7 @@ hg2 <- si_df_final_m %>%
   ylab("Frequency distribution") +
   theme(text = element_text(size=fontSize)) + 
   theme(legend.position = "none")
-  ggsave(file=paste0("HI_Si_hist.tiff"), dpi = 300)
+#  ggsave(file=paste0("HI_Si_hist.tiff"), dpi = 300)
 
 grid.arrange(hg1, hg2, nrow=2) # save it via rstudio
 
@@ -563,7 +566,7 @@ bg1 <- si_df_final_m %>%
   ggtitle("(a) Total biomass") +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) # +
  # geom_text(aes(label = paste0("(",round(df_av$siVal, digits=1),"%)"), y=mean(siVal)), size = 7) +
-  ggsave(file=paste0("Bio_Si_barGraph.tiff"), dpi = 300)
+#  ggsave(file=paste0("Bio_Si_barGraph.tiff"), dpi = 300)
 
 # Harvest Index - bar
 
@@ -600,8 +603,8 @@ grid.arrange(bg1, bg2, nrow=2) # save it via rstudio
 
 ```{r Si_by_Temp}
 
-weatherPixel <- 
-  read.csv("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+getwd()
+weatherPixel <- read.csv("RasterOutput_base.csv") # copied from D:\ERA-40_Reanalysis\metFiles_ERA_1971_2000\SummaryResults
 
 weatherPixel <- data.frame(weatherPixel)
 head(weatherPixel)
