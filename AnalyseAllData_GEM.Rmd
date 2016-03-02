@@ -46,7 +46,10 @@ library(knitr)
 #setwd("E:\\SowByGenotype")
 #setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data")
 #setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
-setwd("C:\\GitHubRepos\\GEM_files\\GEM_data")
+#setwd("C:\\GitHubRepos\\GEM_files\\GEM_data")
+setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles")
+#setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles_OrigRun")
+#setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles_NewDefaultFrost")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
@@ -317,13 +320,13 @@ theme(legend.position = "none")
 # Total Yield
 # Total biomass
 workDF %>%
-filter(Combine == "LTLR" | Combine == "MTMR" | Combine == "HTHR")  %>%
+#filter(Combine == "LTLR" | Combine == "MTMR" | Combine == "HTHR")  %>%
 ggplot(aes(x= thisHyb , y=TotalYield)) +  
 geom_violin() +
 geom_boxplot(aes(alpha = 0.5)) +
 facet_grid(Combine ~ thisSow) +
-xlab("Grain yield (kg/ha)") +
-ylab("Total biomass (kg/ha)") +
+xlab("Hybrid maturity") +
+ylab("Grain yield (kg/ha)") +
 theme(text = element_text(size=25)) + 
 theme(legend.position = "none") 
 #ggsave(file=paste0("Grain_boxplot.tiff"), dpi = 300)
@@ -331,7 +334,7 @@ theme(legend.position = "none")
 # Harvest Index
 # Total biomass
 workDF %>%
-filter(Combine == "LTLR" | Combine == "HTHR")  %>%
+#filter(Combine == "LTLR" | Combine == "HTHR")  %>%
 ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
 geom_violin() +
 geom_boxplot(aes(alpha = 0.5)) +
@@ -601,7 +604,9 @@ grid.arrange(bg1, bg2, nrow=2) # save it via rstudio
 ```{r Si_by_Temp}
 
 getwd()
-weatherPixel <- read.csv("RasterOutput_base.csv") # copied from D:\ERA-40_Reanalysis\metFiles_ERA_1971_2000\SummaryResults
+#weatherPixel <- read.csv("RasterOutput_base.csv") # copied from D:\ERA-40_Reanalysis\metFiles_ERA_1971_2000\SummaryResults
+weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\metFiles_Test_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+
 
 weatherPixel <- data.frame(weatherPixel)
 head(weatherPixel)
@@ -727,7 +732,7 @@ facet_grid( row~ thisSow)
 workDF %>%
 ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
 geom_boxplot() +
-facet_grid( row~ thisSow)
+facet_grid( .~ thisSow)
 
 # Water Use
 workDF %>%

@@ -13,7 +13,8 @@ library(raster)
 #setwd("D:\\EIT\\ERA_40_worked\\MetFiles_1971_2000")
 #setwd("D:\\EIT\\RCP8_5_Jan15_worked\\MetFiles_1971_2100")
 #setwd("F:\\ERA-40_Reanalysis\\MetFiles_1971_2000")
-setwd("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000") 
+#setwd("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000") 
+setwd("F:\\ERA-40_Reanalysis\\metFiles_Test_ERA_1971_2000")
 
 # # Set up df to hold variables
 pixelSummary = NULL
@@ -38,10 +39,10 @@ files <- list.files(getwd(),pattern='.met', full.names=FALSE) # if true gets pat
 print(paste0("Found ",length(files)," .met files in folder"))
 
 
-# Filter met files for the LU mask (comment out if doing all country)
+# Filter met files for the LU mask (comment out if doing all country or files were pre-filtered)
 #load("C:\\Apsim_dev\\Projects\\CCII\\filter\\Filter_LU_metList.RData", .GlobalEnv)
-load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)
-files <- metList
+#load("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseArableFilter_metList.RData", .GlobalEnv)
+#files <- metList
 
 #info = file.info(files)
 #summary(info)
