@@ -10,16 +10,18 @@ output: html_document
 # 16 NOV 2014 Using this "RCP" version for any scenario (updated one)  
 # 10 Feb 2015 Removed frost calculation to simplify it
 # 24 July 2015 Prepared it for ERA dataset for the GEM work in Bonn University
+# 2 Mar 2016 changed to new netcdf library to test script
 
 # Memory to clean up and libraries to load  
 ```{r Libs, echo=FALSE, include=FALSE}
 gc()
 memory.limit(size=4095)
 library("knitr")
-library("ncdf")
+#library("ncdf")
 library("chron")
 library("plyr")
 library("dplyr")
+library("ncdf4")
 ```
 
 # Set RCP first
@@ -92,7 +94,7 @@ runPeriod <- paste0(firstYear[1],"_",max(firstYear)+9)
 
 ```{r SetOutFolder}
 # set output folder
-outFolder <- paste0(climDir,"/metFiles_",RCP,"_",runPeriod,"/")
+outFolder <- paste0(climDir,"/metFiles_Test_",RCP,"_",runPeriod,"/")
 suppressWarnings(dir.create(outFolder))
 ```
 
@@ -144,10 +146,11 @@ for (y in 1:length(firstYear)) {
   thisFile <- paste(factorName[4],"_",firstYear[y],"-",firstYear[y]+9,".nc", sep = "", collapse = NULL)
   
   # open netCDF
-  base.nc <- open.ncdf(paste0(climDir,"\\",thisFile))
+  base.nc <- nc_open(paste0(climDir,"\\",thisFile)) # new lib ncdf4
+
   
   # loop daily to get doy and year dimensions
-  for (t in 1:length(get.var.ncdf(base.nc, "time"))) {       
+  for (t in 1:length(ncvar_get(base.nc, "time"))) {       
     # FIXME: Dealing with bug in NIWAs data, some years should be leep after 2040
     # So 2040 on the doy and year function gine NAs on some years
     # This needs checking in final version
@@ -165,7 +168,8 @@ for (y in 1:length(firstYear)) {
     rowNo <- base.nc$dim$latitude$len
     colNo <- base.nc$dim$longitude$len
   }
-  close(base.nc)
+  nc_close(base.nc)
+  
 }
 
 # check lengths of vectors are the same
@@ -186,7 +190,8 @@ Loop through netCDF files
 #TODO: Select arable grid-cells
 
 LUFilter <- 
-  read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseFilter_Allcats.txt", 
+ # read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseFilter_Allcats.txt", 
+   read.table("C:\\apsim_dev\\Projects\\CCII\filter\\LandUseFilter_Allcats.txt",
              header = TRUE)
 
 print(paste0("Found ", nrow(LUFilter), " pixels"))
@@ -198,7 +203,7 @@ print(paste0("Selected ", nrow(arableLUFilter), " arable pixels"))
 head(arableLUFilter)
 
  for (p in 1:length(arableLUFilter$row)){     #loop rows (lat)
-#  for (p in 1:3){     #loop rows (lat)
+#  for (p in 1:3){     # test
  
   r <- arableLUFilter$row[p]
   c <- arableLUFilter$col[p]
@@ -238,15 +243,15 @@ head(arableLUFilter)
         # Console info
         print(paste("Running: ",fileName, sep = " ", collapse = NULL))
         
-        netc <- open.ncdf(paste0(climDir,"//",fileName))
+        netc <- nc_open(paste0(climDir,"//",fileName))
         
-        time.dim <- length(get.var.ncdf(netc, "time")) # FIXME: this is same as base? (delete it?)
+        time.dim <- length(ncvar_get(netc, "time"))
         thisLat <- netc$dim$latitude$vals[r]
         thisLong <-  netc$dim$longitude$vals[c] 
         
         # Do stuff with open netCDF file
         myVar <- NULL
-        myVar <- get.var.ncdf(netc, start=c(c,r,1), count=c(1,1,-1))   
+        myVar <- ncvar_get(netc, start=c(c,r,1), count=c(1,1,-1))   
         # note: column is "X" and row is "Y" and time is "T" (see R netCDF doc)
         
         # Handle different NAs types used by NIWA
@@ -257,7 +262,7 @@ head(arableLUFilter)
                       r, "col: ",c," (skipping this grid-cell)",
                       sep = " ", collapse = NULL))         
           
-          close(netc) 
+          nc_close(base.nc)
           
           skipLoop <- TRUE # flag to skip the loop if missing data is found
           
@@ -286,7 +291,7 @@ head(arableLUFilter)
 
 out.fact <- c(out.fact, var)  # appends all years for each variable
 
-close(netc)
+nc_close(base.nc)
 
       } # end year loop
 
