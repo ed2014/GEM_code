@@ -226,9 +226,9 @@
     <svp_fract description="(0-1)">0.75  </svp_fract>
     <eo_crop_factor_default description="default crop factor for limiting soil">100.0  </eo_crop_factor_default>
     <co2level>350.0</co2level>
-	<!-- EIT: TE response copied from wheat as met file has CO2. Considering it OFF for GEM study as it is historical climate only -->
+	<!-- EIT: Considering it OFF for GEM study as it is historical climate only but CO2 is in met -->
     <co2_level_te>   0  350   700   1000   </co2_level_te>
-    <te_co2_modifier>0  1.0   1.0  1.0</te_co2_modifier>
+    <te_co2_modifier>1.0  1.0   1.0  1.0</te_co2_modifier>
 	<x_co2_nconc_modifier units="ppm co2">350  700   1000</x_co2_nconc_modifier>
     <y_co2_nconc_modifier>1.0  1.0  1.0</y_co2_nconc_modifier>
 	<co2_level_nconc>350.0</co2_level_nconc>
@@ -2040,7 +2040,7 @@
 		<head_grain_no_max description="grains per cob">850</head_grain_no_max>
 		<grain_gth_rate description="(mg/grain/day)">8.5</grain_gth_rate>
 	<!-- Phenology -->
-      <tt_emerg_to_endjuv units="oC">150</tt_emerg_to_endjuv>
+      <tt_emerg_to_endjuv units="oC">250</tt_emerg_to_endjuv>
       <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
       <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
       <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
