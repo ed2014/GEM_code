@@ -17,5 +17,11 @@ Filtered for arable lands (~2100 pixels)
 
 23 December 2015: Moving to new machine. Many supporting data at C:\GitHubRepos\GEM_files
 
+Analysis steps:
+
+1) Met files (APSIM) created with netCDFToMet_GEM based on F:\\ERA-40_Reanalysis\\ from NIWA filtered 
+2) Obs: Arable filter with CreateFilters.R at C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseFilter_Allcats.txt LandUse = 3 (arable lands only)
+3)
+
 
 

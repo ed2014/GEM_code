@@ -7,13 +7,13 @@
     <initdata>
       <timestep_events>prepare init_step do_management run_one_step do_pasture_water process do_pasture_growth do_stock post end_step</timestep_events>
       <start_date type="date" description="Enter the start date of the simulation">01/01/1971</start_date>
-      <end_date type="date" description="Enter the end date of the simulation">01/05/1975</end_date>
+      <end_date type="date" description="Enter the end date of the simulation">01/05/2000</end_date>
     </initdata>
   </component>
   <component name="met" executable="%apsim%\Model\Input.dll" class="Input.Metfile">
     <executable name="%apsim%\Model\Input.dll" version="1.0" />
     <initdata>
-      <filename name="filename" input="yes">C:\Apsim_dev\Projects\2014-SowByGenotype\metFiles\testPixels\65_180.met</filename>
+      <filename name="filename" input="yes">F:\ERA-40_Reanalysis\metFiles_Test_ERA_1971_2000\189_56.met</filename>
     </initdata>
   </component>
   <system name="pixel" executable="%apsim%/Model/ProtocolManager.dll" class="ProtocolManager">
@@ -71,6 +71,7 @@
         <variable>FloweringDOY </variable>
         <variable>DaysToFlower </variable>
         <variable>PTtemp </variable>
+        <variable>LeafNoMax</variable>
       </initdata>
     </component>
     <component name="accum" executable="%apsim%/Model/Accum.dll" class="Accum">
@@ -275,7 +276,15 @@ YieldAtFrost = 0 ! kg/ha
    MaturityTT = 0
    TTsum = 0
 
-one = 1</text>
+one = 1
+
+! Leaf Number
+
+LeafNoMax = 0
+
+!--- extra leach variables
+leachyear = 0
+drainyear = 0</text>
           <event>init</event>
         </script>
         <script>
@@ -426,6 +435,10 @@ FloweringDOY = day
   endif
 endif
 
+!---- Leaf Number
+
+LeafNoMax = [crop1].leaf_no + [crop2].leaf_no
+
 </text>
           <event>end_of_day</event>
         </script>
@@ -485,6 +498,8 @@ TTsum = 0
 
 BiomassAtFrost = 0 ! kg/ha
 YieldAtFrost = 0 ! kg/ha
+
+LeafNoMax = 0
 
 
 </text>
@@ -651,9 +666,9 @@ TtPosFlow = 0
           <Population type="text" description="Plant population (/m2)">12</Population>
           <SowDepth type="text" description="Sowing Depth (mm):">50</SowDepth>
           <RowSpace type="text" description="Row Spacing (mm):">0.75</RowSpace>
-          <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-oct</StartSow>
-          <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-oct</EndSow>
-          <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-oct</EndRot>
+          <StartSow type="ddmmmdate" description="Start of sowing window (dd-mmm):">1-sep</StartSow>
+          <EndSow type="ddmmmdate" description="End of sowing window (dd-mmm):">2-sep</EndSow>
+          <EndRot type="ddmmmdate" description="Date after when this crop option is not considered anymore (dd-mmm):">3-sep</EndRot>
           <General type="category" description="General criteria for sowing" />
           <SWFMax type="text" description="Maximum soil water fraction in upper 3 soil layers to allow sowing (0-1):">10</SWFMax>
           <SWFTopMin type="text" description="Minimum soil water fraction in TOP soil layer to allow sowing (0-1):">-10</SWFTopMin>
@@ -661,7 +676,7 @@ TtPosFlow = 0
           <Harvesting type="category" description="Harvesting Rules" />
           <StageName type="text" description="Stage name to harvest crop (e.g. harvest):">maturity</StageName>
           <StatusName type="text" description="Status name to harvest crop (e.g. dead)">dead</StatusName>
-          <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-apr</CriticalDate>
+          <CriticalDate type="ddmmmdate" description="Date after which crop must be harvested (dd-mmm):">30-may</CriticalDate>
           <SilageCut type="yesno" description="Harvested for silage? (yes/no):">yes</SilageCut>
           <HeadDryRule type="yesno" description="Harvest after head is dry? (yes/no)">no</HeadDryRule>
           <Fertilizer type="category" description="Fertilizer Rules" />
@@ -1213,54 +1228,6 @@ trigger_deficit = 0.5                   ! Fraction of available water in the top
         </script>
       </initdata>
     </component>
-    <component name="TillageRules" executable="%apsim%\Model\Manager.dll" class="Manager">
-      <executable name="%apsim%\Model\Manager.dll" version="1.0" />
-      <initdata>
-        <ui>
-          <category type="category" description="When should tillage be done" />
-          <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">01-sep</tillage_date>
-          <category type="category" description="Tillage application details" />
-          <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
-          <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
-          <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">250</tillage_depth>
-          <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.95</tillage_f_incorp>
-          <XXX type="category" description="Fraction of residue removed" />
-          <catch_res type="text" description="Main crop residue &quot;removed&quot; after harvest (0-1):">0.90</catch_res>
-          <main_res type="text" description="Green-crop residue &quot;removed&quot; after harvest (0-1):">0.90</main_res>
-          <XX type="category" description="Nitrogen from residue returned to field" />
-          <n_return_eff type="text" description="Fraction return of nitrogen from removed crop residues (0-1):">0.80</n_return_eff>
-        </ui>
-        <script>
-          <text>! Tillage
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if FallowDays = 1 then  ! Do a tillage operation on the first day after harvesting
-
-
-! Sort out crop and the amount of residue to be removed by silage or grazing
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if (CurrentCropType = 'MainCrop') then
-       removed_residue = [main_res] 
-elseif CurrentCropType = 'CatchCrop') then
-       removed_residue = [catch_res]        
-endif
-
-! Do tillage            
-'[surfaceommodule]' tillage type = [tillage_type], f_incorp = removed_residue (), tillage_depth = 0.0 ! Biomass removed from field	    
-'[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth] ! Do actual tillage            
-
-endif
-
-
-</text>
-          <event>start_of_day</event>
-        </script>
-        <script>
-          <text>removed_residue = 0  ! Fraction of total residue that was removed (e.g. grazing or baling) (0-1)
-returned_n = 0       ! Amount of nitrogen (kg/ha) returned to the field</text>
-          <event>init</event>
-        </script>
-      </initdata>
-    </component>
     <component name="ResetSoil_sowing" executable="%apsim%\Model\Manager.dll" class="Manager">
       <executable name="%apsim%\Model\Manager.dll" version="1.0" />
       <initdata>
@@ -1437,11 +1404,11 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
         <SummerDate>1-Nov</SummerDate>
         <WinterDate>1-Apr</WinterDate>
         <dlayer>150.000 150.000 300.000 300.000 300.000 300.000 300.000 </dlayer>
-        <sat>0.400 0.400 0.400 0.400 0.400 0.400 0.400 </sat>
+        <sat>0.540 0.500 0.460 0.440 0.420 0.400 0.380 </sat>
         <dul>0.320 0.320 0.320 0.320 0.320 0.320 0.320 </dul>
         <ll15>0.160 0.160 0.160 0.160 0.160 0.160 0.160 </ll15>
         <air_dry>0.080 0.160 0.160 0.160 0.160 0.160 0.160 </air_dry>
-        <swcon>0.300 0.300 0.300 0.300 0.300 0.300 0.300 </swcon>
+        <swcon>0.400 0.400 0.400 0.400 0.400 0.400 0.400 </swcon>
         <bd>1.200 1.300 1.400 1.450 1.500 1.550 1.600 </bd>
         <sw>0.320 0.320 0.320 0.320 0.320 0.320 0.320 </sw>
         <ks>50.000 50.000 50.000 50.000 50.000 50.000 50.000 </ks>
@@ -4764,6 +4731,13 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
         <svp_fract description="(0-1)">0.75  </svp_fract>
         <eo_crop_factor_default description="default crop factor for limiting soil">100.0  </eo_crop_factor_default>
         <co2level>350.0</co2level>
+        <!-- EIT: Considering it OFF for GEM study as it is historical climate only but CO2 is in met -->
+        <co2_level_te>   0  350   700   1000   </co2_level_te>
+        <te_co2_modifier>1.0  1.0   1.0  1.0</te_co2_modifier>
+        <x_co2_nconc_modifier units="ppm co2">350  700   1000</x_co2_nconc_modifier>
+        <y_co2_nconc_modifier>1.0  1.0  1.0</y_co2_nconc_modifier>
+        <co2_level_nconc>350.0</co2_level_nconc>
+        <nconc_co2_modifier>1.0</nconc_co2_modifier>
         <!--  water demand to some fraction/multiple
       of atmospheric potential.
       __________________________________________________________________________________________________________-
@@ -6515,6 +6489,26 @@ resetValue_W = 0 ! Total soil water (kg/ha) reseting date</text>
           <tt_flower_to_start_grain description="70  (oC)! MJR changed 21/3/00">150 </tt_flower_to_start_grain>
           <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
         </B_130>
+        <medium cultivar="yes">
+          <!-- Test for CCII RA2 and GEM2015 work-->
+          <!-- Grain growth -->
+          <head_grain_no_max description="grains per cob">850</head_grain_no_max>
+          <grain_gth_rate description="(mg/grain/day)">8.5</grain_gth_rate>
+          <!-- Phenology -->
+          <tt_emerg_to_endjuv units="oC">250</tt_emerg_to_endjuv>
+          <est_days_endjuv_to_init>20</est_days_endjuv_to_init>
+          <tt_endjuv_to_init units="oC">0</tt_endjuv_to_init>
+          <photoperiod_crit1 units="hours">12.5</photoperiod_crit1>
+          <photoperiod_crit2 units="hours">20.0</photoperiod_crit2>
+          <photoperiod_slope>0.0</photoperiod_slope>
+          <tt_flower_to_maturity>900</tt_flower_to_maturity>
+          <tt_flag_to_flower>10</tt_flag_to_flower>
+          <tt_flower_to_start_grain units="oC">120</tt_flower_to_start_grain>
+          <tt_maturity_to_ripe units="oC">1</tt_maturity_to_ripe>
+          <!-- Structure -->
+          <x_stem_wt units="g/stem" description="look up table for canopy height">0    80</x_stem_wt>
+          <y_height units="mm" description="plant canopy height">0  2000</y_height>
+        </medium>
         <ll>0.160 0.160 0.160 0.160 0.160 0.160 0.160 </ll>
         <kl>0.080 0.080 0.070 0.060 0.030 0.020 0.010 </kl>
         <xf>1.000 1.000 1.000 1.000 1.000 1.000 1.000 </xf>

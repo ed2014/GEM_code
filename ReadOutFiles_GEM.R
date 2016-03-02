@@ -1,6 +1,8 @@
 gc()
+setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles")
+#setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles_OrigRun")
 # set wd
-setwd("F:\\SowByGenotype(raw)\\allOutFiles")#
+#setwd("F:\\SowByGenotype(raw)\\allOutFiles")#
 #setwd("C:\\Dropbox\\2014-GEM_paper\\rawData")
 #setwd("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\outFiles")
 # Get all files including from sub-folders (recursive)
