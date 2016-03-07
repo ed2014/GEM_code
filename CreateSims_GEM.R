@@ -11,7 +11,7 @@ gc()
 
 # Select folders and file locations
 # metFolder <- "C:\\MyRun\\MetFiles"
-metFolder <- "C:\\MyRun\\MetFilesTest\\"
+metFolder <- "C:\\MyRun\\MetFiles\\"
 simFolder <- "C:\\MyRun\\SimFiles\\"
 rootSimFile <- "C:\\GitHubRepos\\GEM_code\\baseSim\\BaseSim.sim" # find base simulation 
 climates <- c("Base\\") # Define climate scenarios to run as different folders

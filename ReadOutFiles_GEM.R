@@ -25,12 +25,12 @@ allData = NULL
 thisOutFile = NULL
 
 
-empty.files = 0
+empty.files <- 0
 for (i in 1:length(files)) { 
- # for (i in 1:200) {
+ # for (i in 1:10) {
   
   if(i<10) {
-    thisHeader = read.table(files[i], 
+    thisHeader <- read.table(files[i], 
                             skip = 2, 
                             header = TRUE, 
                             comment.char = "(", blank.lines.skip = TRUE) 
@@ -44,11 +44,11 @@ for (i in 1:length(files)) {
     next}  
   
   # ## Sort data stamps from file name
-  splitName = unlist(strsplit(files[i],"[/,_,.]"))
-  r <- as.numeric(splitName[1]) # FIXME: see if first number is indeed row
-  c <- as.numeric(splitName[2])
-  hyb <- splitName[3]  # scenario
-  sow <- splitName[4] # soil type
+  splitName <- unlist(strsplit(files[i],"[/,_,.]"))
+  r <- as.numeric(splitName[3]) # FIXME: see if first number is indeed row
+  c <- as.numeric(splitName[4])
+  hyb <- splitName[5]  # maturity rate
+  sow <- splitName[6] # sowing date
   
   # read data for that .out file
   thisOutFile <- read.table(files[i], skip = 4, header = FALSE, blank.lines.skip = TRUE) # reads and skips the unit line

@@ -53,14 +53,18 @@ setwd("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles")
 
 load("DATA_GEM.Rda", .GlobalEnv)
 
-
 head(DATA_GEM)
 tail(DATA_GEM)
 summary(DATA_GEM)
 
-print(paste0("Found ", length(unique(DATA_GEM$row)), " rows"))
-print(paste0("Found ", length(unique(DATA_GEM$col)), " cols"))
-print(paste0("Found ", length(unique(DATA_GEM$row * DATA_GEM$col)), " pixels"))
+# how many years in each file
+y <- DATA_GEM %>%
+  group_by(fileNo) %>%
+  summarise(count = n())
+
+summary(y)
+
+
 
 ```
 
@@ -68,8 +72,20 @@ print(paste0("Found ", length(unique(DATA_GEM$row * DATA_GEM$col)), " pixels"))
 
 ```{r TidyUp, echo = FALSE, include=FALSE}
 # Remove wheat (catch crop rotation) and keep only maize data
+# Remove first year
+# Now using all years as simulations are reinitialsed
+
 workDF <- NULL
-workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed')
+# workDF <- subset(DATA_GEM, CurrentCrop != 'wheat_exceed' | year != "1971") # now only maize
+#workDF <- DATA_GEM %>% subset(year != 1971) # %>% subset(year != 1972) %>% subset(year != 2000)
+workDF <- DATA_GEM
+
+y <- workDF %>%
+  group_by(fileNo) %>%
+  summarise(count = n())
+
+summary(y)
+
 
 # order sow dates
 workDF$thisSow <- factor(workDF$thisSow, levels = c('s1', 's2', 's3', 's4', 's5'))
@@ -154,6 +170,7 @@ workDF$thisHyb_n[workDF$thisHyb == "h5"] <- 5
 
 summary(workDF)
 head(workDF)
+
 enPix <- length(unique(workDF$pixel_ID))
 print(paste0("Found ", length(unique(workDF$pixel_ID)), 
              " pixels and difference in pixel count (if any) was ",inPix - enPix))
@@ -202,7 +219,6 @@ av_Bio <- data.frame(scn = "av_Bio",av_Bio)
 av_Bio
 
 # Harvest index
-# Variability of hybrid by sowing date within each pixel (does not include inter-annual variability)
   av_HI <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   dplyr::select(HarvestIndex) %>%
@@ -219,10 +235,9 @@ av_Bio
 av_HI <- data.frame(scn = "av_HI",av_HI)
 av_HI
 
-# Statistics on G by M effect (CV% among scenarions in eachpixel using 30 year averages)
+# variability statistics on G by M effect (CV% among scenarions in each pixel using 30 year averages)
 
 # Total biomass
-
   cv_Bio <- workDF %>%
   group_by(Combine, pixel_ID, thisHyb, thisSow) %>%
   dplyr::select(TotalBiomass) %>%
@@ -320,7 +335,7 @@ theme(legend.position = "none")
 # Total Yield
 # Total biomass
 workDF %>%
-#filter(Combine == "LTLR" | Combine == "MTMR" | Combine == "HTHR")  %>%
+filter(Combine == "LTLR" | Combine == "MTMR" | Combine == "HTHR")  %>%
 ggplot(aes(x= thisHyb , y=TotalYield)) +  
 geom_violin() +
 geom_boxplot(aes(alpha = 0.5)) +
@@ -334,7 +349,7 @@ theme(legend.position = "none")
 # Harvest Index
 # Total biomass
 workDF %>%
-#filter(Combine == "LTLR" | Combine == "HTHR")  %>%
+filter(Combine == "LTLR" | Combine == "HTHR")  %>%
 ggplot(aes(x= thisHyb , y=HarvestIndex)) +  
 geom_violin() +
 geom_boxplot(aes(alpha = 0.5)) +
@@ -364,6 +379,9 @@ theme(legend.position = "none")
 # This loop takes ages!
 
 si_df_final <- NULL
+si_df_final_m <- NULL
+
+
 pixels <- unique(workDF$pixel_ID)
 
 summary(workDF) # Should I use workDF?
@@ -374,8 +392,8 @@ vars <- c("TotalBiomass", "HarvestIndex")
 # FIXME: Loop is too slow - do this later with dplyr or something better
 
 for (v in 1:length(vars)) {
- for (p in 1:length(pixels)) {
-#  for (p in 1:10) { # test
+  for (p in 1:length(pixels)) {
+  # for (p in 1:10) { # test
 
   thisPixDF <- workDF %>%
     filter(pixel_ID == pixels[[p]]) %>%
@@ -419,6 +437,7 @@ for (v in 1:length(vars)) {
   df_ss$SS_p <- round((df_ss$SS/sum(df_ss$SS))*100,3)
   # df_ss$MS_p <- round((df_ss$MS/sum(df_ss$MS))*100,3) 
   # FIXME: Not sure which to use SS or MS - Esther Menkeen suggested SS
+  # ifelse(sum(df_ss$SS_p>101|df_ss$SS_p>99),print("Check ANOVA sum"),"All good")
  
 # Add SS of interections as a new vector element that adds to 100%
 sumInt <- sum(df_ss$SS_p[(noFactors+1):length(namesAnTab)]) # Calculate sums total SS due to interactions (i.e. sums every SS that is not main factor)
@@ -479,9 +498,10 @@ nrow(si_df_final)
 #gW <- ggplot(si_df_final, aes(x=Si_yearAsFact)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 #gI <- ggplot(si_df_final, aes(x=Si_Interac)) + geom_histogram(binwidth=.5, colour="black", fill="white")
 
-si_df_final_m <- si_df_final # place holder while we decide what to do with region
+# append variables in single df
+si_df_final_m <- rbind(si_df_final_m, si_df_final) # place holder while we decide what to do with region
 
-head(si_df_final_m)
+summary(si_df_final_m)
 
 } # end loop in variables
 
@@ -546,7 +566,7 @@ grid.arrange(hg1, hg2, nrow=2) # save it via rstudio
 fontSize <- 18
 
 bg1 <- si_df_final_m %>%
- # filter(thisVar == "TotalBiomass")  %>%
+  filter(thisVar == "TotalBiomass")  %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%
   mutate (Si_tot = Si_thisHyb + Si_thisSow + Si_yearAsFact + Si_Interac) %>%
@@ -571,6 +591,7 @@ bg1 <- si_df_final_m %>%
 # Harvest Index - bar
 
 bg2 <- si_df_final_m %>%
+#   filter(thisVar == "TotalBiomass")  %>%
   filter(thisVar == "HarvestIndex")  %>%
   group_by(thisClimZone) %>%
   summarise_each(funs(mean)) %>%

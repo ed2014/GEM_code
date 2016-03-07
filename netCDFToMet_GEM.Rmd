@@ -191,7 +191,7 @@ Loop through netCDF files
 
 LUFilter <- 
  # read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\gisLayers\\luFilter\\LandUseFilter_Allcats.txt", 
-   read.table("C:\\apsim_dev\\Projects\\CCII\filter\\LandUseFilter_Allcats.txt",
+   read.table("C:\\apsim_dev\\Projects\\CCII\\filter\\LandUseFilter_Allcats.txt",
              header = TRUE)
 
 print(paste0("Found ", nrow(LUFilter), " pixels"))
