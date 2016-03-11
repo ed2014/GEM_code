@@ -563,6 +563,8 @@ grid.arrange(hg1, hg2, nrow=2) # save it via rstudio
 
 # Biomass - bar
 
+cZpallete <- c("#ca0020","#f4a582","#92c5de","#0571b0")
+
 fontSize <- 18
 
 bg1 <- si_df_final_m %>%
@@ -575,7 +577,7 @@ bg1 <- si_df_final_m %>%
           Si_yearAsFact = Si_yearAsFact/Si_tot*100, 
           Si_Interac = Si_Interac/Si_tot*100) %>%
   gather(factName, siVal, 7:10) %>% # FIXME: Automate this
-  ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=rev(factName))) + 
+  ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=factName)) + 
   geom_bar(stat='identity')  +
   xlab(" ") + 
   ylab("Share of total variability (%)") + 
@@ -601,7 +603,7 @@ bg2 <- si_df_final_m %>%
           Si_yearAsFact = Si_yearAsFact/Si_tot*100, 
           Si_Interac = Si_Interac/Si_tot*100) %>%
   gather(factName, siVal, 7:10) %>% # FIXME: Automate this
-  ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=rev(factName))) + 
+  ggplot(aes(x=thisClimZone, y=siVal, fill=factName, order=factName)) + 
   geom_bar(stat='identity')  +
   ggtitle("(b) Harvest index") +
   xlab("Climatic zones ") + ylab("Share of total variability (%)") + 
@@ -624,9 +626,8 @@ grid.arrange(bg1, bg2, nrow=2) # save it via rstudio
 
 ```{r Si_by_Temp}
 
-getwd()
 #weatherPixel <- read.csv("RasterOutput_base.csv") # copied from D:\ERA-40_Reanalysis\metFiles_ERA_1971_2000\SummaryResults
-weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\metFiles_Test_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
+weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\SummaryResults\\RasterOutput_base.csv")
 
 
 weatherPixel <- data.frame(weatherPixel)
@@ -643,24 +644,32 @@ head(si_weather_merged)
 fontSize <- 20
 # Graph now
 
-colnames(si_weather_merged)[7:10] <- c("Hybrid", "Sowing", "Weather", "Interactions")
+colnames(si_weather_merged)[7:10] <- c("Hybrid Maturity", "Sowing Date", "Weather", "Interactions") # FIXME: Should not be done by hand!
 
 si_weather_merged$thisVar <- factor(si_weather_merged$thisVar, 
                                     levels=c("TotalBiomass", "HarvestIndex"), 
                                     labels=c("Above-ground biomass","Harvest index")) 
 
+pallete1 <- c("#8c510a","#bf812d","#dfc27d",
+              "#f6e8c3","#f5f5f5","#c7eae5",
+              "#80cdc1","#35978f","#01665e")
+
 si_weather_merged %>%
   gather(factName, siVal, 7:10) %>% # FIXME: this might change - can you automate?
   ggplot(aes(x=meant, y=siVal)) +
   geom_point(aes(colour = thisClimZone)) +
-  geom_smooth(method=lm) +
+ # geom_smooth(method=lm) +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2, raw=TRUE), se = TRUE, colour='darkblue') +
   #legend.title(name="Climate zones") +
   #stat_smooth(method=lm) +
   scale_colour_brewer(name = "Climate zone") +
+  theme(panel.background = element_rect(fill = "darkgrey")) +
+  theme(legend.key = element_rect(fill = "darkgrey"))+
   xlab("Average annual temperature (oC)") +
   ylab("Sensitivity index (Si, % total variability)") +
   facet_grid(thisVar~factName, scales = "free") +
   theme(text = element_text(size=fontSize)) +
+  labs(x=expression("Average annual temperature "~"("^{o}~C~")")) +
   scale_x_continuous(breaks=c(7,10,14,18),limits=c(5, 18))
   ggsave(file=paste0("Si_ResponseToTemp.tiff"), dpi = 300)
 
