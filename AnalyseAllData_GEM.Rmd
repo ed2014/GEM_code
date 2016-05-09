@@ -125,7 +125,7 @@ head(workDF)
 
 # Read climate zone data
 climZones <- NULL
-climZones <- read.csv("C:\\GitHubRepos\\GEM_files\\GEM_data\\CLuster.csv")
+climZones <- read.csv("C:\\GitHubRepos\\GEM_files\\GEM_data\\Cluster.csv")
 head(climZones)
 nrow(climZones)
 
@@ -633,7 +633,7 @@ weatherPixel <- read.csv("F:\\ERA-40_Reanalysis\\metFiles_ERA_1971_2000\\Summary
 weatherPixel <- data.frame(weatherPixel)
 head(weatherPixel)
 summary(weatherPixel)
-weatherPixel <- weatherPixel %>% select(-thisLat, -thisLong) # unnecessary cols and dulicates at merge
+weatherPixel <- weatherPixel %>% dplyr::select(-thisLat, -thisLong) # unnecessary cols and dulicates at merge
 
 si_weather_merged <- NULL
 si_weather_merged <- merge(si_df_final_m, weatherPixel, by = c("row","col"))
@@ -1074,7 +1074,7 @@ Test yield over time
 # FIXME: not working now
 slopesDF <- NULL
 slopesDF <- workDF %>%
- select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
+ dplyr::select (pixel_ID, thisSow, thisHyb, thisLat, thisLong, TotalBiomass, year) %>%
  group_by(pixel_ID, thisSow, thisHyb) %>%
 # filter(TotalBiomass > 100) %>%
  do(mod = lm(TotalBiomass ~ year, data = .)) %>%
@@ -1103,14 +1103,14 @@ setDT(workDF)[, list(Slope = summary(lm(TotalBiomass ~ year))$coeff[2]),  pixel_
 
 ```{r SlopeAnalysis}
 slopesDF %>%
-  select(thisSow, thisHyb, slope) %>%
+  dplyr::select(thisSow, thisHyb, slope) %>%
   ggplot(aes(x=thisSow, y=slope)) +
   geom_boxplot() +
   geom_jitter(aes(colour = thisHyb))
 
 
 slopesDF %>%
-  select(thisLat, thisSow, thisHyb, slope) %>%
+  dplyr::select(thisLat, thisSow, thisHyb, slope) %>%
   ggplot(aes(x=thisLat, y=slope)) +
   geom_point(aes(colour = thisHyb)) +
   facet_grid(thisSow~.)
@@ -1120,7 +1120,7 @@ head(slopesDF)
 # Test some pixels
 workDF %>%
 filter(pixel_ID == "149_131" & TotalBiomass > 100) %>%
-select(year, TotalBiomass, thisSow, thisHyb) %>%
+dplyr::select(year, TotalBiomass, thisSow, thisHyb) %>%
 ggplot(aes(x= year , y=TotalBiomass)) +  
 geom_smooth(method=lm) +  
 geom_point() +
@@ -1171,7 +1171,7 @@ for(s in 1:length(sow)) {
 # map averages of Total Biomass
 
 mapDf <- workDF %>% 
-  select(pixel_ID, thisLat, thisLong, TotalBiomass, HarvestIndex) %>%
+  dplyr::select(pixel_ID, thisLat, thisLong, TotalBiomass, HarvestIndex) %>%
   group_by(pixel_ID)  %>% 
   summarise_each(funs(mean))
 
@@ -1216,7 +1216,7 @@ workDF %>%
  # filter(thisLat < -45) %>%
   filter(Combine == "LTLR" | Combine == "HTHR") %>%
   group_by(Combine, thisSow, thisHyb) %>%
-  select(TotalBiomass) %>%
+  dplyr::select(TotalBiomass) %>%
   ggplot(aes(x= thisHyb , y=TotalBiomass))+
   geom_boxplot() +
   geom_violin(aes(alpha = 0.5))+
@@ -1228,7 +1228,7 @@ workDF %>%
   #filter(thisLat > -37) %>%
   #filter(thisLat < -45) %>%
   group_by(thisSow, thisHyb) %>%
-  select(TotalBiomass) %>%
+  dplyr::select(TotalBiomass) %>%
   ggplot(aes(x= thisHyb , y=TotalBiomass))+
   geom_boxplot() +
   facet_grid(. ~ thisSow)
@@ -1237,7 +1237,7 @@ workDF %>%
   workDF %>% 
   filter(Combine == "LTLR") %>%
   group_by(thisSow, thisHyb) %>%
-  select(AnthesisTT) %>%
+  dplyr::select(AnthesisTT) %>%
   ggplot(aes(x= thisHyb , y=AnthesisTT))+
   geom_boxplot() +
   facet_grid(. ~ thisSow)

@@ -8,7 +8,8 @@ library(raster)
 
 # read df
 #data_df <- read.table("C:\\Apsim_dev\\Projects\\2014-SowByGenotype\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
-data_df <- read.table("C:\\GitHubRepos\\GEM_files\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
+# data_df <- read.table("C:\\GitHubRepos\\GEM_files\\GEM_data\\Si_by_Pixel.txt",header = TRUE)
+data_df <- read.table("F:\\SowByGenotype\\MyRun2016Mar\\OutFiles\\Si_by_Pixel.txt",header = TRUE)
 head(data_df)
 
 # Identify variables
